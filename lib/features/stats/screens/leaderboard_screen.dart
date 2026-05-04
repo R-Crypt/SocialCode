@@ -51,7 +51,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         slivers: [
           // Header podium
           SliverAppBar(
-            expandedHeight: 280,
+            expandedHeight: 380,
             pinned: true,
             automaticallyImplyLeading: false,
             backgroundColor: AppTheme.backgroundLight,
@@ -178,9 +178,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (second != null) Expanded(child: _buildPodiumUser(second, 2, 70)),
-          Expanded(child: _buildPodiumUser(first, 1, 90)),
-          if (third != null) Expanded(child: _buildPodiumUser(third, 3, 60)),
+          if (second != null) _buildPodiumUser(second, 2, 70),
+          _buildPodiumUser(first, 1, 90),
+          if (third != null) _buildPodiumUser(third, 3, 60),
         ],
       ),
     );
@@ -193,11 +193,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final imgUrl = user['profile_image_url'] as String?;
     
     final pedestalHeight = rank == 1 ? 140.0 : rank == 2 ? 100.0 : 80.0;
+    final pedestalWidth = rank == 1 ? 110.0 : 90.0;
     final pedestalColor = rank == 1 ? AppTheme.primaryMagenta : Colors.white;
     final textColor = rank == 1 ? Colors.white : AppTheme.borderBlack;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -242,7 +243,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           // Pedestal Block
           Container(
             height: pedestalHeight,
-            width: double.infinity,
+            width: pedestalWidth,
             decoration: BoxDecoration(
               color: pedestalColor,
               border: Border.all(color: AppTheme.borderBlack, width: 2),
