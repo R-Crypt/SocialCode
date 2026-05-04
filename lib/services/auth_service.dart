@@ -33,11 +33,15 @@ class AuthService {
 
   // --- GOOGLE SIGN IN ---
 
+  static const String _webRedirectUrl = 'https://social-code.vercel.app';
+
   Future<void> signInWithGoogle() async {
-    // Using Supabase native OAuth to prevent crashes on macOS/Windows and simplify configuration
+    final redirectTo = kIsWeb
+        ? _webRedirectUrl
+        : 'io.supabase.socialcode://login-callback';
     await sb.Supabase.instance.client.auth.signInWithOAuth(
       sb.OAuthProvider.google,
-      redirectTo: kIsWeb ? null : 'io.supabase.socialcode://login-callback',
+      redirectTo: redirectTo,
       queryParams: {
         'prompt': 'consent',
       },

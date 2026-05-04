@@ -99879,6 +99879,7 @@ aj7(a,b,c,d,e){var s=0,r=A.q(t.PN),q,p=this,o,n,m,l
 var $async$Bd=A.m(function(f,g){if(f===1)return A.n(g,r)
 for(;;)switch(s){case 0:m=t.N
 l=A.a7(["provider",A.bak(a)],m,m)
+l.m(0,"redirect_to",c)
 l.O(0,b)
 o=p.ay
 s=o===B.fi?3:4
@@ -105865,7 +105866,7 @@ for(;;)switch(s){case 0:p=$.c4().b
 p===$&&A.a()
 q=t.N
 s=2
-return A.l(A.RK(p.giE(),B.S5,A.a7(["prompt","consent"],q,q),null),$async$Ae)
+return A.l(A.RK(p.giE(),B.S5,A.a7(["prompt","consent"],q,q),"https://social-code.vercel.app"),$async$Ae)
 case 2:return A.o(null,r)}})
 return A.p($async$Ae,r)},
 ny(){var s=0,r=A.q(t.ih),q,p=2,o=[],n,m,l,k,j,i,h,g,f,e,d,c
