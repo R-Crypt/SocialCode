@@ -71,6 +71,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     color: AppTheme.borderBlack),
               ),
               centerTitle: true,
+              titlePadding: const EdgeInsets.only(bottom: 16),
             ),
           ),
 
@@ -172,7 +173,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final third = top3.length > 2 ? top3[2] : null;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 80),
+      padding: const EdgeInsets.only(top: 40, bottom: 50),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
