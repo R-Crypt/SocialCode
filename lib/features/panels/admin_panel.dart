@@ -11,6 +11,7 @@ import 'package:social_code/services/auth_service.dart';
 import 'package:social_code/models/challenge.dart';
 import 'package:social_code/features/challenges/bloc/challenges_bloc.dart';
 import 'package:social_code/core/widgets/challenge_image_picker.dart';
+import 'package:social_code/core/utils/download.dart';
 
 class AdminPanel extends StatefulWidget {
   final AppUser user;
@@ -581,11 +582,14 @@ class _AdminDataExport extends StatelessWidget {
       }).join('\n');
       final csv = '$headers\n$rows';
 
-      await Clipboard.setData(ClipboardData(text: csv));
+      // Call our web-safe download helper
+      final fileName = '${table}_export_${DateTime.now().millisecondsSinceEpoch}.csv';
+      downloadCsv(fileName, csv);
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${response.length} rows from $table copied to clipboard as CSV!'),
+            content: Text('${response.length} rows from $table downloaded as CSV!'),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 3),
           ),
