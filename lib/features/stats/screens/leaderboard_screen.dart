@@ -47,100 +47,101 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundLight,
-      body: CustomScrollView(
-        slivers: [
-          // Header podium
-          SliverAppBar(
-            expandedHeight: 380,
-            pinned: true,
-            automaticallyImplyLeading: false,
-            backgroundColor: AppTheme.backgroundLight,
-            surfaceTintColor: Colors.transparent,
-            flexibleSpace: FlexibleSpaceBar(
-              background: _loading
-                  ? const Center(
-                      child: CircularProgressIndicator(color: AppTheme.primaryMagenta))
-                  : _leaders.isNotEmpty
-                      ? _buildPodium()
-                      : const SizedBox(),
-              title: Text(
-                'TOP CITIZENS',
-                style: GoogleFonts.outfit(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 18,
-                    color: AppTheme.borderBlack),
-              ),
-              centerTitle: true,
-              titlePadding: const EdgeInsets.only(bottom: 16),
-            ),
-          ),
-
-          // Region label
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-              child: Row(
-                children: [
-                  Text(
-                    'BENGALURU LEADERBOARD',
-                    style: GoogleFonts.spaceMono(
-                        color: AppTheme.borderBlack.withOpacity(0.4),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 11,
-                        letterSpacing: 1.2),
-                  ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: _loadLeaderboard,
-                    child: const Icon(Icons.refresh, size: 18, color: AppTheme.primaryMagenta),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Error
-          if (_error != null)
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // ---- TITLE HEADER ----
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(children: [
-                  Text('COULD NOT LOAD LEADERBOARD',
-                      style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold)),
-                  ElevatedButton(
-                      onPressed: _loadLeaderboard, child: const Text('RETRY')),
-                ]),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                child: Row(
+                  children: [
+                    Text(
+                      'TOP CITIZENS',
+                      style: GoogleFonts.outfit(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 26,
+                        letterSpacing: 0.5,
+                        color: AppTheme.borderBlack,
+                      ),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: _loadLeaderboard,
+                      child: const Icon(Icons.refresh, size: 20, color: AppTheme.primaryMagenta),
+                    ),
+                  ],
+                ),
               ),
             ),
 
-          // List
-          if (_loading)
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (_, __) => Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      height: 60,
-                      color: Colors.white,
-                    ),
+            // ---- REGION LABEL ----
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
+                child: Text(
+                  'BENGALURU LEADERBOARD',
+                  style: GoogleFonts.spaceMono(
+                    color: AppTheme.borderBlack.withOpacity(0.4),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                    letterSpacing: 1.2,
                   ),
-                  childCount: 10,
                 ),
               ),
-            )
-          else
+            ),
+
+            // ---- PODIUM / LOADING ----
+            if (_loading)
+              const SliverToBoxAdapter(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 60),
+                    child: CircularProgressIndicator(color: AppTheme.primaryMagenta),
+                  ),
+                ),
+              )
+            else if (_leaders.isNotEmpty)
+              SliverToBoxAdapter(child: _buildPodium()),
+
+            // ---- RANKINGS LABEL (only if there are rank 4+) ----
+            if (!_loading && _leaders.length > 3)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+                  child: Text(
+                    'RANKINGS',
+                    style: GoogleFonts.spaceMono(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11,
+                      letterSpacing: 1.5,
+                      color: AppTheme.borderBlack.withOpacity(0.4),
+                    ),
+                  ),
+                ),
+              ),
+
+            // ---- ERROR ----
+            if (_error != null)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(children: [
+                    Text('COULD NOT LOAD LEADERBOARD',
+                        style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold)),
+                    ElevatedButton(
+                        onPressed: _loadLeaderboard, child: const Text('RETRY')),
+                  ]),
+                ),
+              ),
+
+            // ---- LIST (rank 4+) ----
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    if (_leaders.isEmpty) {
-                      return _buildEmptyState();
-                    }
+                    if (_leaders.isEmpty) return _buildEmptyState();
                     final item = _leaders[index + 3];
                     return _buildRankItem(item, index + 4);
                   },
@@ -150,7 +151,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 ),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -172,16 +174,19 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final second = top3.length > 1 ? top3[1] : null;
     final third = top3.length > 2 ? top3[2] : null;
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 20, bottom: 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          if (second != null) _buildPodiumUser(second, 2, 70),
-          _buildPodiumUser(first, 1, 90),
-          if (third != null) _buildPodiumUser(third, 3, 60),
-        ],
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 60),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            if (second != null) _buildPodiumUser(second, 2, 70),
+            _buildPodiumUser(first, 1, 90),
+            if (third != null) _buildPodiumUser(third, 3, 60),
+          ],
+        ),
       ),
     );
   }
