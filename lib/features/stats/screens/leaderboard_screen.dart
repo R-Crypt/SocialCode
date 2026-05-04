@@ -60,11 +60,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               background: _loading
                   ? const Center(
                       child: CircularProgressIndicator(color: AppTheme.primaryMagenta))
-                  : _leaders.length >= 3
+                  : _leaders.isNotEmpty
                       ? _buildPodium()
                       : const SizedBox(),
               title: Text(
-                'TOP FLEXERS',
+                'TOP CITIZENS',
                 style: GoogleFonts.outfit(
                     fontWeight: FontWeight.w900,
                     fontSize: 18,
@@ -137,18 +137,15 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    if (_leaders.length <= 3 && index == 0) {
+                    if (_leaders.isEmpty) {
                       return _buildEmptyState();
                     }
-                    final offset = _leaders.length >= 3 ? 3 : 0;
-                    final item = _leaders[index + offset];
-                    return _buildRankItem(item, index + offset + 1);
+                    final item = _leaders[index + 3];
+                    return _buildRankItem(item, index + 4);
                   },
-                  childCount: _leaders.length >= 3
-                      ? _leaders.length - 3
-                      : _leaders.length == 0
-                          ? 1
-                          : _leaders.length,
+                  childCount: _leaders.isEmpty
+                      ? 1
+                      : (_leaders.length > 3 ? _leaders.length - 3 : 0),
                 ),
               ),
             ),
@@ -168,8 +165,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   Widget _buildPodium() {
     final top3 = _leaders.take(3).toList();
-    final second = top3[1];
+    if (top3.isEmpty) return const SizedBox();
+
     final first = top3[0];
+    final second = top3.length > 1 ? top3[1] : null;
     final third = top3.length > 2 ? top3[2] : null;
 
     return Padding(
@@ -178,7 +177,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _buildPodiumUser(second, 2, 80),
+          if (second != null) _buildPodiumUser(second, 2, 80),
           _buildPodiumUser(first, 1, 100),
           if (third != null) _buildPodiumUser(third, 3, 70),
         ],
