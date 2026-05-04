@@ -187,27 +187,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 16),
                       ],
                       if (user.websiteUrl != null && user.websiteUrl!.isNotEmpty) ...[
-                        GestureDetector(
-                          onTap: () async {
-                            var url = user.websiteUrl!;
+                        Builder(
+                          builder: (context) {
+                            var url = user.websiteUrl!.trim();
                             if (!url.startsWith('http')) url = 'https://$url';
-                            final uri = Uri.parse(url);
-                            if (await canLaunchUrl(uri)) await launchUrl(uri);
-                          },
-                          child: Row(
-                            children: [
-                              const Icon(Icons.link, size: 16, color: AppTheme.borderBlack),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Text(user.websiteUrl!,
-                                    style: GoogleFonts.spaceMono(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppTheme.primaryMagenta,
-                                        decoration: TextDecoration.underline)),
+                            String displayUrl = user.websiteUrl!;
+                            try {
+                              displayUrl = Uri.parse(url).host.replaceFirst('www.', '');
+                            } catch (_) {}
+                            
+                            return GestureDetector(
+                              onTap: () async {
+                                final uri = Uri.parse(url);
+                                if (await canLaunchUrl(uri)) await launchUrl(uri);
+                              },
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.link, size: 16, color: AppTheme.borderBlack),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(displayUrl,
+                                        style: GoogleFonts.spaceMono(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppTheme.primaryMagenta,
+                                            decoration: TextDecoration.underline)),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            );
+                          }
                         ),
                         const SizedBox(height: 8),
                       ],
@@ -215,8 +224,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Builder(
                           builder: (context) {
                             var input = user.instagramUrl!.trim();
-                            if (input.startsWith('@')) input = input.substring(1);
-                            final username = input.split('/').where((e) => e.isNotEmpty).last;
+                            String username = input;
+                            try {
+                              if (input.contains('instagram.com')) {
+                                if (!input.startsWith('http')) input = 'https://$input';
+                                final uri = Uri.parse(input);
+                                final segments = uri.pathSegments.where((e) => e.isNotEmpty).toList();
+                                if (segments.isNotEmpty) {
+                                  username = segments.first;
+                                }
+                              } else {
+                                if (input.startsWith('@')) input = input.substring(1);
+                                username = input.split('/').where((e) => e.isNotEmpty).last.split('?').first;
+                              }
+                            } catch (_) {}
                             
                             return GestureDetector(
                               onTap: () async {
