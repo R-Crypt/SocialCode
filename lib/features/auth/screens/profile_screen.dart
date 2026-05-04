@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:social_code/core/theme/app_theme.dart';
 import 'package:social_code/features/auth/bloc/auth_bloc.dart';
 import 'package:social_code/models/app_user.dart';
@@ -186,26 +187,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 16),
                       ],
                       if (user.websiteUrl != null && user.websiteUrl!.isNotEmpty) ...[
-                        Row(
-                          children: [
-                            const Icon(Icons.link, size: 16, color: AppTheme.borderBlack),
-                            const SizedBox(width: 6),
-                            Text(user.websiteUrl!,
-                                style: GoogleFonts.spaceMono(
-                                    fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.borderBlack)),
-                          ],
+                        GestureDetector(
+                          onTap: () async {
+                            var url = user.websiteUrl!;
+                            if (!url.startsWith('http')) url = 'https://$url';
+                            final uri = Uri.parse(url);
+                            if (await canLaunchUrl(uri)) await launchUrl(uri);
+                          },
+                          child: Row(
+                            children: [
+                              const Icon(Icons.link, size: 16, color: AppTheme.borderBlack),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(user.websiteUrl!,
+                                    style: GoogleFonts.spaceMono(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.primaryMagenta,
+                                        decoration: TextDecoration.underline)),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 8),
                       ],
                       if (user.instagramUrl != null && user.instagramUrl!.isNotEmpty) ...[
-                        Row(
-                          children: [
-                            const Icon(Icons.camera_alt_outlined, size: 16, color: AppTheme.borderBlack),
-                            const SizedBox(width: 6),
-                            Text('@${user.instagramUrl!.split('/').last}',
-                                style: GoogleFonts.spaceMono(
-                                    fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.borderBlack)),
-                          ],
+                        Builder(
+                          builder: (context) {
+                            var input = user.instagramUrl!.trim();
+                            if (input.startsWith('@')) input = input.substring(1);
+                            final username = input.split('/').where((e) => e.isNotEmpty).last;
+                            
+                            return GestureDetector(
+                              onTap: () async {
+                                final uri = Uri.parse('https://instagram.com/$username');
+                                if (await canLaunchUrl(uri)) await launchUrl(uri);
+                              },
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.camera_alt_outlined, size: 16, color: AppTheme.borderBlack),
+                                  const SizedBox(width: 6),
+                                  Text('@$username',
+                                      style: GoogleFonts.spaceMono(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppTheme.primaryMagenta,
+                                          decoration: TextDecoration.underline)),
+                                ],
+                              ),
+                            );
+                          }
                         ),
                       ],
                     ],
