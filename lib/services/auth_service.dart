@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:social_code/models/app_user.dart';
@@ -91,6 +92,19 @@ class AuthService {
         role: UserRole.citizen,
       );
     }
+  }
+
+  Future<String> uploadAvatarImage(Uint8List imageBytes, String userId) async {
+    final fileName = '${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final storagePath = '$fileName';
+
+    await _client.storage.from('avatars').uploadBinary(
+          storagePath,
+          imageBytes,
+          fileOptions: const sb.FileOptions(contentType: 'image/jpeg', upsert: true),
+        );
+
+    return _client.storage.from('avatars').getPublicUrl(storagePath);
   }
 
   Future<void> updateProfile({

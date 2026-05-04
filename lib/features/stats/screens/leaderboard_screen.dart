@@ -173,14 +173,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final third = top3.length > 2 ? top3[2] : null;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 40, bottom: 50),
+      padding: const EdgeInsets.only(top: 20, bottom: 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (second != null) _buildPodiumUser(second, 2, 80),
-          _buildPodiumUser(first, 1, 100),
-          if (third != null) _buildPodiumUser(third, 3, 70),
+          if (second != null) Expanded(child: _buildPodiumUser(second, 2, 70)),
+          Expanded(child: _buildPodiumUser(first, 1, 90)),
+          if (third != null) Expanded(child: _buildPodiumUser(third, 3, 60)),
         ],
       ),
     );
@@ -191,40 +191,99 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final name = (user['display_name'] as String? ?? 'User').toUpperCase();
     final pts = user['points'] as int? ?? 0;
     final imgUrl = user['profile_image_url'] as String?;
+    
+    final pedestalHeight = rank == 1 ? 140.0 : rank == 2 ? 100.0 : 80.0;
+    final pedestalColor = rank == 1 ? AppTheme.primaryMagenta : Colors.white;
+    final textColor = rank == 1 ? Colors.white : AppTheme.borderBlack;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (isFirst)
-            const Icon(Icons.workspace_premium,
-                color: AppTheme.primaryMagenta, size: 24),
+            const Icon(Icons.workspace_premium, color: AppTheme.primaryMagenta, size: 28),
+          if (!isFirst) const SizedBox(height: 28),
           const SizedBox(height: 4),
-          CircleAvatar(
-            radius: size / 2,
-            backgroundColor: AppTheme.primaryMagenta.withOpacity(0.1),
-            backgroundImage: imgUrl != null ? NetworkImage(imgUrl) : null,
-            child: imgUrl == null
-                ? Text(name[0],
-                    style: GoogleFonts.outfit(
-                        fontWeight: FontWeight.w900,
-                        fontSize: size / 3,
-                        color: AppTheme.primaryMagenta))
-                : null,
+          
+          // Avatar
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppTheme.borderBlack, width: 2),
+            ),
+            child: CircleAvatar(
+              radius: size / 2,
+              backgroundColor: AppTheme.primaryMagenta.withOpacity(0.1),
+              backgroundImage: imgUrl != null ? NetworkImage(imgUrl) : null,
+              child: imgUrl == null
+                  ? Text(name[0],
+                      style: GoogleFonts.outfit(
+                          fontWeight: FontWeight.w900,
+                          fontSize: size / 3,
+                          color: AppTheme.primaryMagenta))
+                  : null,
+            ),
           ),
           const SizedBox(height: 8),
-          Text(name.split(' ')[0],
-              style: GoogleFonts.outfit(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  color: AppTheme.borderBlack)),
-          Text('$pts PTS',
-              style: GoogleFonts.outfit(
-                  color: isFirst ? AppTheme.primaryMagenta : AppTheme.borderBlack.withOpacity(0.6),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w900)),
-          const SizedBox(height: 16),
+          
+          // Name
+          Text(
+            name.split(' ')[0],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.outfit(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: AppTheme.borderBlack),
+          ),
+          const SizedBox(height: 8),
+          
+          // Pedestal Block
+          Container(
+            height: pedestalHeight,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: pedestalColor,
+              border: Border.all(color: AppTheme.borderBlack, width: 2),
+              boxShadow: const [
+                BoxShadow(
+                  color: AppTheme.borderBlack,
+                  offset: Offset(4, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'RANK $rank',
+                  style: GoogleFonts.spaceMono(
+                    color: textColor.withOpacity(0.7),
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '$pts',
+                  style: GoogleFonts.outfit(
+                    color: textColor,
+                    fontSize: isFirst ? 24 : 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Text(
+                  'PTS',
+                  style: GoogleFonts.outfit(
+                    color: textColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

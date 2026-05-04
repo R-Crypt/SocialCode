@@ -1,6 +1,9 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:social_code/core/theme/app_theme.dart';
 import 'package:social_code/features/auth/bloc/auth_bloc.dart';
 import 'package:social_code/models/app_user.dart';
@@ -109,6 +112,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ],
                           ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.edit, size: 20),
+                          onPressed: () => _showEditProfileSheet(context),
                         ),
                         IconButton(
                           icon: const Icon(Icons.logout),
@@ -220,6 +227,165 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showEditProfileSheet(BuildContext context) {
+    final user = widget.user;
+    final nameController = TextEditingController(text: user.displayName);
+    XFile? newImage;
+    Uint8List? newImageBytes;
+    bool isSaving = false;
+    String? errorText;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 24,
+                right: 24,
+                top: 24,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('EDIT PROFILE',
+                        style: GoogleFonts.outfit(
+                            fontWeight: FontWeight.w900, fontSize: 18)),
+                    const SizedBox(height: 24),
+                    GestureDetector(
+                      onTap: () async {
+                        final picker = ImagePicker();
+                        final img = await picker.pickImage(
+                            source: ImageSource.gallery, imageQuality: 80);
+                        if (img != null) {
+                          final bytes = await img.readAsBytes();
+                          setState(() {
+                            newImage = img;
+                            newImageBytes = bytes;
+                          });
+                        }
+                      },
+                      child: CircleAvatar(
+                        radius: 40,
+                        backgroundColor: AppTheme.primaryMagenta.withOpacity(0.1),
+                        backgroundImage: newImageBytes != null
+                            ? MemoryImage(newImageBytes!)
+                            : (user.profileImageUrl != null
+                                ? NetworkImage(user.profileImageUrl!)
+                                : null) as ImageProvider?,
+                        child: (newImageBytes == null && user.profileImageUrl == null)
+                            ? const Icon(Icons.camera_alt, color: AppTheme.primaryMagenta)
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text('TAP TO CHANGE PHOTO',
+                        style: GoogleFonts.spaceMono(
+                            fontSize: 10, color: AppTheme.primaryMagenta)),
+                    const SizedBox(height: 24),
+                    TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: 'USERNAME',
+                        errorText: errorText,
+                        labelStyle: GoogleFonts.spaceMono(
+                            fontSize: 12, fontWeight: FontWeight.bold),
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.zero,
+                          borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.zero,
+                          borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: isSaving
+                            ? null
+                            : () async {
+                                final newName = nameController.text.trim();
+                                if (newName.isEmpty) {
+                                  setState(() => errorText = 'USERNAME CANNOT BE EMPTY');
+                                  return;
+                                }
+
+                                setState(() {
+                                  isSaving = true;
+                                  errorText = null;
+                                });
+
+                                try {
+                                  final svc = context.read<AuthService>();
+                                  
+                                  // Check unique display name
+                                  if (newName != user.displayName) {
+                                    final exists = await Supabase.instance.client
+                                        .from('profiles')
+                                        .select('id')
+                                        .eq('display_name', newName)
+                                        .maybeSingle();
+                                    if (exists != null && exists['id'] != user.id) {
+                                      setState(() {
+                                        errorText = 'USERNAME ALREADY TAKEN';
+                                        isSaving = false;
+                                      });
+                                      return;
+                                    }
+                                  }
+
+                                  String? newUrl;
+                                  if (newImageBytes != null) {
+                                    newUrl = await svc.uploadAvatarImage(newImageBytes!, user.id);
+                                  }
+
+                                  await svc.updateProfile(
+                                    userId: user.id,
+                                    displayName: newName,
+                                    profileImageUrl: newUrl,
+                                  );
+
+                                  if (mounted) {
+                                    // Trigger reload
+                                    context.read<AuthBloc>().add(AppStarted());
+                                    Navigator.pop(context);
+                                  }
+                                } catch (e) {
+                                  setState(() {
+                                    errorText = 'FAILED TO UPDATE PROFILE: $e';
+                                    isSaving = false;
+                                  });
+                                }
+                              },
+                        child: isSaving
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                    color: Colors.white, strokeWidth: 2))
+                            : const Text('SAVE CHANGES'),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

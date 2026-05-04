@@ -5,6 +5,8 @@ import 'package:social_code/core/theme/app_theme.dart';
 import 'package:social_code/models/app_user.dart';
 import 'package:social_code/models/submission.dart';
 import 'package:social_code/services/submission_service.dart';
+import 'package:social_code/features/panels/admin_users_screen.dart';
+import 'package:social_code/features/challenges/screens/challenges_list_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:social_code/services/auth_service.dart';
@@ -267,18 +269,46 @@ class _AdminPanelState extends State<AdminPanel> {
                           crossAxisSpacing: 12,
                           childAspectRatio: 1.1,
                           children: [
-                            _MetricCard('ACTIVE CODES',
-                                '${_metrics['active_challenges'] ?? 0}',
-                                Icons.flash_on, AppTheme.primaryMagenta),
-                            _MetricCard('CITIZENS',
-                                '${_metrics['citizens'] ?? 0}',
-                                Icons.people, AppTheme.accentPurple),
-                            _MetricCard('ISSUES RESOLVED',
-                                '${_metrics['resolved_reports'] ?? 0}',
-                                Icons.check_circle, Colors.green),
-                            _MetricCard('PENDING REVIEWS',
-                                '${_metrics['pending_reviews'] ?? 0}',
-                                Icons.pending, Colors.orange),
+                            _MetricCard(
+                              label: 'ACTIVE CODES',
+                              value: '${_metrics['active_challenges'] ?? 0}',
+                              icon: Icons.flash_on,
+                              color: AppTheme.primaryMagenta,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChallengesListScreen(user: widget.user),
+                                  ),
+                                );
+                              },
+                            ),
+                            _MetricCard(
+                              label: 'CITIZENS',
+                              value: '${_metrics['citizens'] ?? 0}',
+                              icon: Icons.people,
+                              color: AppTheme.accentPurple,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AdminUsersScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            _MetricCard(
+                              label: 'ISSUES RESOLVED',
+                              value: '${_metrics['resolved_reports'] ?? 0}',
+                              icon: Icons.check_circle,
+                              color: Colors.green,
+                            ),
+                            _MetricCard(
+                              label: 'PENDING REVIEWS',
+                              value: '${_metrics['pending_reviews'] ?? 0}',
+                              icon: Icons.pending,
+                              color: Colors.orange,
+                            ),
                           ],
                         );
                       }),
@@ -407,31 +437,42 @@ class _MetricCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color color;
-  const _MetricCard(this.label, this.value, this.icon, this.color);
+  final VoidCallback? onTap;
+
+  const _MetricCard({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: AppTheme.borderBlack, width: 2),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 22),
-          const SizedBox(height: 8),
-          Text(value,
-              style: GoogleFonts.outfit(
-                  fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.borderBlack)),
-          Text(label,
-              style: TextStyle(
-                  fontSize: 9,
-                  color: AppTheme.borderBlack.withOpacity(0.5),
-                  fontWeight: FontWeight.bold)),
-        ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: AppTheme.borderBlack, width: 2),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(height: 8),
+            Text(value,
+                style: GoogleFonts.outfit(
+                    fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.borderBlack)),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 9,
+                    color: AppTheme.borderBlack.withOpacity(0.5),
+                    fontWeight: FontWeight.bold)),
+          ],
+        ),
       ),
     );
   }
