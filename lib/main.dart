@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'core/theme/app_theme.dart';
-import 'features/auth/screens/login_screen.dart';
+import 'package:social_code/core/theme/app_theme.dart';
+import 'package:social_code/features/auth/bloc/auth_bloc.dart';
+import 'package:social_code/features/auth/screens/login_screen.dart';
+import 'package:social_code/features/auth/screens/dashboard_screen.dart';
+import 'package:social_code/services/auth_service.dart';
+import 'package:social_code/services/challenge_service.dart';
+import 'package:social_code/services/submission_service.dart';
+import 'package:social_code/services/report_service.dart';
+import 'package:social_code/features/challenges/bloc/challenges_bloc.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // NOTE: Firebase initialization requires google-services.json / GoogleService-Info.plist
-  // Uncomment the following lines once you've added your Firebase configuration files.
-  /*
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+
+  await Supabase.initialize(
+    url: 'https://vyihctqxmpdbhdzvpkqg.supabase.co',
+    anonKey: 'sb_publishable_8K922tNL8hGQX4geoyz8Sg_7K9SOZ5l',
   );
-  */
 
   runApp(const SocialCodeApp());
 }
@@ -23,11 +27,56 @@ class SocialCodeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'The Social Code',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      home: const LoginScreen(), // Starting with Login for now
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(create: (_) => AuthService()),
+        RepositoryProvider(create: (_) => ChallengeService()),
+        RepositoryProvider(create: (_) => SubmissionService()),
+        RepositoryProvider(create: (_) => ReportService()),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (ctx) => AuthBloc(ctx.read<AuthService>())..add(AppStarted()),
+          ),
+          BlocProvider(
+            create: (ctx) => ChallengesBloc(ctx.read<ChallengeService>()),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'The Social Code',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.brutalistTheme,
+          home: BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              if (state is AuthLoading || state is AuthInitial) {
+                return const _SplashScreen();
+              }
+              if (state is Authenticated) {
+                return DashboardScreen(user: state.user);
+              }
+              return const LoginScreen();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SplashScreen extends StatelessWidget {
+  const _SplashScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundLight,
+      body: const Center(
+        child: CircularProgressIndicator(
+          color: AppTheme.primaryMagenta,
+          strokeWidth: 3,
+        ),
+      ),
     );
   }
 }

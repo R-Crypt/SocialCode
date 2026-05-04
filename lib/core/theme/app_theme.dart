@@ -2,73 +2,80 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Brand Colors
-  static const Color primaryPurple = Color(0xFF8B5CF6); // Modern Purple
-  static const Color neonGreen = Color(0xFFCCFF00); // Cyber Lime
-  static const Color backgroundDark = Color(0xFF0F172A); // Deep Slate
-  static const Color surfaceDark = Color(0xFF1E293B); // Lighter Slate
-  static const Color accentPink = Color(0xFFF43F5E); // Impact Accent
+  // Brand Colors (Brutalist Palette)
+  static const Color primaryMagenta = Color(0xFFE91E63); // High-Impact Pink
+  static const Color accentPurple = Color(0xFF9C27B0); // Logo Purple
+  static const Color backgroundLight = Color(0xFFF9F9F9); // Off-white Paper
+  static const Color borderBlack = Color(0xFF111111); // Sharp Black
+  static const Color surfaceWhite = Color(0xFFFFFFFF);
 
-  static ThemeData get darkTheme {
+  static ThemeData get brutalistTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: backgroundDark,
-      colorScheme: const ColorScheme.dark(
-        primary: primaryPurple,
-        secondary: neonGreen,
-        surface: surfaceDark,
-        onSurface: Colors.white,
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: backgroundLight,
+      colorScheme: const ColorScheme.light(
+        primary: primaryMagenta,
+        secondary: borderBlack,
+        surface: surfaceWhite,
+        onSurface: borderBlack,
         onPrimary: Colors.white,
       ),
-      textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme).copyWith(
+      textTheme: GoogleFonts.outfitTextTheme(ThemeData.light().textTheme).copyWith(
         displayLarge: GoogleFonts.outfit(
           fontSize: 32,
-          fontWeight: FontWeight.extrabold,
+          fontWeight: FontWeight.w900,
           letterSpacing: -0.5,
-          color: Colors.white,
+          color: borderBlack,
         ),
         displayMedium: GoogleFonts.outfit(
           fontSize: 24,
+          fontWeight: FontWeight.w800,
+          color: borderBlack,
+        ),
+        labelLarge: GoogleFonts.spaceMono(
+          fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: borderBlack,
+          letterSpacing: 1.0,
         ),
         bodyLarge: GoogleFonts.inter(
           fontSize: 16,
-          color: Colors.white.withOpacity(0.9),
+          color: borderBlack.withOpacity(0.9),
         ),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: backgroundDark,
+        backgroundColor: surfaceWhite,
         elevation: 0,
         centerTitle: false,
+        iconTheme: IconThemeData(color: borderBlack),
         titleTextStyle: TextStyle(
           fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+          fontWeight: FontWeight.w900,
+          color: borderBlack,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: neonGreen,
-          foregroundColor: Colors.black,
-          textStyle: GoogleFonts.outfit(
-            fontWeight: FontWeight.black,
-            fontSize: 16,
-            letterSpacing: 1.0,
+          backgroundColor: borderBlack,
+          foregroundColor: Colors.white,
+          textStyle: GoogleFonts.spaceMono(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(0), // Square corners
+            side: const BorderSide(color: borderBlack, width: 2),
           ),
         ),
       ),
-      cardTheme: CardTheme(
-        color: surfaceDark,
+      cardTheme: CardThemeData(
+        color: surfaceWhite,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Colors.white.withOpacity(0.1)),
+          borderRadius: BorderRadius.circular(0), // Sharp Brutalist corners
+          side: const BorderSide(color: borderBlack, width: 1.5),
         ),
       ),
     );

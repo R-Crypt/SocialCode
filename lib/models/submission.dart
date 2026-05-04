@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 enum SubmissionStatus { pending, approved, rejected }
 
 class Submission {
@@ -9,10 +7,13 @@ class Submission {
   final String userName;
   final String imageUrl;
   final String? caption;
-  final DateTime timestamp;
+  final DateTime createdAt;
   final SubmissionStatus status;
   final double? latitude;
   final double? longitude;
+  final String? locationName;
+  final int pointsAwarded;
+  final String? reviewerNotes;
 
   Submission({
     required this.id,
@@ -21,41 +22,51 @@ class Submission {
     required this.userName,
     required this.imageUrl,
     this.caption,
-    required this.timestamp,
+    required this.createdAt,
     this.status = SubmissionStatus.pending,
     this.latitude,
     this.longitude,
+    this.locationName,
+    this.pointsAwarded = 0,
+    this.reviewerNotes,
   });
 
   factory Submission.fromMap(Map<String, dynamic> data, String id) {
     return Submission(
       id: id,
-      challengeId: data['challengeId'] ?? '',
-      userId: data['userId'] ?? '',
-      userName: data['userName'] ?? 'Anonymous',
-      imageUrl: data['imageUrl'] ?? '',
+      challengeId: data['challenge_id'] ?? '',
+      userId: data['user_id'] ?? '',
+      userName: data['user_name'] ?? 'Anonymous',
+      imageUrl: data['image_url'] ?? '',
       caption: data['caption'],
-      timestamp: (data['timestamp'] as Timestamp).toDate(),
+      createdAt: data['created_at'] != null
+          ? DateTime.parse(data['created_at'])
+          : DateTime.now(),
       status: SubmissionStatus.values.firstWhere(
         (e) => e.name == (data['status'] ?? 'pending'),
         orElse: () => SubmissionStatus.pending,
       ),
       latitude: data['latitude']?.toDouble(),
       longitude: data['longitude']?.toDouble(),
+      locationName: data['location_name'],
+      pointsAwarded: data['points_awarded'] ?? 0,
+      reviewerNotes: data['reviewer_notes'],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'challengeId': challengeId,
-      'userId': userId,
-      'userName': userName,
-      'imageUrl': imageUrl,
+      'challenge_id': challengeId,
+      'user_id': userId,
+      'user_name': userName,
+      'image_url': imageUrl,
       'caption': caption,
-      'timestamp': Timestamp.fromDate(timestamp),
       'status': status.name,
       'latitude': latitude,
       'longitude': longitude,
+      'location_name': locationName,
+      'points_awarded': pointsAwarded,
+      'reviewer_notes': reviewerNotes,
     };
   }
 }
