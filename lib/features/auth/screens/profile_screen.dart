@@ -59,6 +59,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Header
                     Row(
                       children: [
+                        if (Navigator.canPop(context)) ...[
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
                         CircleAvatar(
                           radius: 36,
                           backgroundColor: AppTheme.primaryMagenta.withOpacity(0.1),
@@ -117,11 +124,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           icon: const Icon(Icons.edit, size: 20),
                           onPressed: () => _showEditProfileSheet(context),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.logout),
-                          onPressed: () =>
-                              context.read<AuthBloc>().add(LogoutRequested()),
-                        ),
+                        if (!Navigator.canPop(context)) ...[
+                          IconButton(
+                            icon: const Icon(Icons.logout),
+                            onPressed: () =>
+                                context.read<AuthBloc>().add(LogoutRequested()),
+                          ),
+                        ],
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -162,6 +171,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               fontSize: 14,
                               color: AppTheme.borderBlack.withOpacity(0.7),
                               height: 1.5)),
+                    ],
+
+                    if (user.role == UserRole.creator) ...[
+                      const SizedBox(height: 16),
+                      if (user.creatorDetails != null && user.creatorDetails!.isNotEmpty) ...[
+                        Text('UPCOMING MOVEMENTS',
+                            style: GoogleFonts.spaceMono(
+                                fontWeight: FontWeight.bold, fontSize: 12, color: AppTheme.primaryMagenta)),
+                        const SizedBox(height: 4),
+                        Text(user.creatorDetails!,
+                            style: GoogleFonts.inter(
+                                fontSize: 14, color: AppTheme.borderBlack, height: 1.5)),
+                        const SizedBox(height: 16),
+                      ],
+                      if (user.websiteUrl != null && user.websiteUrl!.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            const Icon(Icons.link, size: 16, color: AppTheme.borderBlack),
+                            const SizedBox(width: 6),
+                            Text(user.websiteUrl!,
+                                style: GoogleFonts.spaceMono(
+                                    fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.borderBlack)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                      if (user.instagramUrl != null && user.instagramUrl!.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            const Icon(Icons.camera_alt_outlined, size: 16, color: AppTheme.borderBlack),
+                            const SizedBox(width: 6),
+                            Text('@${user.instagramUrl!.split('/').last}',
+                                style: GoogleFonts.spaceMono(
+                                    fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.borderBlack)),
+                          ],
+                        ),
+                      ],
                     ],
 
                     const SizedBox(height: 24),
@@ -233,6 +279,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showEditProfileSheet(BuildContext context) {
     final user = widget.user;
     final nameController = TextEditingController(text: user.displayName);
+    final bioController = TextEditingController(text: user.bio);
+    final instaController = TextEditingController(text: user.instagramUrl);
+    final webController = TextEditingController(text: user.websiteUrl);
+    final detailsController = TextEditingController(text: user.creatorDetails);
+    
     XFile? newImage;
     Uint8List? newImageBytes;
     bool isSaving = false;
@@ -308,6 +359,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: bioController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: 'BIO',
+                        labelStyle: GoogleFonts.spaceMono(
+                            fontSize: 12, fontWeight: FontWeight.bold),
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.zero,
+                          borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.zero,
+                          borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
+                        ),
+                      ),
+                    ),
+                    if (user.role == UserRole.creator) ...[
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: detailsController,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          labelText: 'UPCOMING MOVEMENTS / DETAILS',
+                          labelStyle: GoogleFonts.spaceMono(
+                              fontSize: 12, fontWeight: FontWeight.bold),
+                          enabledBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: webController,
+                        decoration: InputDecoration(
+                          labelText: 'WEBSITE URL',
+                          labelStyle: GoogleFonts.spaceMono(
+                              fontSize: 12, fontWeight: FontWeight.bold),
+                          enabledBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: instaController,
+                        decoration: InputDecoration(
+                          labelText: 'INSTAGRAM URL',
+                          labelStyle: GoogleFonts.spaceMono(
+                              fontSize: 12, fontWeight: FontWeight.bold),
+                          enabledBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
@@ -355,6 +478,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     userId: user.id,
                                     displayName: newName,
                                     profileImageUrl: newUrl,
+                                    bio: bioController.text.trim(),
+                                    instagramUrl: instaController.text.trim(),
+                                    websiteUrl: webController.text.trim(),
+                                    creatorDetails: detailsController.text.trim(),
                                   );
 
                                   if (mounted) {

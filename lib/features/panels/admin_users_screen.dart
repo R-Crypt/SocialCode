@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:social_code/core/theme/app_theme.dart';
+import 'package:social_code/models/app_user.dart';
+import 'package:social_code/features/auth/screens/profile_screen.dart';
 
 class AdminUsersScreen extends StatefulWidget {
   const AdminUsersScreen({super.key});
@@ -27,7 +29,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     try {
       final response = await Supabase.instance.client
           .from('profiles')
-          .select('id, email, display_name, role, points, region, profile_image_url')
+          .select('id, email, display_name, role, points, region, profile_image_url, bio, instagram_url, website_url, creator_details')
           .order('points', ascending: false);
 
       final citizens = <Map<String, dynamic>>[];
@@ -153,16 +155,26 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                         final region = user['region'] ?? 'Unknown';
                         final img = user['profile_image_url'];
 
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                                color: AppTheme.borderBlack, width: 2),
-                          ),
-                          child: Row(
-                            children: [
+                        return GestureDetector(
+                          onTap: () {
+                            final appUser = AppUser.fromMap(user, user['id']);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ProfileScreen(user: appUser),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(
+                                  color: AppTheme.borderBlack, width: 2),
+                            ),
+                            child: Row(
+                              children: [
                               CircleAvatar(
                                 radius: 24,
                                 backgroundColor: _tabIndex == 0
@@ -245,6 +257,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                               ),
                             ],
                           ),
+                        ),
                         );
                       },
                     ),

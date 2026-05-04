@@ -9,6 +9,9 @@ class AppUser {
   final String region;
   final String? profileImageUrl;
   final String? bio;
+  final String? instagramUrl;
+  final String? websiteUrl;
+  final String? creatorDetails;
 
   AppUser({
     required this.id,
@@ -19,6 +22,9 @@ class AppUser {
     this.region = 'Bengaluru',
     this.profileImageUrl,
     this.bio,
+    this.instagramUrl,
+    this.websiteUrl,
+    this.creatorDetails,
   });
 
   factory AppUser.fromMap(Map<String, dynamic> data, String id) {
@@ -34,6 +40,9 @@ class AppUser {
       region: data['region'] ?? 'Bengaluru',
       profileImageUrl: data['profile_image_url'] ?? data['profileImageUrl'],
       bio: data['bio'],
+      instagramUrl: data['instagram_url'],
+      websiteUrl: data['website_url'],
+      creatorDetails: data['creator_details'],
     );
   }
 
@@ -46,6 +55,9 @@ class AppUser {
       'region': region,
       'profile_image_url': profileImageUrl,
       'bio': bio,
+      if (instagramUrl != null) 'instagram_url': instagramUrl,
+      if (websiteUrl != null) 'website_url': websiteUrl,
+      if (creatorDetails != null) 'creator_details': creatorDetails,
     };
   }
 
@@ -56,6 +68,9 @@ class AppUser {
     String? region,
     String? profileImageUrl,
     String? bio,
+    String? instagramUrl,
+    String? websiteUrl,
+    String? creatorDetails,
   }) {
     return AppUser(
       id: id,
@@ -66,6 +81,9 @@ class AppUser {
       region: region ?? this.region,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       bio: bio ?? this.bio,
+      instagramUrl: instagramUrl ?? this.instagramUrl,
+      websiteUrl: websiteUrl ?? this.websiteUrl,
+      creatorDetails: creatorDetails ?? this.creatorDetails,
     );
   }
 }

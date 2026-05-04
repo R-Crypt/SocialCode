@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   region TEXT DEFAULT 'Bengaluru',
   profile_image_url TEXT,
   bio TEXT,
+  instagram_url TEXT,
+  website_url TEXT,
+  creator_details TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );

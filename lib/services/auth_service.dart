@@ -113,12 +113,18 @@ class AuthService {
     String? region,
     String? bio,
     String? profileImageUrl,
+    String? instagramUrl,
+    String? websiteUrl,
+    String? creatorDetails,
   }) async {
     final updates = <String, dynamic>{};
     if (displayName != null) updates['display_name'] = displayName;
     if (region != null) updates['region'] = region;
     if (bio != null) updates['bio'] = bio;
     if (profileImageUrl != null) updates['profile_image_url'] = profileImageUrl;
+    if (instagramUrl != null) updates['instagram_url'] = instagramUrl;
+    if (websiteUrl != null) updates['website_url'] = websiteUrl;
+    if (creatorDetails != null) updates['creator_details'] = creatorDetails;
 
     await _client.from('profiles').update(updates).eq('id', userId);
   }
