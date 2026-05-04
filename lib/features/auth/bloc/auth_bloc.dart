@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:social_code/models/app_user.dart';
 import 'package:social_code/services/auth_service.dart';
 
@@ -82,6 +83,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GoogleSignInRequested>(_onGoogleSignIn);
     on<LogoutRequested>(_onLogout);
     on<AuthUserUpdated>(_onAuthUserUpdated);
+
+    // Listen to Supabase auth state changes (handles OAuth redirects AND
+    // session recovery on page reload)
+    _authService.authStateChanges.listen((event) {
+      if (event.event == sb.AuthChangeEvent.signedIn ||
+          event.event == sb.AuthChangeEvent.tokenRefreshed ||
+          event.event == sb.AuthChangeEvent.userUpdated) {
+        _authService.getCurrentUserData().then((user) {
+          add(AuthUserUpdated(user));
+        });
+      } else if (event.event == sb.AuthChangeEvent.signedOut) {
+        add(AuthUserUpdated(null));
+      }
+    });
   }
 
   Future<void> _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
@@ -102,11 +117,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       await _authService.signIn(event.email, event.password);
+      // After sign-in, the auth stream listener above will fire AuthUserUpdated.
+      // But also fetch directly here in case the stream is slow.
       final user = await _authService.getCurrentUserData();
       if (user != null) {
         emit(Authenticated(user));
       } else {
-        emit(AuthFailure('Profile not found. Please try again.'));
+        emit(AuthFailure('Profile not found. Please try signing up first.'));
+      }
+    } on sb.AuthException catch (e) {
+      // Surface Supabase-specific errors clearly
+      if (e.message.toLowerCase().contains('email not confirmed')) {
+        emit(AuthFailure('Please verify your email — check your inbox for a confirmation link.'));
+      } else if (e.message.toLowerCase().contains('invalid login credentials')) {
+        emit(AuthFailure('Wrong email or password. If you signed up with Google, use the Google button.'));
+      } else {
+        emit(AuthFailure('Sign in failed: ${e.message}'));
       }
     } catch (e) {
       emit(AuthFailure(_parseError(e)));

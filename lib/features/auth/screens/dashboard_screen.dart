@@ -50,7 +50,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return const LeaderboardScreen();
       case 3:
         if (widget.user.role == UserRole.creator) return CreatorPanel(user: widget.user);
-        if (widget.user.role == UserRole.admin) return AdminPanel(user: widget.user);
+        if (widget.user.role == UserRole.admin) return AdminPanel(
+          user: widget.user,
+          onNavigateToCodes: () => setState(() => _selectedIndex = 0),
+        );
         return ProfileScreen(user: widget.user);
       default:
         return ChallengesListScreen(user: widget.user);

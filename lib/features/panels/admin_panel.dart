@@ -17,7 +17,8 @@ import 'package:social_code/core/utils/download.dart';
 
 class AdminPanel extends StatefulWidget {
   final AppUser user;
-  const AdminPanel({super.key, required this.user});
+  final VoidCallback? onNavigateToCodes;
+  const AdminPanel({super.key, required this.user, this.onNavigateToCodes});
 
   @override
   State<AdminPanel> createState() => _AdminPanelState();
@@ -275,12 +276,16 @@ class _AdminPanelState extends State<AdminPanel> {
                               icon: Icons.flash_on,
                               color: AppTheme.primaryMagenta,
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ChallengesListScreen(user: widget.user),
-                                  ),
-                                );
+                                if (widget.onNavigateToCodes != null) {
+                                  widget.onNavigateToCodes!();
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ChallengesListScreen(user: widget.user),
+                                    ),
+                                  );
+                                }
                               },
                             ),
                             _MetricCard(
