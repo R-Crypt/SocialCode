@@ -22,23 +22,22 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
-  List<_NavItem> get _navItems => [
-        const _NavItem(icon: Icons.flash_on, label: 'CODES'),
-        const _NavItem(icon: Icons.map, label: 'MAP'),
-        const _NavItem(icon: Icons.emoji_events, label: 'STATS'),
-        _NavItem(
-          icon: widget.user.role == UserRole.creator
-              ? Icons.add_box
-              : widget.user.role == UserRole.admin
-                  ? Icons.dashboard_customize
-                  : Icons.person,
-          label: widget.user.role == UserRole.creator
-              ? 'CREATE'
-              : widget.user.role == UserRole.admin
-                  ? 'ADMIN'
-                  : 'ME',
-        ),
-      ];
+  List<_NavItem> get _navItems {
+    final baseTabs = [
+      const _NavItem(icon: Icons.flash_on, label: 'CODES'),
+      const _NavItem(icon: Icons.map, label: 'MAP'),
+      const _NavItem(icon: Icons.emoji_events, label: 'STATS'),
+    ];
+
+    if (widget.user.role == UserRole.creator) {
+      baseTabs.add(const _NavItem(icon: Icons.add_box, label: 'CREATE'));
+    } else if (widget.user.role == UserRole.admin) {
+      baseTabs.add(const _NavItem(icon: Icons.dashboard_customize, label: 'ADMIN'));
+    }
+
+    baseTabs.add(const _NavItem(icon: Icons.person, label: 'ME'));
+    return baseTabs;
+  }
 
   Widget get _currentScreen {
     switch (_selectedIndex) {
@@ -49,12 +48,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 2:
         return const LeaderboardScreen();
       case 3:
-        if (widget.user.role == UserRole.creator) return CreatorPanel(user: widget.user);
-        if (widget.user.role == UserRole.admin) return AdminPanel(
-          user: widget.user,
-          onNavigateToCodes: () => setState(() => _selectedIndex = 0),
-        );
-        return ProfileScreen(user: widget.user);
+        if (widget.user.role == UserRole.creator) {
+          return CreatorPanel(user: widget.user);
+        } else if (widget.user.role == UserRole.admin) {
+          return AdminPanel(
+            user: widget.user,
+            onNavigateToCodes: () => setState(() => _selectedIndex = 0),
+          );
+        }
+        return ProfileScreen(user: widget.user); // Index 3 for Citizen is Profile
+      case 4:
+        return ProfileScreen(user: widget.user); // Index 4 for Creator/Admin is Profile
       default:
         return ChallengesListScreen(user: widget.user);
     }
