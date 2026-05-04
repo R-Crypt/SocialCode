@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +21,7 @@ class SubmitProofScreen extends StatefulWidget {
 
 class _SubmitProofScreenState extends State<SubmitProofScreen> {
   XFile? _image;
+  Uint8List? _imageBytes; // web-safe preview
   final _captionController = TextEditingController();
   Position? _position;
   bool _submitting = false;
@@ -60,7 +61,10 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: source, imageQuality: 80);
-    if (image != null && mounted) setState(() => _image = image);
+    if (image != null && mounted) {
+      final bytes = await image.readAsBytes();
+      setState(() { _image = image; _imageBytes = bytes; });
+    }
   }
 
   Future<void> _submit() async {
@@ -72,7 +76,7 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
         challengeId: widget.challenge.id,
         userId: widget.user.id,
         userName: widget.user.displayName,
-        imageFilePath: _image!.path,
+        imageBytes: _imageBytes!,
         caption: _captionController.text.trim().isNotEmpty
             ? _captionController.text.trim()
             : null,
@@ -181,7 +185,9 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                           ),
                         ],
                       )
-                    : Image.file(File(_image!.path), fit: BoxFit.cover),
+                    : _imageBytes != null
+                        ? Image.memory(_imageBytes!, fit: BoxFit.cover)
+                        : const SizedBox.shrink(),
               ),
             ),
             const SizedBox(height: 24),
@@ -307,9 +313,8 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
   }
 
   void _showImageSourceSheet() {
-    // On macOS/desktop, camera is not supported - open gallery directly
-    final isDesktop = kIsWeb || Platform.isMacOS || Platform.isWindows || Platform.isLinux;
-    if (isDesktop) {
+    // On web, camera is not supported — open gallery directly
+    if (kIsWeb) {
       _pickImage(ImageSource.gallery);
       return;
     }

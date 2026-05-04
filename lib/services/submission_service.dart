@@ -1,19 +1,18 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:social_code/models/submission.dart';
 
 class SubmissionService {
   SupabaseClient get _client => Supabase.instance.client;
 
-  /// Upload image to Supabase Storage and return public URL
-  Future<String> uploadProofImage(String filePath, String userId) async {
-    final file = File(filePath);
+  /// Upload image bytes to Supabase Storage and return public URL
+  Future<String> uploadProofImage(Uint8List imageBytes, String userId) async {
     final fileName = '${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
     final storagePath = 'submissions/$fileName';
 
-    await _client.storage.from('submissions').upload(
+    await _client.storage.from('submissions').uploadBinary(
           storagePath,
-          file,
+          imageBytes,
           fileOptions: const FileOptions(contentType: 'image/jpeg', upsert: true),
         );
 
@@ -26,14 +25,14 @@ class SubmissionService {
     required String challengeId,
     required String userId,
     required String userName,
-    required String imageFilePath,
+    required Uint8List imageBytes,
     String? caption,
     double? latitude,
     double? longitude,
     String? locationName,
   }) async {
     // Upload image first
-    final imageUrl = await uploadProofImage(imageFilePath, userId);
+    final imageUrl = await uploadProofImage(imageBytes, userId);
 
     final data = {
       'challenge_id': challengeId,
