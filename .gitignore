@@ -30,7 +30,7 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
-/build/
+# /build/ (re-enabled for Vercel)
 /coverage/
 
 # Symbolication related
@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Allow Flutter web build for Vercel
+
+!build/web

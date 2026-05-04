@@ -1,0 +1,24 @@
+dependencies: \
+  /Users/rayaankhan/Desktop/SocialCode/build/macos/Build/Intermediates.noindex/Pods.build/Debug/GTMAppAuth.build/module.modulemap \
+  /Users/rayaankhan/Desktop/SocialCode/build/macos/Build/Intermediates.noindex/Pods.build/Debug/GoogleSignIn.build/module.modulemap \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/GIDSignIn.m \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/Public/GoogleSignIn/GIDSignIn.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Foundation.framework/Modules/module.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/DarwinFoundation1.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Modules/module.modulemap \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/GIDSignIn_Private.h \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/Public/GoogleSignIn/GIDConfiguration.h \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/Public/GoogleSignIn/GIDGoogleUser.h \
+  /Users/rayaankhan/Desktop/SocialCode/build/macos/Build/Intermediates.noindex/Pods.build/Debug/GTMSessionFetcher.build/module.modulemap \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/Public/GoogleSignIn/GIDProfileData.h \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/Public/GoogleSignIn/GIDSignInResult.h \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/GIDEMMSupport.h \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/GIDSignInInternalOptions.h \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/GIDSignInPreferences.h \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/GIDCallbackQueue.h \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/GIDScopes.h \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/GIDSignInCallbackSchemes.h \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/GIDGoogleUser_Private.h \
+  /Users/rayaankhan/Desktop/SocialCode/build/macos/Build/Intermediates.noindex/Pods.build/Debug/AppAuth.build/module.modulemap \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/GIDProfileData_Private.h \
+  /Users/rayaankhan/Desktop/SocialCode/macos/Pods/GoogleSignIn/GoogleSignIn/Sources/GIDSignInResult_Private.h
