@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -555,6 +556,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: CircularProgressIndicator(
                                     color: Colors.white, strokeWidth: 2))
                             : const Text('SAVE CHANGES'),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Divider(color: AppTheme.borderBlack.withOpacity(0.2), thickness: 2),
+                    const SizedBox(height: 16),
+                    Text('DATA & PRIVACY (GDPR/DPDPA)',
+                        style: GoogleFonts.outfit(
+                            fontWeight: FontWeight.w900, fontSize: 14)),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          try {
+                            final res = await Supabase.instance.client.rpc('export_user_data');
+                            await Clipboard.setData(ClipboardData(text: res.toString()));
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('DATA EXPORTED TO CLIPBOARD')),
+                              );
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('EXPORT FAILED: $e')),
+                              );
+                            }
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: AppTheme.borderBlack, width: 2),
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                        ),
+                        child: Text('EXPORT MY DATA', style: GoogleFonts.spaceMono(color: AppTheme.borderBlack, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                              title: Text('DELETE ACCOUNT?', style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
+                              content: Text('This action is permanent and cannot be undone. All your data will be erased.', style: GoogleFonts.inter()),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('CANCEL', style: TextStyle(color: AppTheme.borderBlack))),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: const Text('DELETE FOR GOOD'),
+                                ),
+                              ],
+                            ),
+                          );
+
+                          if (confirm == true) {
+                            try {
+                              await Supabase.instance.client.rpc('delete_user_account');
+                              if (mounted) {
+                                context.read<AuthBloc>().add(LogoutRequested());
+                                Navigator.of(context).popUntil((route) => route.isFirst);
+                              }
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('DELETE FAILED: $e')),
+                                );
+                              }
+                            }
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.red, width: 2),
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                        ),
+                        child: Text('DELETE ACCOUNT', style: GoogleFonts.spaceMono(color: Colors.red, fontWeight: FontWeight.bold)),
                       ),
                     ),
                     const SizedBox(height: 24),

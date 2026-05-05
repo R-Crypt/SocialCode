@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:social_code/models/app_user.dart';
 import 'package:social_code/core/theme/app_theme.dart';
 import 'package:social_code/features/auth/bloc/auth_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:social_code/features/challenges/screens/challenges_list_screen.dart';
 import 'package:social_code/features/stats/screens/leaderboard_screen.dart';
 import 'package:social_code/features/panels/creator_panel.dart';
@@ -21,6 +22,129 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkConsent();
+  }
+
+  Future<void> _checkConsent() async {
+    try {
+      final res = await Supabase.instance.client
+          .from('user_consents')
+          .select()
+          .eq('user_id', widget.user.id)
+          .maybeSingle();
+
+      if (res == null) {
+        if (mounted) {
+          _showConsentBanner();
+        }
+      }
+    } catch (e) {
+      // Handle error gracefully or retry
+    }
+  }
+
+  void _showConsentBanner() {
+    bool analytics = true;
+    bool marketing = true;
+
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) => PopScope(
+          canPop: false, // Prevent back button
+          child: Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('YOUR DATA. YOUR RULES.', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 24)),
+                const SizedBox(height: 8),
+                Text('SocialCode requires basic cookies to function. We also use optional cookies for analytics and marketing.', style: GoogleFonts.inter(fontSize: 14)),
+                const SizedBox(height: 24),
+                CheckboxListTile(
+                  value: true,
+                  onChanged: null,
+                  activeColor: AppTheme.borderBlack,
+                  title: Text('ESSENTIAL (REQUIRED)', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 12)),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
+                ),
+                CheckboxListTile(
+                  value: analytics,
+                  onChanged: (val) => setState(() => analytics = val ?? false),
+                  activeColor: AppTheme.primaryMagenta,
+                  title: Text('ANALYTICS & PERFORMANCE', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 12)),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
+                ),
+                CheckboxListTile(
+                  value: marketing,
+                  onChanged: (val) => setState(() => marketing = val ?? false),
+                  activeColor: AppTheme.primaryMagenta,
+                  title: Text('MARKETING & OFFERS', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 12)),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          side: const BorderSide(color: AppTheme.borderBlack, width: 2),
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                        ),
+                        onPressed: () => _saveConsent(false, false),
+                        child: Text('REJECT ALL', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, color: AppTheme.borderBlack)),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          backgroundColor: AppTheme.primaryMagenta,
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                        ),
+                        onPressed: () => _saveConsent(analytics, marketing),
+                        child: Text('ACCEPT', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _saveConsent(bool analytics, bool marketing) async {
+    try {
+      await Supabase.instance.client.from('user_consents').insert({
+        'user_id': widget.user.id,
+        'analytics_consent': analytics,
+        'marketing_consent': marketing,
+      });
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save preferences.')));
+      }
+    }
+  }
 
   List<_NavItem> get _navItems {
     final baseTabs = [
