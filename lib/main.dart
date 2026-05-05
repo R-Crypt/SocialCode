@@ -47,17 +47,38 @@ class SocialCodeApp extends StatelessWidget {
           title: 'The Social Code',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.brutalistTheme,
-          home: BlocBuilder<AuthBloc, AuthState>(
-            builder: (context, state) {
-              if (state is AuthLoading || state is AuthInitial) {
-                return const _SplashScreen();
-              }
-              if (state is Authenticated) {
-                return DashboardScreen(user: state.user);
-              }
-              return const LoginScreen();
-            },
-          ),
+          onGenerateRoute: (settings) {
+            // Check if the URL has messy OAuth query parameters attached
+            if (settings.name != null && settings.name!.contains('?code=')) {
+              // Strip them out and push a clean root route
+              return MaterialPageRoute(
+                settings: const RouteSettings(name: '/'),
+                builder: (context) {
+                  return BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      if (state is AuthLoading || state is AuthInitial) return const _SplashScreen();
+                      if (state is Authenticated) return DashboardScreen(user: state.user);
+                      return const LoginScreen();
+                    },
+                  );
+                },
+              );
+            }
+
+            // Normal route handling
+            return MaterialPageRoute(
+              settings: settings.name == '/' ? const RouteSettings(name: '/') : settings,
+              builder: (context) {
+                return BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthLoading || state is AuthInitial) return const _SplashScreen();
+                    if (state is Authenticated) return DashboardScreen(user: state.user);
+                    return const LoginScreen();
+                  },
+                );
+              },
+            );
+          },
         ),
       ),
     );
