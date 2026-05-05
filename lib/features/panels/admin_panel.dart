@@ -14,6 +14,11 @@ import 'package:social_code/models/challenge.dart';
 import 'package:social_code/features/challenges/bloc/challenges_bloc.dart';
 import 'package:social_code/core/widgets/challenge_image_picker.dart';
 import 'package:social_code/core/utils/download.dart';
+import 'package:intl/intl.dart';
+import 'package:social_code/models/event.dart';
+import 'package:social_code/services/event_service.dart';
+import 'package:social_code/features/events/screens/gate_check_screen.dart';
+import 'package:social_code/features/events/screens/events_list_screen.dart';
 
 class AdminPanel extends StatefulWidget {
   final AppUser user;
@@ -418,6 +423,10 @@ class _AdminPanelState extends State<AdminPanel> {
                               letterSpacing: 1.0)),
                       const SizedBox(height: 16),
                       const _AdminDataExport(),
+
+                      // ── Events Management ──────────────────────────────
+                      const SizedBox(height: 36),
+                      _AdminEventsSection(user: widget.user),
                     ],
                   ),
                 ),
@@ -877,4 +886,562 @@ class _FormField extends StatelessWidget {
       ],
     );
   }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ADMIN EVENTS SECTION
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class _AdminEventsSection extends StatefulWidget {
+  final AppUser user;
+  const _AdminEventsSection({required this.user});
+  @override
+  State<_AdminEventsSection> createState() => _AdminEventsSectionState();
+}
+
+class _AdminEventsSectionState extends State<_AdminEventsSection> {
+  final _svc = EventService();
+  List<Event> _events = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() => _loading = true);
+    try {
+      final events = await _svc.getAllEvents();
+      if (mounted) setState(() { _events = events; _loading = false; });
+    } catch (e) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _delete(String id) async {
+    try {
+      await _svc.deleteEvent(id);
+      _load();
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Event deleted.')));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+    }
+  }
+
+  void _showForm({Event? existing}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      builder: (_) => _EventForm(
+        user: widget.user,
+        existing: existing,
+        onSaved: _load,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('EVENTS',
+                style: GoogleFonts.outfit(
+                    fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
+            Row(
+              children: [
+                // Gate check button
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => GateCheckScreen(user: widget.user),
+                    ),
+                  ),
+                  icon: const Icon(Icons.qr_code_scanner, size: 16),
+                  label: Text('GATE CHECK',
+                      style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppTheme.borderBlack, width: 2),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.add_circle, color: AppTheme.primaryMagenta),
+                  onPressed: () => _showForm(),
+                  tooltip: 'Create Event',
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        if (_loading)
+          const Center(child: CircularProgressIndicator(color: AppTheme.primaryMagenta))
+        else if (_events.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              border: Border.all(color: AppTheme.borderBlack.withOpacity(0.2)),
+            ),
+            child: Center(
+              child: Text('No events yet. Tap + to create one.',
+                  style: GoogleFonts.spaceMono(fontSize: 11,
+                      color: AppTheme.borderBlack.withOpacity(0.4))),
+            ),
+          )
+        else
+          ..._events.map((e) => _AdminEventItem(
+                event: e,
+                onEdit: () => _showForm(existing: e),
+                onDelete: () => _delete(e.id),
+              )),
+
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          height: 46,
+          child: OutlinedButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => EventsListScreen(user: widget.user),
+              ),
+            ),
+            icon: const Icon(Icons.open_in_new, size: 16),
+            label: Text('VIEW PUBLIC EVENTS PAGE',
+                style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 10)),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: AppTheme.borderBlack, width: 2),
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Admin Event Item ─────────────────────────────────────────────────────────
+
+class _AdminEventItem extends StatelessWidget {
+  final Event event;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  const _AdminEventItem({required this.event, required this.onEdit, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    final dateStr = DateFormat('d MMM yyyy · HH:mm').format(event.eventDate.toLocal());
+    final statusColor = switch (event.status) {
+      EventStatus.published => Colors.green,
+      EventStatus.draft     => Colors.orange,
+      EventStatus.cancelled => Colors.red,
+      EventStatus.completed => Colors.grey,
+    };
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: AppTheme.borderBlack, width: 1.5),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    color: statusColor,
+                    child: Text(event.status.name.toUpperCase(),
+                        style: GoogleFonts.spaceMono(
+                            fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white)),
+                  ),
+                  const SizedBox(width: 8),
+                  if (event.isSoldOut)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      color: Colors.red.shade100,
+                      child: Text('SOLD OUT',
+                          style: GoogleFonts.spaceMono(
+                              fontSize: 8, fontWeight: FontWeight.bold, color: Colors.red)),
+                    ),
+                ]),
+                const SizedBox(height: 6),
+                Text(event.title.toUpperCase(),
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 15)),
+                const SizedBox(height: 4),
+                Text(dateStr,
+                    style: GoogleFonts.spaceMono(
+                        fontSize: 9, color: AppTheme.borderBlack.withOpacity(0.5))),
+                Text('${event.location}  ·  ${event.slotsSold}/${event.totalSlots} sold',
+                    style: GoogleFonts.spaceMono(
+                        fontSize: 9, color: AppTheme.borderBlack.withOpacity(0.5))),
+                const SizedBox(height: 4),
+                Text(
+                  event.priceTiers
+                      .map((t) => '${t.label}: ${t.formattedPrice}')
+                      .join('  |  '),
+                  style: GoogleFonts.spaceMono(
+                      fontSize: 9, color: AppTheme.primaryMagenta, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.edit, size: 18),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: onEdit,
+              ),
+              const SizedBox(height: 8),
+              IconButton(
+                icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: onDelete,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Event Creation / Edit Form ───────────────────────────────────────────────
+
+class _EventForm extends StatefulWidget {
+  final AppUser user;
+  final Event? existing;
+  final VoidCallback onSaved;
+  const _EventForm({required this.user, this.existing, required this.onSaved});
+  @override
+  State<_EventForm> createState() => _EventFormState();
+}
+
+class _EventFormState extends State<_EventForm> {
+  final _titleCtrl    = TextEditingController();
+  final _descCtrl     = TextEditingController();
+  final _locationCtrl = TextEditingController();
+  final _slotsCtrl    = TextEditingController();
+
+  DateTime _eventDate = DateTime.now().add(const Duration(days: 7));
+  EventStatus _status = EventStatus.published;
+  List<_TierEntry> _tiers = [_TierEntry()];
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.existing;
+    if (e != null) {
+      _titleCtrl.text    = e.title;
+      _descCtrl.text     = e.description ?? '';
+      _locationCtrl.text = e.location;
+      _slotsCtrl.text    = '${e.totalSlots}';
+      _eventDate         = e.eventDate;
+      _status            = e.status;
+      _tiers = e.priceTiers
+          .map((t) => _TierEntry(label: t.label, paise: t.pricePaise))
+          .toList();
+    }
+  }
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _descCtrl.dispose();
+    _locationCtrl.dispose();
+    _slotsCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _eventDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
+    );
+    if (picked == null || !mounted) return;
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_eventDate),
+    );
+    if (pickedTime == null) return;
+    setState(() {
+      _eventDate = DateTime(
+        picked.year, picked.month, picked.day,
+        pickedTime.hour, pickedTime.minute,
+      );
+    });
+  }
+
+  Future<void> _save() async {
+    if (_titleCtrl.text.trim().isEmpty || _locationCtrl.text.trim().isEmpty) return;
+    setState(() => _saving = true);
+    try {
+      final svc = EventService();
+      final tiers = _tiers
+          .where((t) => t.labelCtrl.text.trim().isNotEmpty)
+          .map((t) => PriceTier(
+                label: t.labelCtrl.text.trim(),
+                pricePaise: int.tryParse(t.paiseCtrl.text.trim()) ?? 0,
+              ))
+          .toList();
+
+      if (tiers.isEmpty) tiers.add(const PriceTier(label: 'General', pricePaise: 0));
+
+      if (widget.existing != null) {
+        await svc.updateEvent(widget.existing!.id, {
+          'title':       _titleCtrl.text.trim(),
+          'description': _descCtrl.text.trim(),
+          'location':    _locationCtrl.text.trim(),
+          'event_date':  _eventDate.toUtc().toIso8601String(),
+          'total_slots': int.tryParse(_slotsCtrl.text) ?? 100,
+          'price_tiers': tiers.map((t) => t.toMap()).toList(),
+          'status':      _status.name,
+        });
+      } else {
+        await svc.createEvent(
+          title:       _titleCtrl.text.trim(),
+          description: _descCtrl.text.trim(),
+          location:    _locationCtrl.text.trim(),
+          eventDate:   _eventDate,
+          totalSlots:  int.tryParse(_slotsCtrl.text) ?? 100,
+          priceTiers:  tiers,
+          status:      _status,
+          createdBy:   widget.user.id,
+        );
+      }
+
+      if (mounted) {
+        widget.onSaved();
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(widget.existing != null ? 'Event updated!' : 'Event created!'),
+          backgroundColor: Colors.green,
+        ));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dateStr = DateFormat('EEE, d MMM yyyy · HH:mm').format(_eventDate);
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24, right: 24, top: 24,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(widget.existing == null ? 'CREATE EVENT' : 'EDIT EVENT',
+                style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 22)),
+            const SizedBox(height: 20),
+
+            _FormField(controller: _titleCtrl, label: 'EVENT TITLE'),
+            const SizedBox(height: 12),
+            _FormField(controller: _descCtrl, label: 'DESCRIPTION', maxLines: 2),
+            const SizedBox(height: 12),
+            _FormField(controller: _locationCtrl, label: 'VENUE / LOCATION'),
+            const SizedBox(height: 12),
+            _FormField(
+              controller: _slotsCtrl, label: 'TOTAL SLOTS',
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 12),
+
+            // Date / time picker
+            Text('DATE & TIME',
+                style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 4),
+            GestureDetector(
+              onTap: _pickDate,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: AppTheme.borderBlack, width: 2),
+                ),
+                child: Row(children: [
+                  const Icon(Icons.calendar_today, size: 16, color: AppTheme.primaryMagenta),
+                  const SizedBox(width: 8),
+                  Text(dateStr,
+                      style: GoogleFonts.spaceMono(fontSize: 12, fontWeight: FontWeight.bold)),
+                ]),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Status selector
+            Text('STATUS',
+                style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Row(
+              children: EventStatus.values.map((s) {
+                final sel = _status == s;
+                return GestureDetector(
+                  onTap: () => setState(() => _status = s),
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: sel ? AppTheme.primaryMagenta : Colors.white,
+                      border: Border.all(
+                        color: sel ? AppTheme.primaryMagenta : AppTheme.borderBlack,
+                        width: 2,
+                      ),
+                    ),
+                    child: Text(s.name.toUpperCase(),
+                        style: GoogleFonts.spaceMono(
+                            fontSize: 9, fontWeight: FontWeight.bold,
+                            color: sel ? Colors.white : AppTheme.borderBlack)),
+                  ),
+                );
+              }).toList(),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Dynamic price tiers
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('PRICE TIERS (in paise)',
+                    style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
+                TextButton.icon(
+                  onPressed: () => setState(() => _tiers.add(_TierEntry())),
+                  icon: const Icon(Icons.add, size: 16),
+                  label: Text('ADD TIER',
+                      style: GoogleFonts.spaceMono(fontSize: 9, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text('1 INR = 100 paise. Free tier = 0.',
+                style: GoogleFonts.spaceMono(
+                    fontSize: 8, color: AppTheme.borderBlack.withOpacity(0.4))),
+            const SizedBox(height: 8),
+
+            ..._tiers.asMap().entries.map((entry) {
+              final idx = entry.key;
+              final tier = entry.value;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(children: [
+                  Expanded(
+                    flex: 3,
+                    child: TextField(
+                      controller: tier.labelCtrl,
+                      decoration: InputDecoration(
+                        labelText: 'Label (e.g. VIP)',
+                        labelStyle: GoogleFonts.spaceMono(fontSize: 10),
+                        filled: true, fillColor: Colors.white,
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.zero,
+                          borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.zero,
+                          borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    flex: 2,
+                    child: TextField(
+                      controller: tier.paiseCtrl,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      decoration: InputDecoration(
+                        labelText: 'Paise',
+                        labelStyle: GoogleFonts.spaceMono(fontSize: 10),
+                        filled: true, fillColor: Colors.white,
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.zero,
+                          borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.zero,
+                          borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                      ),
+                    ),
+                  ),
+                  if (_tiers.length > 1)
+                    IconButton(
+                      icon: const Icon(Icons.remove_circle, color: Colors.red, size: 20),
+                      onPressed: () => setState(() => _tiers.removeAt(idx)),
+                    ),
+                ]),
+              );
+            }),
+
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: _saving ? null : _save,
+                child: _saving
+                    ? const SizedBox(width: 20, height: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : Text(
+                        widget.existing == null ? 'CREATE EVENT →' : 'SAVE CHANGES →',
+                        style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold),
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Helper to hold tier form state
+class _TierEntry {
+  final TextEditingController labelCtrl;
+  final TextEditingController paiseCtrl;
+
+  _TierEntry({String label = 'General', int paise = 0})
+      : labelCtrl = TextEditingController(text: label),
+        paiseCtrl = TextEditingController(text: paise == 0 ? '0' : '$paise');
 }

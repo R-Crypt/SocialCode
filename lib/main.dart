@@ -9,7 +9,10 @@ import 'package:social_code/services/auth_service.dart';
 import 'package:social_code/services/challenge_service.dart';
 import 'package:social_code/services/submission_service.dart';
 import 'package:social_code/services/report_service.dart';
+import 'package:social_code/services/event_service.dart';
+import 'package:social_code/services/ticket_service.dart';
 import 'package:social_code/features/challenges/bloc/challenges_bloc.dart';
+import 'package:social_code/features/events/bloc/events_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +36,8 @@ class SocialCodeApp extends StatelessWidget {
         RepositoryProvider(create: (_) => ChallengeService()),
         RepositoryProvider(create: (_) => SubmissionService()),
         RepositoryProvider(create: (_) => ReportService()),
+        RepositoryProvider(create: (_) => EventService()),
+        RepositoryProvider(create: (_) => TicketService()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -41,6 +46,9 @@ class SocialCodeApp extends StatelessWidget {
           ),
           BlocProvider(
             create: (ctx) => ChallengesBloc(ctx.read<ChallengeService>()),
+          ),
+          BlocProvider(
+            create: (ctx) => EventsBloc(ctx.read<EventService>())..add(LoadPublishedEvents()),
           ),
         ],
         child: MaterialApp(
