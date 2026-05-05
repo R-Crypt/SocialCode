@@ -11,6 +11,7 @@ import 'package:social_code/features/panels/creator_panel.dart';
 import 'package:social_code/features/panels/admin_panel.dart';
 import 'package:social_code/features/reporting/screens/civic_reporter_screen.dart';
 import 'package:social_code/features/auth/screens/profile_screen.dart';
+import 'package:social_code/features/events/screens/events_list_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final AppUser user;
@@ -151,6 +152,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       const _NavItem(icon: Icons.flash_on, label: 'CODES'),
       const _NavItem(icon: Icons.map, label: 'MAP'),
       const _NavItem(icon: Icons.emoji_events, label: 'STATS'),
+      const _NavItem(icon: Icons.event, label: 'EVENTS'),
     ];
 
     if (widget.user.role == UserRole.creator) {
@@ -172,6 +174,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 2:
         return const LeaderboardScreen();
       case 3:
+        return EventsListScreen(user: widget.user);
+      case 4:
         if (widget.user.role == UserRole.creator) {
           return CreatorPanel(user: widget.user);
         } else if (widget.user.role == UserRole.admin) {
@@ -180,9 +184,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onNavigateToCodes: () => setState(() => _selectedIndex = 0),
           );
         }
-        return ProfileScreen(user: widget.user); // Index 3 for Citizen is Profile
-      case 4:
-        return ProfileScreen(user: widget.user); // Index 4 for Creator/Admin is Profile
+        return ProfileScreen(user: widget.user); // Citizen
+      case 5:
+        return ProfileScreen(user: widget.user); // Creator/Admin
       default:
         return ChallengesListScreen(user: widget.user);
     }
