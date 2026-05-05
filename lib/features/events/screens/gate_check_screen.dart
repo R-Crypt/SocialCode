@@ -194,7 +194,7 @@ class _GateCheckScreenState extends State<GateCheckScreen>
           // ── Bottom: Recent scans counter ─────────────────────────────────
           Container(
             padding: const EdgeInsets.all(12),
-            color: Colors.white06,
+            color: Colors.white10,
             child: Text(
               'LOGGED IN AS: ${widget.user.displayName.toUpperCase()}  •  ROLE: ${widget.user.role.name.toUpperCase()}',
               style: GoogleFonts.spaceMono(fontSize: 9, color: Colors.white38),
