@@ -18,31 +18,46 @@ class SocialCodeLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveColor = color ?? (Theme.of(context).brightness == Brightness.dark ? Colors.white : AppTheme.textMain);
+    final logoWidget = Text(
+      'SOCIAL CODE',
+      style: GoogleFonts.outfit(
+        fontWeight: FontWeight.w900,
+        fontSize: fontSize,
+        letterSpacing: -1.0,
+        shadows: [
+          const Shadow(
+            color: Colors.black,
+            offset: Offset(4, 4),
+            blurRadius: 0,
+          ),
+        ],
+      ),
+    );
 
     return Column(
       crossAxisAlignment: crossAxisAlignment,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          'SOCIAL CODE',
-          style: GoogleFonts.outfit(
-            fontWeight: FontWeight.w900,
-            fontSize: fontSize,
-            color: effectiveColor,
-            letterSpacing: -0.5,
-          ),
+        ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [Color(0xFFE91E63), Color(0xFF9C27B0)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(bounds),
+          child: logoWidget,
         ),
-        if (showTagline)
+        if (showTagline) ...[
+          const SizedBox(height: 4),
           Text(
             'GOOD IS THE NEW FLEX',
             style: GoogleFonts.spaceMono(
               fontSize: fontSize * 0.3,
               fontWeight: FontWeight.bold,
-              color: effectiveColor.withOpacity(0.5),
+              color: (Theme.of(context).brightness == Brightness.dark ? Colors.white : AppTheme.textMain).withOpacity(0.5),
               letterSpacing: 1.0,
             ),
           ),
+        ],
       ],
     );
   }
