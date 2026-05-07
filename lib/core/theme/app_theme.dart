@@ -13,6 +13,10 @@ class AppTheme {
   static const Color textMain = Color(0xFF111111);
   static const Color textDim = Color(0xFF666666);
 
+  static final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.light);
+
+  static bool get isDark => themeMode.value == ThemeMode.dark;
+
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
@@ -63,15 +67,15 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: darkBg,
+      scaffoldBackgroundColor: const Color(0xFF000000), // Pure black for AMOLED feel
       primaryColor: primaryMagenta,
       colorScheme: const ColorScheme.dark(
         primary: primaryMagenta,
         secondary: accentPurple,
-        surface: darkSurface,
+        surface: Color(0xFF111111), // Slightly off-black
         onSurface: Colors.white,
         onPrimary: Colors.white,
-        outline: Colors.white10,
+        outline: Colors.white12,
       ),
       textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme).copyWith(
         displayLarge: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white),
@@ -80,14 +84,14 @@ class AppTheme {
         bodyMedium: GoogleFonts.inter(color: Colors.white60),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black,
         elevation: 0,
         centerTitle: false,
         iconTheme: IconThemeData(color: Colors.white),
         titleTextStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white),
       ),
       cardTheme: CardThemeData(
-        color: darkSurface,
+        color: const Color(0xFF111111),
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
@@ -103,6 +107,11 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           textStyle: GoogleFonts.spaceMono(fontWeight: FontWeight.bold),
         ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.05),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
       ),
     );
   }

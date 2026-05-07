@@ -51,37 +51,44 @@ class SocialCodeApp extends StatelessWidget {
             create: (ctx) => EventsBloc(ctx.read<EventService>())..add(LoadPublishedEvents()),
           ),
         ],
-        child: MaterialApp(
-          title: 'The Social Code',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          onGenerateRoute: (settings) {
-            // Check if the URL has messy OAuth query parameters attached
-            if (settings.name != null && settings.name!.contains('?code=')) {
-              // Strip them out and push a clean root route
-              return MaterialPageRoute(
-                settings: const RouteSettings(name: '/'),
-                builder: (context) {
-                  return BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      if (state is AuthLoading || state is AuthInitial) return const _SplashScreen();
-                      if (state is Authenticated) return DashboardScreen(user: state.user);
-                      return const LoginScreen();
+        child: ValueListenableBuilder<ThemeMode>(
+          valueListenable: AppTheme.themeMode,
+          builder: (context, mode, _) {
+            return MaterialApp(
+              title: 'The Social Code',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: mode,
+              onGenerateRoute: (settings) {
+                // Check if the URL has messy OAuth query parameters attached
+                if (settings.name != null && settings.name!.contains('?code=')) {
+                  // Strip them out and push a clean root route
+                  return MaterialPageRoute(
+                    settings: const RouteSettings(name: '/'),
+                    builder: (context) {
+                      return BlocBuilder<AuthBloc, AuthState>(
+                        builder: (context, state) {
+                          if (state is AuthLoading || state is AuthInitial) return const _SplashScreen();
+                          if (state is Authenticated) return DashboardScreen(user: state.user);
+                          return const LoginScreen();
+                        },
+                      );
                     },
                   );
-                },
-              );
-            }
+                }
 
-            // Normal route handling
-            return MaterialPageRoute(
-              settings: settings.name == '/' ? const RouteSettings(name: '/') : settings,
-              builder: (context) {
-                return BlocBuilder<AuthBloc, AuthState>(
-                  builder: (context, state) {
-                    if (state is AuthLoading || state is AuthInitial) return const _SplashScreen();
-                    if (state is Authenticated) return DashboardScreen(user: state.user);
-                    return const LoginScreen();
+                // Normal route handling
+                return MaterialPageRoute(
+                  settings: settings.name == '/' ? const RouteSettings(name: '/') : settings,
+                  builder: (context) {
+                    return BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        if (state is AuthLoading || state is AuthInitial) return const _SplashScreen();
+                        if (state is Authenticated) return DashboardScreen(user: state.user);
+                        return const LoginScreen();
+                      },
+                    );
                   },
                 );
               },

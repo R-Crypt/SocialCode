@@ -12,6 +12,7 @@ import 'package:social_code/models/app_user.dart';
 import 'package:social_code/models/submission.dart';
 import 'package:social_code/services/submission_service.dart';
 import 'package:social_code/services/auth_service.dart';
+import 'package:social_code/features/auth/screens/settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final AppUser user;
@@ -125,6 +126,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         IconButton(
                           icon: const Icon(Icons.edit, size: 20),
                           onPressed: () => _showEditProfileSheet(context),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.settings, size: 20),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => SettingsScreen(user: user)),
+                          ),
                         ),
                         if (!Navigator.canPop(context)) ...[
                           IconButton(

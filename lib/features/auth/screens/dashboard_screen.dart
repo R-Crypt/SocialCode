@@ -12,6 +12,7 @@ import 'package:social_code/features/panels/admin_panel.dart';
 import 'package:social_code/features/reporting/screens/civic_reporter_screen.dart';
 import 'package:social_code/features/auth/screens/profile_screen.dart';
 import 'package:social_code/features/events/screens/events_list_screen.dart';
+import 'package:social_code/core/widgets/social_code_logo.dart';
 
 class DashboardScreen extends StatefulWidget {
   final AppUser user;
@@ -281,33 +282,9 @@ class _SideNav extends StatelessWidget {
             // Logo
             Padding(
               padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [AppTheme.primaryMagenta, AppTheme.accentPurple],
-                    ).createShader(bounds),
-                    child: Text(
-                      'SOCIAL\nCODE',
-                      style: GoogleFonts.outfit(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                        height: 0.9,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'GOOD IS THE NEW FLEX',
-                    style: GoogleFonts.spaceMono(
-                      fontSize: 8,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textMain.withOpacity(0.4),
-                    ),
-                  ),
-                ],
+              child: SocialCodeLogo(
+                fontSize: 28,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : AppTheme.textMain,
               ),
             ),
             const Divider(height: 1, thickness: 2, color: AppTheme.textMain),

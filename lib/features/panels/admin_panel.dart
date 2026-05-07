@@ -225,6 +225,8 @@ class _AdminPanelState extends State<AdminPanel> {
     );
   }
 
+  final _scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -234,6 +236,7 @@ class _AdminPanelState extends State<AdminPanel> {
             : RefreshIndicator(
                 onRefresh: _loadData,
                 child: SingleChildScrollView(
+                  controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(24),
                   child: Column(
@@ -294,12 +297,53 @@ class _AdminPanelState extends State<AdminPanel> {
         crossAxisCount: cols,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 1.3,
+        childAspectRatio: 1,
         children: [
-          _MetricCard(label: 'CITIZENS', value: '${_metrics['citizens']}', icon: Icons.people, color: AppTheme.accentPurple),
-          _MetricCard(label: 'PENDING REVIEWS', value: '${_metrics['pending_reviews']}', icon: Icons.pending_actions, color: Colors.orange),
-          _MetricCard(label: 'PENDING ISSUES', value: '${_metrics['pending_issues']}', icon: Icons.report_problem, color: Colors.red),
-          _MetricCard(label: 'RESOLVED', value: '${_metrics['resolved_reports']}', icon: Icons.check_circle, color: Colors.green),
+          _MetricCard(
+            label: 'CITIZENS', 
+            value: '${_metrics['citizens']}', 
+            icon: Icons.people, 
+            color: AppTheme.accentPurple,
+            onTap: () {
+              // Scroll to user management or show dialog
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('CITIZEN LIST LOADING...')));
+            },
+          ),
+          _MetricCard(
+            label: 'PENDING REVIEWS', 
+            value: '${_metrics['pending_reviews']}', 
+            icon: Icons.pending_actions, 
+            color: Colors.orange,
+            onTap: () {
+              _scrollController.animateTo(
+                400, // Approximate position of pending reviews
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+              );
+            },
+          ),
+          _MetricCard(
+            label: 'PENDING ISSUES', 
+            value: '${_metrics['pending_issues']}', 
+            icon: Icons.warning_amber_rounded, 
+            color: Colors.red,
+            onTap: () {
+               _scrollController.animateTo(
+                200, // Approximate position of pending issues
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+              );
+            },
+          ),
+          _MetricCard(
+            label: 'RESOLVED', 
+            value: '${_metrics['resolved']}', 
+            icon: Icons.check_circle_outline, 
+            color: Colors.green,
+            onTap: () {
+               // Show resolved list
+            },
+          ),
         ],
       );
     });
@@ -551,25 +595,52 @@ class _MetricCard extends StatelessWidget {
   final Color color;
   final VoidCallback? onTap;
 
-  const _MetricCard({required this.label, required this.value, required this.icon, required this.color, this.onTap});
+  const _MetricCard({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: color, size: 20),
-              const SizedBox(height: 8),
-              Text(value, style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w900)),
-              Text(label, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: AppTheme.textDim)),
-            ],
-          ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardTheme.color,
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(icon, color: color, size: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: GoogleFonts.outfit(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: Theme.of(context).textTheme.displayLarge?.color,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: GoogleFonts.spaceMono(
+                    fontSize: 8,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textDim,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -839,7 +910,7 @@ class _EventFormState extends State<_EventForm> {
           const SizedBox(height: 12),
           _FormField(controller: _slotsCtrl, label: 'TOTAL SLOTS', keyboardType: TextInputType.number),
           const SizedBox(height: 12),
-          const Text('MEDIA UPLOAD (PRO)', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+          const Text('MEDIA UPLOAD', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Container(
             height: 80, width: double.infinity,
@@ -896,10 +967,26 @@ class _FormField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.spaceMono(fontSize: 9, fontWeight: FontWeight.bold)),
+        Text(label, style: GoogleFonts.spaceMono(fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta)),
         const SizedBox(height: 6),
-        TextField(controller: controller, maxLines: maxLines, keyboardType: keyboardType, 
-          decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+        TextField(
+          controller: controller, 
+          maxLines: maxLines, 
+          keyboardType: keyboardType, 
+          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.02),
+            enabledBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.zero,
+              borderSide: BorderSide(color: AppTheme.textMain, width: 2),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.zero,
+              borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
+            ),
+          ),
+        ),
       ],
     );
   }

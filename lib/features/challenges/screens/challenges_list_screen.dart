@@ -8,6 +8,10 @@ import 'package:social_code/features/challenges/bloc/challenges_bloc.dart';
 import 'package:social_code/models/app_user.dart';
 import 'package:social_code/models/challenge.dart';
 import 'challenge_detail_screen.dart';
+import 'package:social_code/core/widgets/social_code_logo.dart';
+import 'package:social_code/services/submission_service.dart';
+import 'package:social_code/services/auth_service.dart';
+import 'package:social_code/features/auth/screens/settings_screen.dart';
 
 class ChallengesListScreen extends StatefulWidget {
   final AppUser user;
@@ -77,15 +81,7 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('SOCIAL CODE', 
-            style: GoogleFonts.outfit(
-              fontWeight: FontWeight.w900, 
-              fontSize: 28, 
-              color: Theme.of(context).brightness == Brightness.dark 
-                ? Colors.white 
-                : AppTheme.textMain,
-            ),
-          ),
+          const SocialCodeLogo(fontSize: 28),
           Row(
             children: [
               IconButton(icon: const Icon(Icons.notifications_none_outlined), onPressed: () {}),
