@@ -26,7 +26,7 @@ class _CreatorPanelState extends State<CreatorPanel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.lightBg,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -37,11 +37,11 @@ class _CreatorPanelState extends State<CreatorPanel> {
                   style: GoogleFonts.outfit(
                       fontSize: 30,
                       fontWeight: FontWeight.w900,
-                      color: AppTheme.borderBlack)),
+                      color: AppTheme.textMain)),
               const SizedBox(height: 4),
               Text('BUILD YOUR LEGACY. SPARK THE MOVEMENT.',
                   style: GoogleFonts.spaceMono(
-                      color: AppTheme.borderBlack.withOpacity(0.4),
+                      color: AppTheme.textMain.withOpacity(0.4),
                       fontWeight: FontWeight.bold,
                       fontSize: 10)),
               const SizedBox(height: 28),
@@ -103,14 +103,14 @@ class _CreatorPanelState extends State<CreatorPanel> {
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           border: Border.all(
-                              color: AppTheme.borderBlack.withOpacity(0.2)),
+                              color: AppTheme.textMain.withOpacity(0.2)),
                         ),
                         child: Center(
                           child: Text(
                             'NO CHALLENGES YET.\nCREATE YOUR FIRST CODE.',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.spaceMono(
-                                color: AppTheme.borderBlack.withOpacity(0.4),
+                                color: AppTheme.textMain.withOpacity(0.4),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 11),
                           ),
@@ -215,7 +215,7 @@ class _CreatorPanelState extends State<CreatorPanel> {
                             border: Border.all(
                               color: isSelected
                                   ? AppTheme.primaryMagenta
-                                  : AppTheme.borderBlack,
+                                  : AppTheme.textMain,
                               width: 2,
                             ),
                           ),
@@ -224,7 +224,7 @@ class _CreatorPanelState extends State<CreatorPanel> {
                             style: GoogleFonts.spaceMono(
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
-                              color: isSelected ? Colors.white : AppTheme.borderBlack,
+                              color: isSelected ? Colors.white : AppTheme.textMain,
                             ),
                           ),
                         ),
@@ -328,7 +328,7 @@ class _StatCard extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.borderBlack.withOpacity(0.4))),
+                    color: AppTheme.textMain.withOpacity(0.4))),
             const SizedBox(height: 4),
             Text(value,
                 style: GoogleFonts.spaceMono(
@@ -362,7 +362,7 @@ class _ActionButton extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: AppTheme.borderBlack, width: 2),
+          border: Border.all(color: AppTheme.textMain, width: 2),
         ),
         child: Row(
           children: [
@@ -384,7 +384,7 @@ class _ActionButton extends StatelessWidget {
                           fontWeight: FontWeight.w900, fontSize: 12)),
                   Text(subtitle,
                       style: TextStyle(
-                          color: AppTheme.borderBlack.withOpacity(0.4),
+                          color: AppTheme.textMain.withOpacity(0.4),
                           fontSize: 9,
                           fontWeight: FontWeight.bold)),
                 ],
@@ -411,7 +411,7 @@ class _MyChallengeItem extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: AppTheme.borderBlack, width: 1.5),
+        border: Border.all(color: AppTheme.textMain, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,7 +452,7 @@ class _MyChallengeItem extends StatelessWidget {
               Text('${challenge.daysRemaining} DAYS LEFT',
                   style: GoogleFonts.spaceMono(
                       fontSize: 10,
-                      color: AppTheme.borderBlack.withOpacity(0.4),
+                      color: AppTheme.textMain.withOpacity(0.4),
                       fontWeight: FontWeight.bold)),
               const Spacer(),
               Container(
@@ -487,7 +487,7 @@ class _MyChallengeItem extends StatelessWidget {
           LinearProgressIndicator(
             value: challenge.progressPercent,
             minHeight: 5,
-            backgroundColor: AppTheme.borderBlack.withOpacity(0.1),
+            backgroundColor: AppTheme.textMain.withOpacity(0.1),
             valueColor: const AlwaysStoppedAnimation(AppTheme.primaryMagenta),
           ),
         ],
@@ -525,7 +525,7 @@ class _FormField extends StatelessWidget {
             fillColor: Colors.white,
             enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.zero,
-                borderSide: BorderSide(color: AppTheme.borderBlack, width: 2)),
+                borderSide: BorderSide(color: AppTheme.textMain, width: 2)),
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.zero,
                 borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2)),

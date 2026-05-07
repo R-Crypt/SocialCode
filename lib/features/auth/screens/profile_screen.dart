@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final pending = _submissions.where((s) => s.status == SubmissionStatus.pending).length;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.lightBg,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -99,7 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Text(
                                 user.email,
                                 style: TextStyle(
-                                    color: AppTheme.borderBlack.withOpacity(0.4),
+                                    color: AppTheme.textMain.withOpacity(0.4),
                                     fontSize: 12),
                               ),
                               const SizedBox(height: 4),
@@ -162,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: GoogleFonts.spaceMono(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: AppTheme.borderBlack.withOpacity(0.6))),
+                                color: AppTheme.textMain.withOpacity(0.6))),
                       ],
                     ),
 
@@ -171,7 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Text(user.bio!,
                           style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: AppTheme.borderBlack.withOpacity(0.7),
+                              color: AppTheme.textMain.withOpacity(0.7),
                               height: 1.5)),
                     ],
 
@@ -184,7 +184,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 4),
                         Text(user.creatorDetails!,
                             style: GoogleFonts.inter(
-                                fontSize: 14, color: AppTheme.borderBlack, height: 1.5)),
+                                fontSize: 14, color: AppTheme.textMain, height: 1.5)),
                         const SizedBox(height: 16),
                       ],
                       if (user.websiteUrl != null && user.websiteUrl!.isNotEmpty) ...[
@@ -204,7 +204,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               },
                               child: Row(
                                 children: [
-                                  const Icon(Icons.link, size: 16, color: AppTheme.borderBlack),
+                                  const Icon(Icons.link, size: 16, color: AppTheme.textMain),
                                   const SizedBox(width: 6),
                                   Expanded(
                                     child: Text(displayUrl,
@@ -247,7 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               },
                               child: Row(
                                 children: [
-                                  const Icon(Icons.camera_alt_outlined, size: 16, color: AppTheme.borderBlack),
+                                  const Icon(Icons.camera_alt_outlined, size: 16, color: AppTheme.textMain),
                                   const SizedBox(width: 6),
                                   Text('@$username',
                                       style: GoogleFonts.spaceMono(
@@ -291,17 +291,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.inbox, size: 48,
-                          color: AppTheme.borderBlack.withOpacity(0.2)),
+                          color: AppTheme.textMain.withOpacity(0.2)),
                       const SizedBox(height: 12),
                       Text('NO SUBMISSIONS YET.',
                           style: GoogleFonts.spaceMono(
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.borderBlack.withOpacity(0.4))),
+                              color: AppTheme.textMain.withOpacity(0.4))),
                       const SizedBox(height: 4),
                       Text('JOIN A MISSION AND SUBMIT PROOF.',
                           style: TextStyle(
                               fontSize: 12,
-                              color: AppTheme.borderBlack.withOpacity(0.3))),
+                              color: AppTheme.textMain.withOpacity(0.3))),
                     ],
                   ),
                 ),
@@ -404,7 +404,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             fontSize: 12, fontWeight: FontWeight.bold),
                         enabledBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                          borderSide: BorderSide(color: AppTheme.textMain, width: 2),
                         ),
                         focusedBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.zero,
@@ -422,7 +422,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             fontSize: 12, fontWeight: FontWeight.bold),
                         enabledBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                          borderSide: BorderSide(color: AppTheme.textMain, width: 2),
                         ),
                         focusedBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.zero,
@@ -441,7 +441,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               fontSize: 12, fontWeight: FontWeight.bold),
                           enabledBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
-                            borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                            borderSide: BorderSide(color: AppTheme.textMain, width: 2),
                           ),
                           focusedBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
@@ -458,7 +458,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               fontSize: 12, fontWeight: FontWeight.bold),
                           enabledBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
-                            borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                            borderSide: BorderSide(color: AppTheme.textMain, width: 2),
                           ),
                           focusedBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
@@ -475,7 +475,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               fontSize: 12, fontWeight: FontWeight.bold),
                           enabledBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
-                            borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                            borderSide: BorderSide(color: AppTheme.textMain, width: 2),
                           ),
                           focusedBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
@@ -559,7 +559,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    Divider(color: AppTheme.borderBlack.withOpacity(0.2), thickness: 2),
+                    Divider(color: AppTheme.textMain.withOpacity(0.2), thickness: 2),
                     const SizedBox(height: 16),
                     Text('DATA & PRIVACY (GDPR/DPDPA)',
                         style: GoogleFonts.outfit(
@@ -587,10 +587,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           }
                         },
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppTheme.borderBlack, width: 2),
+                          side: const BorderSide(color: AppTheme.textMain, width: 2),
                           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                         ),
-                        child: Text('EXPORT MY DATA', style: GoogleFonts.spaceMono(color: AppTheme.borderBlack, fontWeight: FontWeight.bold)),
+                        child: Text('EXPORT MY DATA', style: GoogleFonts.spaceMono(color: AppTheme.textMain, fontWeight: FontWeight.bold)),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -606,7 +606,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               title: Text('DELETE ACCOUNT?', style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
                               content: Text('This action is permanent and cannot be undone. All your data will be erased.', style: GoogleFonts.inter()),
                               actions: [
-                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('CANCEL', style: TextStyle(color: AppTheme.borderBlack))),
+                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('CANCEL', style: TextStyle(color: AppTheme.textMain))),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
                                   onPressed: () => Navigator.pop(ctx, true),
@@ -675,7 +675,7 @@ class _StatBox extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.borderBlack.withOpacity(0.5))),
+                    color: AppTheme.textMain.withOpacity(0.5))),
           ],
         ),
       ),
@@ -699,7 +699,7 @@ class _SubmissionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: AppTheme.borderBlack, width: 2),
+        border: Border.all(color: AppTheme.textMain, width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -710,7 +710,7 @@ class _SubmissionTile extends StatelessWidget {
               fit: BoxFit.cover,
               width: double.infinity,
               errorBuilder: (_, __, ___) => Container(
-                color: AppTheme.borderBlack.withOpacity(0.05),
+                color: AppTheme.textMain.withOpacity(0.05),
                 child: const Icon(Icons.broken_image, size: 32),
               ),
             ),

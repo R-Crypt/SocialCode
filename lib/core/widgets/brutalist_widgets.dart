@@ -22,7 +22,7 @@ class BrutalistDataCell extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
         color: backgroundColor ?? Colors.white,
-        border: Border.all(color: AppTheme.borderBlack, width: 1.5),
+        border: Border.all(color: AppTheme.textMain, width: 1.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -32,7 +32,7 @@ class BrutalistDataCell extends StatelessWidget {
             style: GoogleFonts.spaceMono(
               fontWeight: FontWeight.w900,
               fontSize: 12,
-              color: textColor ?? AppTheme.borderBlack,
+              color: textColor ?? AppTheme.textMain,
             ),
           ),
           const SizedBox(width: 8),
@@ -41,7 +41,7 @@ class BrutalistDataCell extends StatelessWidget {
             style: GoogleFonts.spaceMono(
               fontWeight: FontWeight.w400,
               fontSize: 12,
-              color: textColor ?? AppTheme.borderBlack,
+              color: textColor ?? AppTheme.textMain,
             ),
           ),
         ],
@@ -67,7 +67,7 @@ class MissionBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: AppTheme.primaryMagenta,
-        border: Border.all(color: AppTheme.borderBlack, width: 1.5),
+        border: Border.all(color: AppTheme.textMain, width: 1.5),
       ),
       child: Center(
         child: RichText(
@@ -107,7 +107,7 @@ class LogInfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: AppTheme.borderBlack, width: 1.5),
+        border: Border.all(color: AppTheme.textMain, width: 1.5),
       ),
       child: Column(
         children: [
@@ -116,11 +116,11 @@ class LogInfoCard extends StatelessWidget {
             style: GoogleFonts.spaceMono(
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: AppTheme.borderBlack.withOpacity(0.5),
+              color: AppTheme.textMain.withOpacity(0.5),
             ),
           ),
           const SizedBox(height: 8),
-          const Divider(height: 1, color: AppTheme.borderBlack),
+          const Divider(height: 1, color: AppTheme.textMain),
           const SizedBox(height: 8),
           Text(
             content.toUpperCase(),
@@ -128,7 +128,7 @@ class LogInfoCard extends StatelessWidget {
             style: GoogleFonts.spaceMono(
               fontSize: 11,
               fontWeight: FontWeight.w900,
-              color: AppTheme.borderBlack,
+              color: AppTheme.textMain,
             ),
           ),
         ],

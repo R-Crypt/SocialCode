@@ -137,15 +137,15 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     final dateStr = DateFormat('EEEE, d MMMM yyyy • HH:mm').format(widget.event.eventDate.toLocal());
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.lightBg,
       appBar: AppBar(
-        backgroundColor: AppTheme.backgroundLight,
+        backgroundColor: AppTheme.lightBg,
         elevation: 0,
         title: Text('EVENT DETAILS',
             style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 18)),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(2),
-          child: Container(height: 2, color: AppTheme.borderBlack),
+          child: Container(height: 2, color: AppTheme.textMain),
         ),
       ),
       body: _ticket != null ? _TicketView(ticket: _ticket!, event: widget.event) : _BookingView(
@@ -225,7 +225,7 @@ class _BookingView extends StatelessWidget {
             if (event.description != null) ...[
               const SizedBox(height: 12),
               Text(event.description!,
-                  style: GoogleFonts.inter(fontSize: 14, color: AppTheme.borderBlack.withOpacity(0.7))),
+                  style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textMain.withOpacity(0.7))),
             ],
 
             const SizedBox(height: 24),
@@ -253,7 +253,7 @@ class _BookingView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                border: Border.all(color: AppTheme.borderBlack, width: 1.5),
+                border: Border.all(color: AppTheme.textMain, width: 1.5),
                 color: AppTheme.primaryMagenta.withOpacity(0.04),
               ),
               child: Row(
@@ -272,7 +272,7 @@ class _BookingView extends StatelessWidget {
                       'and event entry verification under the Digital Personal Data '
                       'Protection Act 2023 (DPDPA). Policy v1.0.',
                       style: GoogleFonts.inter(fontSize: 12,
-                          color: AppTheme.borderBlack.withOpacity(0.7)),
+                          color: AppTheme.textMain.withOpacity(0.7)),
                     ),
                   ),
                 ],
@@ -349,7 +349,7 @@ class _TicketView extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: Colors.white,
-              border: Border.all(color: AppTheme.borderBlack, width: 2),
+              border: Border.all(color: AppTheme.textMain, width: 2),
               boxShadow: const [BoxShadow(color: Color(0xFF111111), offset: Offset(6, 6))],
             ),
             child: Column(
@@ -365,7 +365,7 @@ class _TicketView extends StatelessWidget {
                 // QR Code
                 Container(
                   padding: const EdgeInsets.all(12),
-                  color: AppTheme.backgroundLight,
+                  color: AppTheme.lightBg,
                   child: ticket.status == TicketStatus.used
                       ? Column(children: [
                           const Icon(Icons.check_circle, size: 80, color: Colors.orange),
@@ -379,11 +379,11 @@ class _TicketView extends StatelessWidget {
                           size: 220,
                           eyeStyle: const QrEyeStyle(
                             eyeShape: QrEyeShape.square,
-                            color: AppTheme.borderBlack,
+                            color: AppTheme.textMain,
                           ),
                           dataModuleStyle: const QrDataModuleStyle(
                             dataModuleShape: QrDataModuleShape.square,
-                            color: AppTheme.borderBlack,
+                            color: AppTheme.textMain,
                           ),
                         ),
                 ),
@@ -407,13 +407,13 @@ class _TicketView extends StatelessWidget {
                   _TicketRow('SCANNED AT',
                       DateFormat('d MMM yyyy • HH:mm').format(ticket.scannedAt!.toLocal())),
                 const SizedBox(height: 12),
-                Divider(color: AppTheme.borderBlack.withOpacity(0.15)),
+                Divider(color: AppTheme.textMain.withOpacity(0.15)),
                 const SizedBox(height: 8),
                 Text(
                   'Show this QR at the gate. Each code is single-use only.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.spaceMono(
-                      fontSize: 9, color: AppTheme.borderBlack.withOpacity(0.5)),
+                      fontSize: 9, color: AppTheme.textMain.withOpacity(0.5)),
                 ),
               ],
             ),
@@ -435,7 +435,7 @@ class _TicketRow extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label, style: GoogleFonts.spaceMono(fontSize: 10,
-                color: AppTheme.borderBlack.withOpacity(0.5), fontWeight: FontWeight.bold)),
+                color: AppTheme.textMain.withOpacity(0.5), fontWeight: FontWeight.bold)),
             Text(value, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13)),
           ],
         ),
@@ -462,7 +462,7 @@ class _InfoRow extends StatelessWidget {
         const SizedBox(width: 6),
         Expanded(
           child: Text(text,
-              style: GoogleFonts.spaceMono(fontSize: 10, color: AppTheme.borderBlack.withOpacity(0.7))),
+              style: GoogleFonts.spaceMono(fontSize: 10, color: AppTheme.textMain.withOpacity(0.7))),
         ),
       ]);
 }
@@ -481,14 +481,14 @@ class _TierRadio extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected ? AppTheme.primaryMagenta.withOpacity(0.06) : Colors.white,
             border: Border.all(
-              color: selected ? AppTheme.primaryMagenta : AppTheme.borderBlack.withOpacity(0.3),
+              color: selected ? AppTheme.primaryMagenta : AppTheme.textMain.withOpacity(0.3),
               width: selected ? 2 : 1.5,
             ),
           ),
           child: Row(
             children: [
               Icon(selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                  color: selected ? AppTheme.primaryMagenta : AppTheme.borderBlack,
+                  color: selected ? AppTheme.primaryMagenta : AppTheme.textMain,
                   size: 20),
               const SizedBox(width: 12),
               Expanded(
@@ -498,7 +498,7 @@ class _TierRadio extends StatelessWidget {
               Text(tier.formattedPrice,
                   style: GoogleFonts.outfit(
                       fontWeight: FontWeight.w900, fontSize: 16,
-                      color: selected ? AppTheme.primaryMagenta : AppTheme.borderBlack)),
+                      color: selected ? AppTheme.primaryMagenta : AppTheme.textMain)),
             ],
           ),
         ),
@@ -530,7 +530,7 @@ class _BrutalField extends StatelessWidget {
               fillColor: Colors.white,
               enabledBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.zero,
-                borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+                borderSide: BorderSide(color: AppTheme.textMain, width: 2),
               ),
               focusedBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.zero,

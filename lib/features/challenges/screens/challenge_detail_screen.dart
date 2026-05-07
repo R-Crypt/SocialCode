@@ -58,14 +58,14 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
   Widget build(BuildContext context) {
     final challenge = widget.challenge;
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.lightBg,
       body: CustomScrollView(
         slivers: [
           // Hero
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
-            backgroundColor: AppTheme.borderBlack,
+            backgroundColor: AppTheme.textMain,
             iconTheme: const IconThemeData(color: Colors.white),
             flexibleSpace: FlexibleSpaceBar(
               background: challenge.imageUrl != null
@@ -79,7 +79,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         fit: BoxFit.cover,
                       ),
                     )
-                  : Container(color: AppTheme.borderBlack),
+                  : Container(color: AppTheme.textMain),
             ),
           ),
 
@@ -94,7 +94,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     spacing: 8,
                     children: [
                       _Tag('${challenge.pointsReward} POINTS', AppTheme.primaryMagenta),
-                      _Tag('${challenge.daysRemaining} DAYS LEFT', AppTheme.borderBlack),
+                      _Tag('${challenge.daysRemaining} DAYS LEFT', AppTheme.textMain),
                       _Tag(challenge.city.toUpperCase(), AppTheme.accentPurple),
                     ],
                   ),
@@ -106,7 +106,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                       fontSize: 32,
                       fontWeight: FontWeight.w900,
                       height: 0.95,
-                      color: AppTheme.borderBlack,
+                      color: AppTheme.textMain,
                     ),
                   ),
                   if (challenge.artistName != null && challenge.artistName!.isNotEmpty)
@@ -125,7 +125,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     'BY ${challenge.creatorName.toUpperCase()}',
                     style: GoogleFonts.spaceMono(
                       fontSize: 10,
-                      color: AppTheme.borderBlack.withOpacity(0.4),
+                      color: AppTheme.textMain.withOpacity(0.4),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -135,7 +135,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppTheme.borderBlack, width: 2),
+                      border: Border.all(color: AppTheme.textMain, width: 2),
                       color: Colors.white,
                     ),
                     child: Column(
@@ -148,7 +148,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                                 style: GoogleFonts.spaceMono(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: AppTheme.borderBlack.withOpacity(0.5))),
+                                    color: AppTheme.textMain.withOpacity(0.5))),
                             Text(
                               '${challenge.currentCount} / ${challenge.targetCount}',
                               style: GoogleFonts.outfit(
@@ -162,7 +162,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         LinearProgressIndicator(
                           value: challenge.progressPercent,
                           minHeight: 8,
-                          backgroundColor: AppTheme.borderBlack.withOpacity(0.1),
+                          backgroundColor: AppTheme.textMain.withOpacity(0.1),
                           valueColor:
                               const AlwaysStoppedAnimation(AppTheme.primaryMagenta),
                         ),
@@ -172,7 +172,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                           style: GoogleFonts.spaceMono(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.borderBlack.withOpacity(0.6)),
+                              color: AppTheme.textMain.withOpacity(0.6)),
                         ),
                       ],
                     ),
@@ -196,7 +196,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         : challenge.description,
                     style: GoogleFonts.inter(
                       fontSize: 15,
-                      color: AppTheme.borderBlack.withOpacity(0.8),
+                      color: AppTheme.textMain.withOpacity(0.8),
                       height: 1.6,
                     ),
                   ),
@@ -212,7 +212,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         style: OutlinedButton.styleFrom(
                           side: BorderSide(
                             color: _hasJoined
-                                ? AppTheme.borderBlack.withOpacity(0.3)
+                                ? AppTheme.textMain.withOpacity(0.3)
                                 : AppTheme.primaryMagenta,
                             width: 2,
                           ),
@@ -224,7 +224,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                           style: GoogleFonts.spaceMono(
                             fontWeight: FontWeight.bold,
                             color: _hasJoined
-                                ? AppTheme.borderBlack.withOpacity(0.4)
+                                ? AppTheme.textMain.withOpacity(0.4)
                                 : AppTheme.primaryMagenta,
                           ),
                         ),

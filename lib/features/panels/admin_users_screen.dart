@@ -58,14 +58,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.lightBg,
       appBar: AppBar(
-        backgroundColor: AppTheme.backgroundLight,
+        backgroundColor: AppTheme.lightBg,
         title: Text(
           'USER DIRECTORY',
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.w900,
-            color: AppTheme.borderBlack,
+            color: AppTheme.textMain,
             letterSpacing: 1.0,
           ),
         ),
@@ -91,7 +91,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                   ? AppTheme.primaryMagenta
                                   : Colors.white,
                               border: Border.all(
-                                  color: AppTheme.borderBlack, width: 2),
+                                  color: AppTheme.textMain, width: 2),
                             ),
                             alignment: Alignment.center,
                             child: Text(
@@ -100,7 +100,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: _tabIndex == 0
                                     ? Colors.white
-                                    : AppTheme.borderBlack,
+                                    : AppTheme.textMain,
                               ),
                             ),
                           ),
@@ -117,7 +117,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                   ? AppTheme.accentPurple
                                   : Colors.white,
                               border: Border.all(
-                                  color: AppTheme.borderBlack, width: 2),
+                                  color: AppTheme.textMain, width: 2),
                             ),
                             alignment: Alignment.center,
                             child: Text(
@@ -126,7 +126,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: _tabIndex == 1
                                     ? Colors.white
-                                    : AppTheme.borderBlack,
+                                    : AppTheme.textMain,
                               ),
                             ),
                           ),
@@ -171,7 +171,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
-                                  color: AppTheme.borderBlack, width: 2),
+                                  color: AppTheme.textMain, width: 2),
                             ),
                             child: Row(
                               children: [
@@ -209,7 +209,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                       email,
                                       style: TextStyle(
                                           fontSize: 12,
-                                          color: AppTheme.borderBlack
+                                          color: AppTheme.textMain
                                               .withOpacity(0.5)),
                                     ),
                                     const SizedBox(height: 4),
@@ -217,7 +217,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                       children: [
                                         Icon(Icons.location_on,
                                             size: 12,
-                                            color: AppTheme.borderBlack
+                                            color: AppTheme.textMain
                                                 .withOpacity(0.5)),
                                         const SizedBox(width: 4),
                                         Text(
@@ -225,7 +225,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                           style: GoogleFonts.spaceMono(
                                               fontSize: 10,
                                               fontWeight: FontWeight.bold,
-                                              color: AppTheme.borderBlack
+                                              color: AppTheme.textMain
                                                   .withOpacity(0.5)),
                                         ),
                                       ],

@@ -74,7 +74,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 CheckboxListTile(
                   value: true,
                   onChanged: null,
-                  activeColor: AppTheme.borderBlack,
+                  activeColor: AppTheme.textMain,
                   title: Text('ESSENTIAL (REQUIRED)', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 12)),
                   controlAffinity: ListTileControlAffinity.leading,
                   contentPadding: EdgeInsets.zero,
@@ -102,11 +102,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: const BorderSide(color: AppTheme.borderBlack, width: 2),
+                          side: const BorderSide(color: AppTheme.textMain, width: 2),
                           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                         ),
                         onPressed: () => _saveConsent(false, false),
-                        child: Text('REJECT ALL', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, color: AppTheme.borderBlack)),
+                        child: Text('REJECT ALL', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, color: AppTheme.textMain)),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -209,7 +209,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   user: widget.user,
                   onTap: (i) => setState(() => _selectedIndex = i),
                 ),
-                const VerticalDivider(width: 1, thickness: 2, color: AppTheme.borderBlack),
+                const VerticalDivider(width: 1, thickness: 2, color: AppTheme.textMain),
                 Expanded(child: _currentScreen),
               ],
             ),
@@ -221,14 +221,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
           body: _currentScreen,
           bottomNavigationBar: Container(
             decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AppTheme.borderBlack, width: 2)),
+              border: Border(top: BorderSide(color: AppTheme.textMain, width: 2)),
             ),
             child: BottomNavigationBar(
               currentIndex: _selectedIndex,
               onTap: (i) => setState(() => _selectedIndex = i),
               backgroundColor: Colors.white,
               selectedItemColor: AppTheme.primaryMagenta,
-              unselectedItemColor: AppTheme.borderBlack,
+              unselectedItemColor: AppTheme.textMain,
               showUnselectedLabels: true,
               selectedLabelStyle: GoogleFonts.spaceMono(
                 fontWeight: FontWeight.w900,
@@ -304,13 +304,13 @@ class _SideNav extends StatelessWidget {
                     style: GoogleFonts.spaceMono(
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.borderBlack.withOpacity(0.4),
+                      color: AppTheme.textMain.withOpacity(0.4),
                     ),
                   ),
                 ],
               ),
             ),
-            const Divider(height: 1, thickness: 2, color: AppTheme.borderBlack),
+            const Divider(height: 1, thickness: 2, color: AppTheme.textMain),
             const SizedBox(height: 16),
 
             // Nav items
@@ -338,7 +338,7 @@ class _SideNav extends StatelessWidget {
                         size: 20,
                         color: isSelected
                             ? Colors.white
-                            : AppTheme.borderBlack.withOpacity(0.6),
+                            : AppTheme.textMain.withOpacity(0.6),
                       ),
                       const SizedBox(width: 12),
                       Text(
@@ -348,7 +348,7 @@ class _SideNav extends StatelessWidget {
                           fontSize: 12,
                           color: isSelected
                               ? Colors.white
-                              : AppTheme.borderBlack.withOpacity(0.7),
+                              : AppTheme.textMain.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -358,7 +358,7 @@ class _SideNav extends StatelessWidget {
             }),
 
             const Spacer(),
-            const Divider(height: 1, thickness: 2, color: AppTheme.borderBlack),
+            const Divider(height: 1, thickness: 2, color: AppTheme.textMain),
 
             // User + logout
             Padding(

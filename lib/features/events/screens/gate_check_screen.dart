@@ -97,9 +97,9 @@ class _GateCheckScreenState extends State<GateCheckScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.borderBlack,
+      backgroundColor: AppTheme.textMain,
       appBar: AppBar(
-        backgroundColor: AppTheme.borderBlack,
+        backgroundColor: AppTheme.textMain,
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           'GATE CHECK',
@@ -116,7 +116,7 @@ class _GateCheckScreenState extends State<GateCheckScreen>
           // ── Top: scan mode selector ──────────────────────────────────────
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            color: AppTheme.borderBlack,
+            color: AppTheme.textMain,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

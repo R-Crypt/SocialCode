@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.lightBg,
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthFailure) {
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: GoogleFonts.spaceMono(
                             fontSize: 13,
                             fontWeight: FontWeight.w900,
-                            color: AppTheme.borderBlack.withOpacity(0.4),
+                            color: AppTheme.textMain.withOpacity(0.4),
                             letterSpacing: 1.2,
                           ),
                         ),
@@ -99,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            border: Border.all(color: AppTheme.borderBlack, width: 2.5),
+                            border: Border.all(color: AppTheme.textMain, width: 2.5),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     _obscurePassword
                                         ? Icons.visibility_off
                                         : Icons.visibility,
-                                    color: AppTheme.borderBlack.withOpacity(0.4),
+                                    color: AppTheme.textMain.withOpacity(0.4),
                                     size: 20,
                                   ),
                                   onPressed: () => setState(
@@ -220,12 +220,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                         style: GoogleFonts.spaceMono(
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
-                                          color: AppTheme.borderBlack,
+                                          color: AppTheme.textMain,
                                         ),
                                       ),
                                       style: OutlinedButton.styleFrom(
                                         side: const BorderSide(
-                                            color: AppTheme.borderBlack, width: 2),
+                                            color: AppTheme.textMain, width: 2),
                                         shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.zero),
                                       ),
@@ -262,15 +262,15 @@ class _TabButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? AppTheme.borderBlack : Colors.transparent,
-          border: Border.all(color: AppTheme.borderBlack, width: 2),
+          color: isActive ? AppTheme.textMain : Colors.transparent,
+          border: Border.all(color: AppTheme.textMain, width: 2),
         ),
         child: Text(
           label,
           style: GoogleFonts.spaceMono(
             fontWeight: FontWeight.w900,
             fontSize: 12,
-            color: isActive ? Colors.white : AppTheme.borderBlack,
+            color: isActive ? Colors.white : AppTheme.textMain,
           ),
         ),
       ),
@@ -305,7 +305,7 @@ class _BrutalistField extends StatelessWidget {
           style: GoogleFonts.spaceMono(
             fontSize: 11,
             fontWeight: FontWeight.w900,
-            color: AppTheme.borderBlack,
+            color: AppTheme.textMain,
             letterSpacing: 1.5,
           ),
         ),
@@ -314,16 +314,16 @@ class _BrutalistField extends StatelessWidget {
           controller: controller,
           obscureText: isObscure,
           keyboardType: keyboardType,
-          style: GoogleFonts.spaceMono(color: AppTheme.borderBlack, fontSize: 14),
+          style: GoogleFonts.spaceMono(color: AppTheme.textMain, fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: AppTheme.borderBlack.withOpacity(0.2)),
+            hintStyle: TextStyle(color: AppTheme.textMain.withOpacity(0.2)),
             filled: true,
             fillColor: Colors.white,
             suffixIcon: suffixIcon,
             enabledBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.zero,
-              borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
+              borderSide: BorderSide(color: AppTheme.textMain, width: 2),
             ),
             focusedBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.zero,
@@ -346,7 +346,7 @@ class _Divider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Expanded(child: Divider(color: AppTheme.borderBlack, thickness: 1)),
+        const Expanded(child: Divider(color: AppTheme.textMain, thickness: 1)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
@@ -354,11 +354,11 @@ class _Divider extends StatelessWidget {
             style: GoogleFonts.spaceMono(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: AppTheme.borderBlack.withOpacity(0.4),
+              color: AppTheme.textMain.withOpacity(0.4),
             ),
           ),
         ),
-        const Expanded(child: Divider(color: AppTheme.borderBlack, thickness: 1)),
+        const Expanded(child: Divider(color: AppTheme.textMain, thickness: 1)),
       ],
     );
   }

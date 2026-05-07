@@ -95,6 +95,13 @@ class ReportService {
     } catch (_) {}
   }
 
+  Future<void> updateReportStatus(String reportId, ReportStatus status) async {
+    await _client
+        .from('civic_reports')
+        .update({'status': status.name})
+        .eq('id', reportId);
+  }
+
   Stream<List<CivicReport>> watchReports() {
     return _client
         .from('civic_reports')

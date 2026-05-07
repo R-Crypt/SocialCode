@@ -54,7 +54,7 @@ class SocialCodeApp extends StatelessWidget {
         child: MaterialApp(
           title: 'The Social Code',
           debugShowCheckedModeBanner: false,
-          theme: AppTheme.brutalistTheme,
+          theme: AppTheme.lightTheme,
           onGenerateRoute: (settings) {
             // Check if the URL has messy OAuth query parameters attached
             if (settings.name != null && settings.name!.contains('?code=')) {
@@ -99,7 +99,7 @@ class _SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.lightBg,
       body: const Center(
         child: CircularProgressIndicator(
           color: AppTheme.primaryMagenta,

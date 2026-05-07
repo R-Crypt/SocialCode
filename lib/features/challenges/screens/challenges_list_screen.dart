@@ -92,10 +92,10 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
               const SizedBox(width: 8),
               CircleAvatar(
                 radius: 20,
-                backgroundImage: widget.user.photoUrl != null 
-                  ? NetworkImage(widget.user.photoUrl!) 
+                backgroundImage: widget.user.profileImageUrl != null 
+                  ? NetworkImage(widget.user.profileImageUrl!) 
                   : null,
-                child: widget.user.photoUrl == null ? const Icon(Icons.person) : null,
+                child: widget.user.profileImageUrl == null ? const Icon(Icons.person) : null,
               ),
             ],
           ),

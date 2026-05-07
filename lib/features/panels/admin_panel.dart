@@ -857,14 +857,25 @@ class _EventFormState extends State<_EventForm> {
                   if (widget.existing != null) {
                     await svc.updateEvent(widget.existing!.id, {'title': _titleCtrl.text, 'location': _locationCtrl.text, 'total_slots': int.tryParse(_slotsCtrl.text) ?? 100});
                   } else {
-                    await svc.createEvent(title: _titleCtrl.text, location: _locationCtrl.text, eventDate: _date, totalSlots: int.tryParse(_slotsCtrl.text) ?? 100, priceTiers: [const PriceTier(label: 'Free', pricePaise: 0)], createdBy: widget.user.id);
+                    await svc.createEvent(
+                      title: _titleCtrl.text,
+                      description: _descCtrl.text,
+                      location: _locationCtrl.text,
+                      eventDate: _date,
+                      totalSlots: int.tryParse(_slotsCtrl.text) ?? 100,
+                      priceTiers: [const PriceTier(label: 'Free', pricePaise: 0)],
+                      createdBy: widget.user.id,
+                    );
                   }
                   widget.onSaved();
                   Navigator.pop(context);
                 } catch (e) {}
                 setState(() => _saving = false);
               },
-              child: const Text('SAVE EVENT'),
+              child: Text(
+                widget.existing == null ? 'CREATE EVENT →' : 'SAVE CHANGES →',
+                style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],
@@ -890,18 +901,6 @@ class _FormField extends StatelessWidget {
         TextField(controller: controller, maxLines: maxLines, keyboardType: keyboardType, 
           decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
       ],
-    );
-  }
-}
- : Text(
-                        widget.existing == null ? 'CREATE EVENT →' : 'SAVE CHANGES →',
-                        style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold),
-                      ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
