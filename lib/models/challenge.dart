@@ -8,6 +8,7 @@ class Challenge {
   final String missionBriefing;
   final String? creatorId;
   final String creatorName;
+  final String? artistName; // New field
   final DateTime startDate;
   final DateTime endDate;
   final int pointsReward;
@@ -26,6 +27,7 @@ class Challenge {
     this.missionBriefing = '',
     this.creatorId,
     required this.creatorName,
+    this.artistName,
     required this.startDate,
     required this.endDate,
     required this.pointsReward,
@@ -46,6 +48,7 @@ class Challenge {
       missionBriefing: data['mission_briefing'] ?? '',
       creatorId: data['creator_id'],
       creatorName: data['creator_name'] ?? 'Admin',
+      artistName: data['artist_name'],
       startDate: DateTime.parse(data['start_date']),
       endDate: DateTime.parse(data['end_date']),
       pointsReward: data['points_reward'] ?? 0,
@@ -72,6 +75,7 @@ class Challenge {
       'mission_briefing': missionBriefing,
       'creator_id': creatorId,
       'creator_name': creatorName,
+      'artist_name': artistName,
       'start_date': startDate.toIso8601String(),
       'end_date': endDate.toIso8601String(),
       'points_reward': pointsReward,

@@ -1,4 +1,4 @@
-enum ReportCategory { pothole, waste, streetlight, water, tree, other }
+enum ReportCategory { pothole, waste, streetlight, water, tree, noise, safety, misc }
 enum ReportStatus { reported, in_progress, resolved, rejected }
 
 class CivicReport {
@@ -40,8 +40,8 @@ class CivicReport {
       title: data['title'] ?? '',
       description: data['description'],
       category: ReportCategory.values.firstWhere(
-        (e) => e.name == (data['category'] ?? 'other'),
-        orElse: () => ReportCategory.other,
+        (e) => e.name == (data['category'] ?? 'misc'),
+        orElse: () => ReportCategory.misc,
       ),
       status: ReportStatus.values.firstWhere(
         (e) => e.name == (data['status'] ?? 'reported').replaceAll('_', '_'),
@@ -81,7 +81,9 @@ class CivicReport {
       case ReportCategory.streetlight: return '💡';
       case ReportCategory.water: return '💧';
       case ReportCategory.tree: return '🌳';
-      case ReportCategory.other: return '⚠️';
+      case ReportCategory.noise: return '🔊';
+      case ReportCategory.safety: return '🛡️';
+      case ReportCategory.misc: return '⚠️';
     }
   }
 

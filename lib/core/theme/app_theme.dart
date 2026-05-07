@@ -2,80 +2,106 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Brand Colors (Brutalist Palette)
-  static const Color primaryMagenta = Color(0xFFE91E63); // High-Impact Pink
-  static const Color accentPurple = Color(0xFF9C27B0); // Logo Purple
-  static const Color backgroundLight = Color(0xFFF9F9F9); // Off-white Paper
-  static const Color borderBlack = Color(0xFF111111); // Sharp Black
-  static const Color surfaceWhite = Color(0xFFFFFFFF);
+  // Brand Colors
+  static const Color primaryMagenta = Color(0xFFE91E63);
+  static const Color accentPurple = Color(0xFF9C27B0);
+  static const Color darkBg = Color(0xFF0F1115);
+  static const Color darkSurface = Color(0xFF1B1E26);
+  static const Color lightBg = Color(0xFFF6F7FB);
+  static const Color lightSurface = Color(0xFFFFFFFF);
+  static const Color borderLight = Color(0xFFE0E0E0);
+  static const Color textMain = Color(0xFF111111);
+  static const Color textDim = Color(0xFF666666);
 
-  static ThemeData get brutalistTheme {
+  static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: backgroundLight,
+      scaffoldBackgroundColor: lightBg,
+      primaryColor: primaryMagenta,
       colorScheme: const ColorScheme.light(
         primary: primaryMagenta,
-        secondary: borderBlack,
-        surface: surfaceWhite,
-        onSurface: borderBlack,
+        secondary: accentPurple,
+        surface: lightSurface,
+        onSurface: textMain,
         onPrimary: Colors.white,
+        outline: borderLight,
       ),
-      textTheme: GoogleFonts.outfitTextTheme(ThemeData.light().textTheme).copyWith(
-        displayLarge: GoogleFonts.outfit(
-          fontSize: 32,
-          fontWeight: FontWeight.w900,
-          letterSpacing: -0.5,
-          color: borderBlack,
-        ),
-        displayMedium: GoogleFonts.outfit(
-          fontSize: 24,
-          fontWeight: FontWeight.w800,
-          color: borderBlack,
-        ),
-        labelLarge: GoogleFonts.spaceMono(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: borderBlack,
-          letterSpacing: 1.0,
-        ),
-        bodyLarge: GoogleFonts.inter(
-          fontSize: 16,
-          color: borderBlack.withOpacity(0.9),
-        ),
+      textTheme: GoogleFonts.outfitTextTheme().copyWith(
+        displayLarge: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: textMain),
+        displayMedium: GoogleFonts.outfit(fontWeight: FontWeight.w800, color: textMain),
+        bodyLarge: GoogleFonts.inter(color: textMain),
+        bodyMedium: GoogleFonts.inter(color: textDim),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: surfaceWhite,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        iconTheme: IconThemeData(color: borderBlack),
-        titleTextStyle: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w900,
-          color: borderBlack,
+        iconTheme: IconThemeData(color: textMain),
+        titleTextStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: textMain),
+      ),
+      cardTheme: CardThemeData(
+        color: lightSurface,
+        elevation: 4,
+        shadowColor: Colors.black.withOpacity(0.05),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryMagenta,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          textStyle: GoogleFonts.spaceMono(fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: darkBg,
+      primaryColor: primaryMagenta,
+      colorScheme: const ColorScheme.dark(
+        primary: primaryMagenta,
+        secondary: accentPurple,
+        surface: darkSurface,
+        onSurface: Colors.white,
+        onPrimary: Colors.white,
+        outline: Colors.white10,
+      ),
+      textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme).copyWith(
+        displayLarge: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white),
+        displayMedium: GoogleFonts.outfit(fontWeight: FontWeight.w800, color: Colors.white),
+        bodyLarge: GoogleFonts.inter(color: Colors.white.withOpacity(0.9)),
+        bodyMedium: GoogleFonts.inter(color: Colors.white60),
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: false,
+        iconTheme: IconThemeData(color: Colors.white),
+        titleTextStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white),
+      ),
+      cardTheme: CardThemeData(
+        color: darkSurface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: Colors.white10, width: 1),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: borderBlack,
+          backgroundColor: primaryMagenta,
           foregroundColor: Colors.white,
-          textStyle: GoogleFonts.spaceMono(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(0), // Square corners
-            side: const BorderSide(color: borderBlack, width: 2),
-          ),
-        ),
-      ),
-      cardTheme: CardThemeData(
-        color: surfaceWhite,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(0), // Sharp Brutalist corners
-          side: const BorderSide(color: borderBlack, width: 1.5),
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          textStyle: GoogleFonts.spaceMono(fontWeight: FontWeight.bold),
         ),
       ),
     );

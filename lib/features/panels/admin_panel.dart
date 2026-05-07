@@ -11,6 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:social_code/services/auth_service.dart';
 import 'package:social_code/models/challenge.dart';
+import 'package:social_code/models/civic_report.dart';
+import 'package:social_code/services/report_service.dart';
 import 'package:social_code/features/challenges/bloc/challenges_bloc.dart';
 import 'package:social_code/core/widgets/challenge_image_picker.dart';
 import 'package:social_code/core/utils/download.dart';
@@ -30,9 +32,9 @@ class AdminPanel extends StatefulWidget {
 }
 
 class _AdminPanelState extends State<AdminPanel> {
-  List<Submission> _pending = [];
+  List<Submission> _pendingReviews = [];
+  List<CivicReport> _pendingIssues = [];
   Map<String, dynamic> _metrics = {};
-  List<Challenge> _pendingChallenges = [];
   List<Challenge> _activeChallenges = [];
   bool _loading = true;
 
@@ -46,29 +48,30 @@ class _AdminPanelState extends State<AdminPanel> {
     if (_metrics.isEmpty) setState(() => _loading = true);
     try {
       final client = Supabase.instance.client;
-      final svc = context.read<SubmissionService>();
+      final subSvc = context.read<SubmissionService>();
+      final reportSvc = context.read<ReportService>();
 
-      final pendingSubs = await svc.getPendingSubmissions();
+      final pendingSubs = await subSvc.getPendingSubmissions();
+      final allReports = await reportSvc.getReports();
+      final pendingIssues = allReports.where((r) => r.status == ReportStatus.reported || r.status == ReportStatus.in_progress).toList();
 
-      // Fetch all challenges
       final challsRaw = await client.from('challenges').select().order('created_at', ascending: false);
       final allChalls = (challsRaw as List).map((data) => Challenge.fromMap(data, data['id'])).toList();
-      
-      _pendingChallenges = allChalls.where((c) => c.status == ChallengeStatus.pending).toList();
-      _activeChallenges = allChalls.where((c) => c.status == ChallengeStatus.active || c.status == ChallengeStatus.draft).toList();
+      _activeChallenges = allChalls;
 
-      // Fetch metrics
       final profiles = await client.from('profiles').select('id');
-      final resolvedReports = await client.from('civic_reports').select('id').eq('status', 'resolved');
+      final resolvedReports = allReports.where((r) => r.status == ReportStatus.resolved).toList();
 
       if (mounted) {
         setState(() {
-          _pending = pendingSubs;
+          _pendingReviews = pendingSubs;
+          _pendingIssues = pendingIssues;
           _metrics = {
-            'active_challenges': _activeChallenges.length,
+            'active_challenges': allChalls.length,
             'citizens': (profiles as List).length,
-            'resolved_reports': (resolvedReports as List).length,
+            'resolved_reports': resolvedReports.length,
             'pending_reviews': pendingSubs.length,
+            'pending_issues': pendingIssues.length,
           };
           _loading = false;
         });
@@ -78,32 +81,12 @@ class _AdminPanelState extends State<AdminPanel> {
     }
   }
 
-  Future<void> _reviewChallenge(String challengeId, bool approve) async {
-    try {
-      final status = approve ? ChallengeStatus.active.name : ChallengeStatus.draft.name;
-      await Supabase.instance.client.from('challenges').update({'status': status}).eq('id', challengeId);
-      _loadData();
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(approve ? 'Challenge approved!' : 'Challenge rejected.')));
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red));
-    }
-  }
-  
-  Future<void> _deleteChallenge(String challengeId) async {
-    try {
-      await Supabase.instance.client.from('challenges').delete().eq('id', challengeId);
-      _loadData();
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Challenge deleted permanently.')));
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete: $e'), backgroundColor: Colors.red));
-    }
-  }
-
   void _showCreateForm(BuildContext context, {Challenge? existing}) {
     final titleCtrl = TextEditingController(text: existing?.title ?? '');
     final descCtrl = TextEditingController(text: existing?.description ?? '');
     final briefingCtrl = TextEditingController(text: existing?.missionBriefing ?? '');
     final cityCtrl = TextEditingController(text: existing?.city ?? 'Bengaluru');
+    final artistCtrl = TextEditingController(text: existing?.artistName ?? '');
     final pointsCtrl = TextEditingController(text: '${existing?.pointsReward ?? 50}');
     final targetCtrl = TextEditingController(text: '${existing?.targetCount ?? 100}');
     ChallengeCategory selectedCategory = existing?.category ?? ChallengeCategory.environment;
@@ -112,7 +95,7 @@ class _AdminPanelState extends State<AdminPanel> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModal) => Padding(
           padding: EdgeInsets.only(
@@ -136,6 +119,8 @@ class _AdminPanelState extends State<AdminPanel> {
 
                 _FormField(controller: titleCtrl, label: 'CHALLENGE TITLE'),
                 const SizedBox(height: 12),
+                _FormField(controller: artistCtrl, label: 'ARTIST / CREATOR NAME'),
+                const SizedBox(height: 12),
                 _FormField(controller: descCtrl, label: 'DESCRIPTION', maxLines: 2),
                 const SizedBox(height: 12),
                 _FormField(controller: briefingCtrl, label: 'MISSION BRIEFING', maxLines: 3),
@@ -152,12 +137,14 @@ class _AdminPanelState extends State<AdminPanel> {
                         onTap: () => setModal(() => selectedCategory = cat),
                         child: Container(
                           margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
-                            color: isSelected ? AppTheme.primaryMagenta : Colors.white,
-                            border: Border.all(color: isSelected ? AppTheme.primaryMagenta : AppTheme.borderBlack, width: 2),
+                            color: isSelected ? AppTheme.primaryMagenta : Theme.of(context).cardTheme.color,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: isSelected ? AppTheme.primaryMagenta : Theme.of(context).colorScheme.outline),
                           ),
-                          child: Text(cat.name.toUpperCase(), style: GoogleFonts.spaceMono(fontSize: 9, fontWeight: FontWeight.bold, color: isSelected ? Colors.white : AppTheme.borderBlack)),
+                          child: Text(cat.name.toUpperCase(), 
+                            style: GoogleFonts.spaceMono(fontSize: 9, fontWeight: FontWeight.bold, color: isSelected ? Colors.white : null)),
                         ),
                       );
                     }).toList(),
@@ -188,6 +175,7 @@ class _AdminPanelState extends State<AdminPanel> {
                         if (isEditing) {
                           await Supabase.instance.client.from('challenges').update({
                             'title': titleCtrl.text.trim(),
+                            'artist_name': artistCtrl.text.trim(),
                             'description': descCtrl.text.trim(),
                             'mission_briefing': briefingCtrl.text.trim(),
                             'points_reward': int.tryParse(pointsCtrl.text) ?? 50,
@@ -200,6 +188,7 @@ class _AdminPanelState extends State<AdminPanel> {
                           final challenge = Challenge(
                             id: '',
                             title: titleCtrl.text.trim(),
+                            artistName: artistCtrl.text.trim(),
                             description: descCtrl.text.trim(),
                             missionBriefing: briefingCtrl.text.trim(),
                             creatorId: widget.user.id,
@@ -219,13 +208,13 @@ class _AdminPanelState extends State<AdminPanel> {
                         if (mounted) {
                           _loadData();
                           Navigator.pop(ctx);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isEditing ? 'Challenge updated!' : 'Challenge launched directly!')));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isEditing ? 'Challenge updated!' : 'Challenge launched!')));
                         }
                       } catch (e) {
                          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
                       }
                     },
-                    child: Text(existing == null ? 'LAUNCH IMMEDIATELY →' : 'SAVE CHANGES →'),
+                    child: Text(existing == null ? 'LAUNCH CHALLENGE →' : 'SAVE CHANGES →'),
                   ),
                 ),
               ],
@@ -239,7 +228,6 @@ class _AdminPanelState extends State<AdminPanel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
       body: SafeArea(
         child: _loading
             ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryMagenta))
@@ -254,179 +242,41 @@ class _AdminPanelState extends State<AdminPanel> {
                       Text('COMMAND CENTER',
                           style: GoogleFonts.outfit(
                               fontSize: 30,
-                              fontWeight: FontWeight.w900,
-                              color: AppTheme.borderBlack)),
-                      const SizedBox(height: 4),
-                      Text('OVERSEEING THE URBAN REVOLUTION',
+                              fontWeight: FontWeight.w900)),
+                      Text('ADMINISTRATIVE OVERVIEW',
                           style: GoogleFonts.spaceMono(
                               fontSize: 10,
-                              color: AppTheme.borderBlack.withOpacity(0.4),
+                              color: AppTheme.textDim,
                               fontWeight: FontWeight.bold)),
                       const SizedBox(height: 28),
 
                       // Metrics grid
-                      LayoutBuilder(builder: (ctx, constraints) {
-                        final cols = constraints.maxWidth > 500 ? 4 : 2;
-                        return GridView.count(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          crossAxisCount: cols,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childAspectRatio: 1.1,
-                          children: [
-                            _MetricCard(
-                              label: 'ACTIVE CODES',
-                              value: '${_metrics['active_challenges'] ?? 0}',
-                              icon: Icons.flash_on,
-                              color: AppTheme.primaryMagenta,
-                              onTap: () {
-                                if (widget.onNavigateToCodes != null) {
-                                  widget.onNavigateToCodes!();
-                                } else {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ChallengesListScreen(user: widget.user),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                            _MetricCard(
-                              label: 'CITIZENS',
-                              value: '${_metrics['citizens'] ?? 0}',
-                              icon: Icons.people,
-                              color: AppTheme.accentPurple,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const AdminUsersScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            _MetricCard(
-                              label: 'ISSUES RESOLVED',
-                              value: '${_metrics['resolved_reports'] ?? 0}',
-                              icon: Icons.check_circle,
-                              color: Colors.green,
-                            ),
-                            _MetricCard(
-                              label: 'PENDING REVIEWS',
-                              value: '${_metrics['pending_reviews'] ?? 0}',
-                              icon: Icons.pending,
-                              color: Colors.orange,
-                            ),
-                          ],
-                        );
-                      }),
+                      _buildMetricsGrid(),
                       const SizedBox(height: 36),
 
-                      Row(
-                        children: [
-                          Text('VERIFICATION QUEUE',
-                              style: GoogleFonts.outfit(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.0)),
-                          const Spacer(),
-                          Text('${_pending.length} PENDING',
-                              style: GoogleFonts.spaceMono(
-                                  fontSize: 11,
-                                  color: Colors.orange,
-                                  fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      if (_pending.isEmpty)
-                        Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: AppTheme.borderBlack.withOpacity(0.2)),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '✓ ALL CAUGHT UP! NO PENDING REVIEWS.',
-                              style: GoogleFonts.spaceMono(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green),
-                            ),
-                          ),
-                        )
-                      else
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _pending.length,
-                          itemBuilder: (ctx, i) => _VerificationItem(
-                            submission: _pending[i],
-                            onApprove: () => _review(_pending[i].id, true),
-                            onReject: () => _review(_pending[i].id, false),
-                          ),
-                        ),
-                        
+                      _buildPendingIssuesBox(),
                       const SizedBox(height: 36),
+
+                      _buildPendingReviewsBox(),
+                      const SizedBox(height: 36),
+
+                      _buildChallengesSection(),
+                      const SizedBox(height: 36),
+
                       Text('ROLE MANAGEMENT',
-                          style: GoogleFonts.outfit(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.0)),
+                          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 16),
                       const _RoleAssignmentSection(),
 
                       const SizedBox(height: 36),
-                      Text('PENDING CODES',
-                          style: GoogleFonts.outfit(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.0)),
-                      const SizedBox(height: 16),
-                      if (_pendingChallenges.isEmpty)
-                        Text('No pending challenges awaiting approval.', style: TextStyle(color: AppTheme.borderBlack.withOpacity(0.5))),
-                      ..._pendingChallenges.map((c) => _AdminChallengeItem(
-                        challenge: c,
-                        onApprove: () => _reviewChallenge(c.id, true),
-                        onReject: () => _reviewChallenge(c.id, false),
-                      )),
-
-                      const SizedBox(height: 36),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('ACTIVE CODES',
-                              style: GoogleFonts.outfit(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.0)),
-                          IconButton(
-                            icon: const Icon(Icons.add_circle, color: AppTheme.primaryMagenta),
-                            onPressed: () => _showCreateForm(context),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      ..._activeChallenges.map((c) => _AdminChallengeItem(
-                        challenge: c,
-                        onEdit: () => _showCreateForm(context, existing: c),
-                        onDelete: () => _deleteChallenge(c.id),
-                      )),
+                      _AdminEventsSection(user: widget.user),
 
                       const SizedBox(height: 36),
                       Text('DATA & INSIGHTS',
-                          style: GoogleFonts.outfit(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.0)),
+                          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 16),
                       const _AdminDataExport(),
-
-                      // ── Events Management ──────────────────────────────
-                      const SizedBox(height: 36),
-                      _AdminEventsSection(user: widget.user),
+                      const SizedBox(height: 80),
                     ],
                   ),
                 ),
@@ -435,13 +285,261 @@ class _AdminPanelState extends State<AdminPanel> {
     );
   }
 
-  Future<void> _review(String id, bool approve) async {
-    final svc = context.read<SubmissionService>();
-    if (approve) {
-      await svc.approveSubmission(id);
-    } else {
-      await svc.rejectSubmission(id);
+  Widget _buildMetricsGrid() {
+    return LayoutBuilder(builder: (ctx, constraints) {
+      final cols = constraints.maxWidth > 600 ? 4 : 2;
+      return GridView.count(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisCount: cols,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.3,
+        children: [
+          _MetricCard(label: 'CITIZENS', value: '${_metrics['citizens']}', icon: Icons.people, color: AppTheme.accentPurple),
+          _MetricCard(label: 'PENDING REVIEWS', value: '${_metrics['pending_reviews']}', icon: Icons.pending_actions, color: Colors.orange),
+          _MetricCard(label: 'PENDING ISSUES', value: '${_metrics['pending_issues']}', icon: Icons.report_problem, color: Colors.red),
+          _MetricCard(label: 'RESOLVED', value: '${_metrics['resolved_reports']}', icon: Icons.check_circle, color: Colors.green),
+        ],
+      );
+    });
+  }
+
+  Widget _buildPendingIssuesBox() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('PENDING ISSUES', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('${_pendingIssues.length} TOTAL', style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.red)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardTheme.color,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
+          ),
+          child: _pendingIssues.isEmpty 
+            ? const Center(child: Text('All issues resolved!'))
+            : ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _pendingIssues.length.clamp(0, 5),
+                separatorBuilder: (_, __) => const Divider(),
+                itemBuilder: (ctx, i) {
+                  final issue = _pendingIssues[i];
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Text(issue.categoryEmoji, style: const TextStyle(fontSize: 20)),
+                    title: Text(issue.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    subtitle: Text('By ${issue.userName} · ${issue.locationName ?? "Unknown location"}', style: const TextStyle(fontSize: 11)),
+                    trailing: const Icon(Icons.chevron_right, size: 16),
+                    onTap: () => _showIssueDetails(issue),
+                  );
+                },
+              ),
+        ),
+      ],
+    );
+  }
+
+  void _showIssueDetails(CivicReport issue) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(issue.categoryEmoji, style: const TextStyle(fontSize: 28)),
+                const SizedBox(width: 12),
+                Expanded(child: Text(issue.title, style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 20))),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _detailRow('Status', issue.statusLabel, color: issue.status == ReportStatus.resolved ? Colors.green : Colors.orange),
+            _detailRow('Reporter', issue.userName),
+            _detailRow('Location', issue.locationName ?? 'Not specified'),
+            _detailRow('Coordinates', '${issue.latitude}, ${issue.longitude}'),
+            if (issue.description != null) ...[
+              const SizedBox(height: 12),
+              const Text('Description', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+              Text(issue.description!, style: const TextStyle(fontSize: 13, height: 1.5)),
+            ],
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await context.read<ReportService>().updateReportStatus(issue.id, ReportStatus.resolved);
+                      Navigator.pop(ctx);
+                      _loadData();
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                    child: const Text('MARK RESOLVED'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      await context.read<ReportService>().updateReportStatus(issue.id, ReportStatus.rejected);
+                      Navigator.pop(ctx);
+                      _loadData();
+                    },
+                    style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red)),
+                    child: const Text('REJECT', style: TextStyle(color: Colors.red)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _detailRow(String label, String value, {Color? color}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Text('$label: ', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textDim)),
+          Text(value, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPendingReviewsBox() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('PENDING REVIEWS', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('${_pendingReviews.length} WAITING', style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.orange)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (_pendingReviews.isEmpty)
+          const Text('No submissions to review.')
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _pendingReviews.length.clamp(0, 3),
+            itemBuilder: (ctx, i) => _VerificationItem(
+              submission: _pendingReviews[i],
+              onApprove: () => _reviewSubmission(_pendingReviews[i].id, true),
+              onReject: () => _reviewSubmission(_pendingReviews[i].id, false),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildChallengesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('ACTIVE CHALLENGES', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
+            IconButton(icon: const Icon(Icons.add_circle, color: AppTheme.primaryMagenta), onPressed: () => _showCreateForm(context)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        ..._activeChallenges.map((c) => _AdminChallengeItem(
+          challenge: c,
+          onEdit: () => _showCreateForm(context, existing: c),
+          onTap: () => _showChallengeDetails(c),
+        )),
+      ],
+    );
+  }
+
+  void _showChallengeDetails(Challenge c) async {
+    // Fetch top contributors
+    final client = Supabase.instance.client;
+    final subsRaw = await client.from('submissions')
+      .select('user_id, user_name')
+      .eq('challenge_id', c.id)
+      .eq('status', 'approved');
+    
+    final Map<String, int> counts = {};
+    final Map<String, String> names = {};
+    for (var s in (subsRaw as List)) {
+      final uid = s['user_id'];
+      counts[uid] = (counts[uid] ?? 0) + 1;
+      names[uid] = s['user_name'];
     }
+    final sortedUids = counts.keys.toList()..sort((a, b) => counts[b]!.compareTo(counts[a]!));
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(c.title.toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 24)),
+            const SizedBox(height: 8),
+            Text('Artist: ${c.artistName ?? "Unknown"}', style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta)),
+            const SizedBox(height: 20),
+            _detailRow('Progress', '${c.currentCount} / ${c.targetCount}'),
+            _detailRow('Points Reward', '${c.pointsReward} PTS'),
+            _detailRow('City', c.city),
+            const SizedBox(height: 20),
+            const Text('TOP CONTRIBUTORS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1)),
+            const SizedBox(height: 12),
+            if (sortedUids.isEmpty)
+              const Text('No approved submissions yet.')
+            else
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: sortedUids.length.clamp(0, 5),
+                itemBuilder: (ctx, i) {
+                  final uid = sortedUids[i];
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: CircleAvatar(child: Text('${i+1}')),
+                    title: Text(names[uid]!, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    trailing: Text('${counts[uid]} subs', style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta)),
+                  );
+                },
+              ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(onPressed: () => Navigator.pop(ctx), child: const Text('CLOSE')),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _reviewSubmission(String id, bool approve) async {
+    final svc = context.read<SubmissionService>();
+    if (approve) await svc.approveSubmission(id);
+    else await svc.rejectSubmission(id);
     _loadData();
   }
 }
@@ -453,39 +551,25 @@ class _MetricCard extends StatelessWidget {
   final Color color;
   final VoidCallback? onTap;
 
-  const _MetricCard({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.color,
-    this.onTap,
-  });
+  const _MetricCard({required this.label, required this.value, required this.icon, required this.color, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: AppTheme.borderBlack, width: 2),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(height: 8),
-            Text(value,
-                style: GoogleFonts.outfit(
-                    fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.borderBlack)),
-            Text(label,
-                style: TextStyle(
-                    fontSize: 9,
-                    color: AppTheme.borderBlack.withOpacity(0.5),
-                    fontWeight: FontWeight.bold)),
-          ],
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: color, size: 20),
+              const SizedBox(height: 8),
+              Text(value, style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w900)),
+              Text(label, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: AppTheme.textDim)),
+            ],
+          ),
         ),
       ),
     );
@@ -496,113 +580,66 @@ class _VerificationItem extends StatelessWidget {
   final Submission submission;
   final VoidCallback onApprove;
   final VoidCallback onReject;
-  const _VerificationItem(
-      {required this.submission, required this.onApprove, required this.onReject});
+  const _VerificationItem({required this.submission, required this.onApprove, required this.onReject});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: AppTheme.borderBlack, width: 1.5),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(submission.imageUrl, width: 60, height: 60, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const Icon(Icons.image, size: 40)),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('BY ${submission.userName.toUpperCase()}', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13)),
+                      if (submission.caption != null) Text(submission.caption!, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AppTheme.textDim)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(child: OutlinedButton(onPressed: onReject, child: const Text('REJECT', style: TextStyle(fontSize: 11)))),
+                const SizedBox(width: 8),
+                Expanded(child: ElevatedButton(onPressed: onApprove, child: const Text('APPROVE', style: TextStyle(fontSize: 11)))),
+              ],
+            ),
+          ],
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.zero,
-                child: Image.network(
-                  submission.imageUrl,
-                  width: 64,
-                  height: 64,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    width: 64,
-                    height: 64,
-                    color: AppTheme.borderBlack.withOpacity(0.05),
-                    child: const Icon(Icons.image, size: 28),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'BY ${submission.userName.toUpperCase()}',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w900, fontSize: 13),
-                    ),
-                    const SizedBox(height: 2),
-                    if (submission.caption != null)
-                      Text(
-                        submission.caption!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 11,
-                            color: AppTheme.borderBlack.withOpacity(0.5)),
-                      ),
-                    const SizedBox(height: 4),
-                    if (submission.locationName != null)
-                      Row(
-                        children: [
-                          const Icon(Icons.location_on,
-                              size: 10, color: AppTheme.primaryMagenta),
-                          const SizedBox(width: 2),
-                          Text(submission.locationName!,
-                              style: GoogleFonts.spaceMono(
-                                  fontSize: 8,
-                                  color: AppTheme.borderBlack.withOpacity(0.4))),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: onReject,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppTheme.borderBlack,
-                    side: const BorderSide(color: AppTheme.borderBlack, width: 2),
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                  ),
-                  child: Text('REJECT',
-                      style: GoogleFonts.spaceMono(
-                          fontWeight: FontWeight.bold, fontSize: 11)),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: onApprove,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryMagenta,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                  ),
-                  child: Text('APPROVE ✓',
-                      style: GoogleFonts.spaceMono(
-                          fontWeight: FontWeight.bold, fontSize: 11)),
-                ),
-              ),
-            ],
-          ),
-        ],
+    );
+  }
+}
+
+class _AdminChallengeItem extends StatelessWidget {
+  final Challenge challenge;
+  final VoidCallback? onEdit;
+  final VoidCallback? onTap;
+
+  const _AdminChallengeItem({required this.challenge, this.onEdit, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        onTap: onTap,
+        title: Text(challenge.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text('Artist: ${challenge.artistName ?? "Unknown"} · ${challenge.city}', style: const TextStyle(fontSize: 11)),
+        trailing: onEdit != null ? IconButton(icon: const Icon(Icons.edit, size: 20), onPressed: onEdit) : null,
       ),
     );
   }
@@ -613,49 +650,15 @@ class _AdminDataExport extends StatelessWidget {
 
   Future<void> _exportData(BuildContext context, String table) async {
     try {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetching $table data...'), duration: const Duration(seconds: 1)),
-      );
       final response = await Supabase.instance.client.from(table).select();
-      if (response.isEmpty) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No data found.')),
-          );
-        }
-        return;
-      }
+      if (response.isEmpty) return;
 
-      // Convert to CSV
       final headers = (response.first as Map<String, dynamic>).keys.join(',');
-      final rows = response.map((row) {
-        return (row as Map<String, dynamic>).values.map((v) {
-          if (v == null) return '';
-          final str = v.toString().replaceAll('"', '""');
-          return '"$str"';
-        }).join(',');
-      }).join('\n');
-      final csv = '$headers\n$rows';
-
-      // Call our web-safe download helper
-      final fileName = '${table}_export_${DateTime.now().millisecondsSinceEpoch}.csv';
-      downloadCsv(fileName, csv);
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${response.length} rows from $table downloaded as CSV!'),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
+      final rows = response.map((row) => (row as Map<String, dynamic>).values.map((v) => '"${v.toString().replaceAll('"', '""')}"').join(',')).join('\n');
+      downloadCsv('${table}_export.csv', '$headers\n$rows');
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exported!'), backgroundColor: Colors.green));
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error exporting $table: $e'), backgroundColor: Colors.red),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
     }
   }
 
@@ -663,36 +666,20 @@ class _AdminDataExport extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _ExportButton('DOWNLOAD CITIZEN PROFILES', Icons.people, () => _exportData(context, 'profiles')),
-        const SizedBox(height: 12),
-        _ExportButton('DOWNLOAD ALL CHALLENGES', Icons.flash_on, () => _exportData(context, 'challenges')),
-        const SizedBox(height: 12),
-        _ExportButton('DOWNLOAD ALL SUBMISSIONS', Icons.photo_library, () => _exportData(context, 'submissions')),
+        _expBtn(context, 'DOWNLOAD CITIZEN PROFILES', Icons.people, 'profiles'),
+        const SizedBox(height: 8),
+        _expBtn(context, 'DOWNLOAD ALL CHALLENGES', Icons.flash_on, 'challenges'),
       ],
     );
   }
-}
 
-class _ExportButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final VoidCallback onTap;
-  const _ExportButton(this.label, this.icon, this.onTap);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _expBtn(BuildContext context, String label, IconData icon, String table) {
     return SizedBox(
       width: double.infinity,
-      height: 50,
       child: OutlinedButton.icon(
-        onPressed: onTap,
-        icon: Icon(icon, color: AppTheme.borderBlack),
-        label: Text(label, style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, color: AppTheme.borderBlack)),
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: AppTheme.borderBlack, width: 2),
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          backgroundColor: Colors.white,
-        ),
+        onPressed: () => _exportData(context, table),
+        icon: Icon(icon, size: 16),
+        label: Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -709,188 +696,46 @@ class _RoleAssignmentSectionState extends State<_RoleAssignmentSection> {
   UserRole _selectedRole = UserRole.creator;
   bool _isLoading = false;
 
-  Future<void> _assignRole() async {
-    final email = _emailCtrl.text.trim();
-    if (email.isEmpty) return;
-
-    setState(() => _isLoading = true);
-    try {
-      await context.read<AuthService>().assignRoleByEmail(email, _selectedRole);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Assigned ${_selectedRole.name.toUpperCase()} role to $email!'), backgroundColor: Colors.green));
-        _emailCtrl.clear();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString()), backgroundColor: Colors.red));
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.accentPurple.withOpacity(0.05),
-        border: Border.all(color: AppTheme.accentPurple, width: 2),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: _emailCtrl,
-            decoration: const InputDecoration(
-              labelText: 'User Email',
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(borderRadius: BorderRadius.zero),
-            ),
-          ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<UserRole>(
-            value: _selectedRole,
-            decoration: const InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(borderRadius: BorderRadius.zero),
-            ),
-            items: const [
-              DropdownMenuItem(value: UserRole.admin, child: Text('ADMIN')),
-              DropdownMenuItem(value: UserRole.creator, child: Text('CREATOR')),
-            ],
-            onChanged: (v) => setState(() => _selectedRole = v!),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.accentPurple,
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
-              onPressed: _isLoading ? null : _assignRole,
-              child: _isLoading 
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text('ASSIGN ROLE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AdminChallengeItem extends StatelessWidget {
-  final Challenge challenge;
-  final VoidCallback? onApprove;
-  final VoidCallback? onReject;
-  final VoidCallback? onEdit;
-  final VoidCallback? onDelete;
-
-  const _AdminChallengeItem({
-    required this.challenge,
-    this.onApprove,
-    this.onReject,
-    this.onEdit,
-    this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: AppTheme.borderBlack, width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(challenge.title.toUpperCase(),
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 16)),
-              ),
-              if (onEdit != null)
-                IconButton(icon: const Icon(Icons.edit, size: 20), padding: EdgeInsets.zero, constraints: const BoxConstraints(), onPressed: onEdit),
-              if (onDelete != null) ...[
-                const SizedBox(width: 12),
-                IconButton(icon: const Icon(Icons.delete, size: 20, color: Colors.red), padding: EdgeInsets.zero, constraints: const BoxConstraints(), onPressed: onDelete),
-              ]
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text('BY: ${challenge.creatorName.toUpperCase()}', style: GoogleFonts.spaceMono(fontSize: 10, color: AppTheme.borderBlack.withOpacity(0.5))),
-          const SizedBox(height: 12),
-          if (onApprove != null)
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: onReject,
-                    style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red), shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
-                    child: Text('REJECT', style: GoogleFonts.spaceMono(color: Colors.red, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: onApprove,
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
-                    child: Text('APPROVE', style: GoogleFonts.spaceMono(color: Colors.white, fontWeight: FontWeight.bold)),
-                  ),
-                ),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(controller: _emailCtrl, decoration: const InputDecoration(labelText: 'Email Address')),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<UserRole>(
+              value: _selectedRole,
+              items: const [
+                DropdownMenuItem(value: UserRole.admin, child: Text('ADMIN')),
+                DropdownMenuItem(value: UserRole.creator, child: Text('CREATOR')),
               ],
+              onChanged: (v) => setState(() => _selectedRole = v!),
             ),
-        ],
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : () async {
+                  setState(() => _isLoading = true);
+                  try {
+                    await context.read<AuthService>().assignRoleByEmail(_emailCtrl.text.trim(), _selectedRole);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Role assigned!')));
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                  }
+                  setState(() => _isLoading = false);
+                },
+                child: const Text('ASSIGN ROLE'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
-class _FormField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final int maxLines;
-  final TextInputType? keyboardType;
-  const _FormField({
-    required this.controller,
-    required this.label,
-    this.maxLines = 1,
-    this.keyboardType,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4),
-        TextField(
-          controller: controller,
-          maxLines: maxLines,
-          keyboardType: keyboardType,
-          decoration: const InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppTheme.borderBlack, width: 2)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2)),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// ADMIN EVENTS SECTION
-// ═══════════════════════════════════════════════════════════════════════════════
 
 class _AdminEventsSection extends StatefulWidget {
   final AppUser user;
@@ -920,31 +765,6 @@ class _AdminEventsSectionState extends State<_AdminEventsSection> {
     }
   }
 
-  Future<void> _delete(String id) async {
-    try {
-      await _svc.deleteEvent(id);
-      _load();
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Event deleted.')));
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
-    }
-  }
-
-  void _showForm({Event? existing}) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-      builder: (_) => _EventForm(
-        user: widget.user,
-        existing: existing,
-        onSaved: _load,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -953,181 +773,27 @@ class _AdminEventsSectionState extends State<_AdminEventsSection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('EVENTS',
-                style: GoogleFonts.outfit(
-                    fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
-            Row(
-              children: [
-                // Gate check button
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => GateCheckScreen(user: widget.user),
-                    ),
-                  ),
-                  icon: const Icon(Icons.qr_code_scanner, size: 16),
-                  label: Text('GATE CHECK',
-                      style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppTheme.borderBlack, width: 2),
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.add_circle, color: AppTheme.primaryMagenta),
-                  onPressed: () => _showForm(),
-                  tooltip: 'Create Event',
-                ),
-              ],
-            ),
+            Text('EVENTS', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
+            IconButton(icon: const Icon(Icons.add_circle, color: AppTheme.primaryMagenta), 
+              onPressed: () => showModalBottomSheet(context: context, isScrollControlled: true, 
+                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+                builder: (_) => _EventForm(user: widget.user, onSaved: _load))),
           ],
         ),
         const SizedBox(height: 12),
-
-        if (_loading)
-          const Center(child: CircularProgressIndicator(color: AppTheme.primaryMagenta))
-        else if (_events.isEmpty)
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              border: Border.all(color: AppTheme.borderBlack.withOpacity(0.2)),
-            ),
-            child: Center(
-              child: Text('No events yet. Tap + to create one.',
-                  style: GoogleFonts.spaceMono(fontSize: 11,
-                      color: AppTheme.borderBlack.withOpacity(0.4))),
-            ),
-          )
-        else
-          ..._events.map((e) => _AdminEventItem(
-                event: e,
-                onEdit: () => _showForm(existing: e),
-                onDelete: () => _delete(e.id),
-              )),
-
-        const SizedBox(height: 12),
-        SizedBox(
-          width: double.infinity,
-          height: 46,
-          child: OutlinedButton.icon(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => EventsListScreen(user: widget.user),
-              ),
-            ),
-            icon: const Icon(Icons.open_in_new, size: 16),
-            label: Text('VIEW PUBLIC EVENTS PAGE',
-                style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 10)),
-            style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: AppTheme.borderBlack, width: 2),
-              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-            ),
+        if (_loading) const Center(child: CircularProgressIndicator())
+        else ..._events.map((e) => Card(
+          child: ListTile(
+            title: Text(e.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('${e.location} · ${e.slotsSold}/${e.totalSlots} slots'),
+            trailing: IconButton(icon: const Icon(Icons.qr_code_scanner), 
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => GateCheckScreen(user: widget.user)))),
           ),
-        ),
+        )),
       ],
     );
   }
 }
-
-// ─── Admin Event Item ─────────────────────────────────────────────────────────
-
-class _AdminEventItem extends StatelessWidget {
-  final Event event;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-  const _AdminEventItem({required this.event, required this.onEdit, required this.onDelete});
-
-  @override
-  Widget build(BuildContext context) {
-    final dateStr = DateFormat('d MMM yyyy · HH:mm').format(event.eventDate.toLocal());
-    final statusColor = switch (event.status) {
-      EventStatus.published => Colors.green,
-      EventStatus.draft     => Colors.orange,
-      EventStatus.cancelled => Colors.red,
-      EventStatus.completed => Colors.grey,
-    };
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: AppTheme.borderBlack, width: 1.5),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    color: statusColor,
-                    child: Text(event.status.name.toUpperCase(),
-                        style: GoogleFonts.spaceMono(
-                            fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white)),
-                  ),
-                  const SizedBox(width: 8),
-                  if (event.isSoldOut)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      color: Colors.red.shade100,
-                      child: Text('SOLD OUT',
-                          style: GoogleFonts.spaceMono(
-                              fontSize: 8, fontWeight: FontWeight.bold, color: Colors.red)),
-                    ),
-                ]),
-                const SizedBox(height: 6),
-                Text(event.title.toUpperCase(),
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 15)),
-                const SizedBox(height: 4),
-                Text(dateStr,
-                    style: GoogleFonts.spaceMono(
-                        fontSize: 9, color: AppTheme.borderBlack.withOpacity(0.5))),
-                Text('${event.location}  ·  ${event.slotsSold}/${event.totalSlots} sold',
-                    style: GoogleFonts.spaceMono(
-                        fontSize: 9, color: AppTheme.borderBlack.withOpacity(0.5))),
-                const SizedBox(height: 4),
-                Text(
-                  event.priceTiers
-                      .map((t) => '${t.label}: ${t.formattedPrice}')
-                      .join('  |  '),
-                  style: GoogleFonts.spaceMono(
-                      fontSize: 9, color: AppTheme.primaryMagenta, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.edit, size: 18),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: onEdit,
-              ),
-              const SizedBox(height: 8),
-              IconButton(
-                icon: const Icon(Icons.delete, size: 18, color: Colors.red),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: onDelete,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Event Creation / Edit Form ───────────────────────────────────────────────
 
 class _EventForm extends StatefulWidget {
   final AppUser user;
@@ -1139,291 +805,95 @@ class _EventForm extends StatefulWidget {
 }
 
 class _EventFormState extends State<_EventForm> {
-  final _titleCtrl    = TextEditingController();
-  final _descCtrl     = TextEditingController();
+  final _titleCtrl = TextEditingController();
+  final _descCtrl = TextEditingController();
   final _locationCtrl = TextEditingController();
-  final _slotsCtrl    = TextEditingController();
-
-  DateTime _eventDate = DateTime.now().add(const Duration(days: 7));
-  EventStatus _status = EventStatus.published;
-  List<_TierEntry> _tiers = [_TierEntry()];
+  final _slotsCtrl = TextEditingController();
+  DateTime _date = DateTime.now().add(const Duration(days: 7));
   bool _saving = false;
 
   @override
   void initState() {
     super.initState();
-    final e = widget.existing;
-    if (e != null) {
-      _titleCtrl.text    = e.title;
-      _descCtrl.text     = e.description ?? '';
-      _locationCtrl.text = e.location;
-      _slotsCtrl.text    = '${e.totalSlots}';
-      _eventDate         = e.eventDate;
-      _status            = e.status;
-      _tiers = e.priceTiers
-          .map((t) => _TierEntry(label: t.label, paise: t.pricePaise))
-          .toList();
-    }
-  }
-
-  @override
-  void dispose() {
-    _titleCtrl.dispose();
-    _descCtrl.dispose();
-    _locationCtrl.dispose();
-    _slotsCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _eventDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
-    );
-    if (picked == null || !mounted) return;
-    final pickedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(_eventDate),
-    );
-    if (pickedTime == null) return;
-    setState(() {
-      _eventDate = DateTime(
-        picked.year, picked.month, picked.day,
-        pickedTime.hour, pickedTime.minute,
-      );
-    });
-  }
-
-  Future<void> _save() async {
-    if (_titleCtrl.text.trim().isEmpty || _locationCtrl.text.trim().isEmpty) return;
-    setState(() => _saving = true);
-    try {
-      final svc = EventService();
-      final tiers = _tiers
-          .where((t) => t.labelCtrl.text.trim().isNotEmpty)
-          .map((t) => PriceTier(
-                label: t.labelCtrl.text.trim(),
-                pricePaise: int.tryParse(t.paiseCtrl.text.trim()) ?? 0,
-              ))
-          .toList();
-
-      if (tiers.isEmpty) tiers.add(const PriceTier(label: 'General', pricePaise: 0));
-
-      if (widget.existing != null) {
-        await svc.updateEvent(widget.existing!.id, {
-          'title':       _titleCtrl.text.trim(),
-          'description': _descCtrl.text.trim(),
-          'location':    _locationCtrl.text.trim(),
-          'event_date':  _eventDate.toUtc().toIso8601String(),
-          'total_slots': int.tryParse(_slotsCtrl.text) ?? 100,
-          'price_tiers': tiers.map((t) => t.toMap()).toList(),
-          'status':      _status.name,
-        });
-      } else {
-        await svc.createEvent(
-          title:       _titleCtrl.text.trim(),
-          description: _descCtrl.text.trim(),
-          location:    _locationCtrl.text.trim(),
-          eventDate:   _eventDate,
-          totalSlots:  int.tryParse(_slotsCtrl.text) ?? 100,
-          priceTiers:  tiers,
-          status:      _status,
-          createdBy:   widget.user.id,
-        );
-      }
-
-      if (mounted) {
-        widget.onSaved();
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(widget.existing != null ? 'Event updated!' : 'Event created!'),
-          backgroundColor: Colors.green,
-        ));
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _saving = false);
+    if (widget.existing != null) {
+      _titleCtrl.text = widget.existing!.title;
+      _descCtrl.text = widget.existing!.description ?? '';
+      _locationCtrl.text = widget.existing!.location;
+      _slotsCtrl.text = '${widget.existing!.totalSlots}';
+      _date = widget.existing!.eventDate;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = DateFormat('EEE, d MMM yyyy · HH:mm').format(_eventDate);
-
     return Padding(
-      padding: EdgeInsets.only(
-        left: 24, right: 24, top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      padding: EdgeInsets.only(left: 24, right: 24, top: 24, bottom: MediaQuery.of(context).viewInsets.bottom + 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('EVENT DETAILS', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 22)),
+          const SizedBox(height: 20),
+          _FormField(controller: _titleCtrl, label: 'TITLE'),
+          const SizedBox(height: 12),
+          _FormField(controller: _locationCtrl, label: 'LOCATION'),
+          const SizedBox(height: 12),
+          _FormField(controller: _slotsCtrl, label: 'TOTAL SLOTS', keyboardType: TextInputType.number),
+          const SizedBox(height: 12),
+          const Text('MEDIA UPLOAD (PRO)', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Container(
+            height: 80, width: double.infinity,
+            decoration: BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.outline), borderRadius: BorderRadius.circular(12)),
+            child: const Center(child: Icon(Icons.cloud_upload_outlined, color: AppTheme.textDim)),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _saving ? null : () async {
+                setState(() => _saving = true);
+                try {
+                  final svc = EventService();
+                  if (widget.existing != null) {
+                    await svc.updateEvent(widget.existing!.id, {'title': _titleCtrl.text, 'location': _locationCtrl.text, 'total_slots': int.tryParse(_slotsCtrl.text) ?? 100});
+                  } else {
+                    await svc.createEvent(title: _titleCtrl.text, location: _locationCtrl.text, eventDate: _date, totalSlots: int.tryParse(_slotsCtrl.text) ?? 100, priceTiers: [const PriceTier(label: 'Free', pricePaise: 0)], createdBy: widget.user.id);
+                  }
+                  widget.onSaved();
+                  Navigator.pop(context);
+                } catch (e) {}
+                setState(() => _saving = false);
+              },
+              child: const Text('SAVE EVENT'),
+            ),
+          ),
+        ],
       ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(widget.existing == null ? 'CREATE EVENT' : 'EDIT EVENT',
-                style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 22)),
-            const SizedBox(height: 20),
+    );
+  }
+}
 
-            _FormField(controller: _titleCtrl, label: 'EVENT TITLE'),
-            const SizedBox(height: 12),
-            _FormField(controller: _descCtrl, label: 'DESCRIPTION', maxLines: 2),
-            const SizedBox(height: 12),
-            _FormField(controller: _locationCtrl, label: 'VENUE / LOCATION'),
-            const SizedBox(height: 12),
-            _FormField(
-              controller: _slotsCtrl, label: 'TOTAL SLOTS',
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 12),
+class _FormField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final int maxLines;
+  final TextInputType? keyboardType;
+  const _FormField({required this.controller, required this.label, this.maxLines = 1, this.keyboardType});
 
-            // Date / time picker
-            Text('DATE & TIME',
-                style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            GestureDetector(
-              onTap: _pickDate,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: AppTheme.borderBlack, width: 2),
-                ),
-                child: Row(children: [
-                  const Icon(Icons.calendar_today, size: 16, color: AppTheme.primaryMagenta),
-                  const SizedBox(width: 8),
-                  Text(dateStr,
-                      style: GoogleFonts.spaceMono(fontSize: 12, fontWeight: FontWeight.bold)),
-                ]),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // Status selector
-            Text('STATUS',
-                style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 6),
-            Row(
-              children: EventStatus.values.map((s) {
-                final sel = _status == s;
-                return GestureDetector(
-                  onTap: () => setState(() => _status = s),
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: sel ? AppTheme.primaryMagenta : Colors.white,
-                      border: Border.all(
-                        color: sel ? AppTheme.primaryMagenta : AppTheme.borderBlack,
-                        width: 2,
-                      ),
-                    ),
-                    child: Text(s.name.toUpperCase(),
-                        style: GoogleFonts.spaceMono(
-                            fontSize: 9, fontWeight: FontWeight.bold,
-                            color: sel ? Colors.white : AppTheme.borderBlack)),
-                  ),
-                );
-              }).toList(),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Dynamic price tiers
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('PRICE TIERS (in paise)',
-                    style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
-                TextButton.icon(
-                  onPressed: () => setState(() => _tiers.add(_TierEntry())),
-                  icon: const Icon(Icons.add, size: 16),
-                  label: Text('ADD TIER',
-                      style: GoogleFonts.spaceMono(fontSize: 9, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text('1 INR = 100 paise. Free tier = 0.',
-                style: GoogleFonts.spaceMono(
-                    fontSize: 8, color: AppTheme.borderBlack.withOpacity(0.4))),
-            const SizedBox(height: 8),
-
-            ..._tiers.asMap().entries.map((entry) {
-              final idx = entry.key;
-              final tier = entry.value;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(children: [
-                  Expanded(
-                    flex: 3,
-                    child: TextField(
-                      controller: tier.labelCtrl,
-                      decoration: InputDecoration(
-                        labelText: 'Label (e.g. VIP)',
-                        labelStyle: GoogleFonts.spaceMono(fontSize: 10),
-                        filled: true, fillColor: Colors.white,
-                        enabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
-                        ),
-                        focusedBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    flex: 2,
-                    child: TextField(
-                      controller: tier.paiseCtrl,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: InputDecoration(
-                        labelText: 'Paise',
-                        labelStyle: GoogleFonts.spaceMono(fontSize: 10),
-                        filled: true, fillColor: Colors.white,
-                        enabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(color: AppTheme.borderBlack, width: 2),
-                        ),
-                        focusedBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                      ),
-                    ),
-                  ),
-                  if (_tiers.length > 1)
-                    IconButton(
-                      icon: const Icon(Icons.remove_circle, color: Colors.red, size: 20),
-                      onPressed: () => setState(() => _tiers.removeAt(idx)),
-                    ),
-                ]),
-              );
-            }),
-
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: _saving ? null : _save,
-                child: _saving
-                    ? const SizedBox(width: 20, height: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : Text(
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: GoogleFonts.spaceMono(fontSize: 9, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 6),
+        TextField(controller: controller, maxLines: maxLines, keyboardType: keyboardType, 
+          decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+      ],
+    );
+  }
+}
+ : Text(
                         widget.existing == null ? 'CREATE EVENT →' : 'SAVE CHANGES →',
                         style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold),
                       ),

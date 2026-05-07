@@ -109,7 +109,18 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                       color: AppTheme.borderBlack,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  if (challenge.artistName != null && challenge.artistName!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        'ARTIST: ${challenge.artistName!.toUpperCase()}',
+                        style: GoogleFonts.spaceMono(
+                          fontSize: 12,
+                          color: AppTheme.primaryMagenta,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
                   Text(
                     'BY ${challenge.creatorName.toUpperCase()}',
                     style: GoogleFonts.spaceMono(

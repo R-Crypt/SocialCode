@@ -81,42 +81,26 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       final svc = EventService();
       final tier = _selectedTier!;
 
-      if (tier.isFree) {
-        // Free event — issue ticket directly via a lightweight Edge Function
-        // (or via a dedicated RPC that bypasses Razorpay)
-        final result = await svc.createRazorpayOrder(
-          eventId: widget.event.id,
-          userId: widget.user.id,
-          attendeeName: _nameCtrl.text.trim(),
-          attendeeEmail: _emailCtrl.text.trim(),
-          tierLabel: tier.label,
-          amountPaise: 0,
-        );
-        // For free tickets the edge function returns the ticket directly
-        if (result['ticket'] != null) {
-          final t = Ticket.fromMap(Map<String, dynamic>.from(result['ticket'] as Map));
-          if (mounted) setState(() => _ticket = t);
-        }
-      } else {
-        // Paid event — create Razorpay order and launch checkout
-        final orderData = await svc.createRazorpayOrder(
-          eventId: widget.event.id,
-          userId: widget.user.id,
-          attendeeName: _nameCtrl.text.trim(),
-          attendeeEmail: _emailCtrl.text.trim(),
-          tierLabel: tier.label,
-          amountPaise: tier.pricePaise,
-        );
+      // User requested to SKIP payment part. 
+      // We will issue a ticket directly regardless of price.
+      final result = await svc.createRazorpayOrder(
+        eventId: widget.event.id,
+        userId: widget.user.id,
+        attendeeName: _nameCtrl.text.trim(),
+        attendeeEmail: _emailCtrl.text.trim(),
+        tierLabel: tier.label,
+        amountPaise: 0, // Mock as free for skipping payment
+      );
 
-        final checkoutUrl = orderData['checkout_url'] as String?;
-        if (checkoutUrl != null) {
-          final uri = Uri.parse(checkoutUrl);
-          if (await canLaunchUrl(uri)) {
-            await launchUrl(uri, mode: LaunchMode.externalApplication);
-            // After returning, poll Supabase for the issued ticket
-            _pollForTicket();
-          }
-        }
+      // In "skip" mode, we assume the edge function or service can handle amountPaise: 0
+      // or we just set the ticket if returned.
+      if (result['ticket'] != null) {
+        final t = Ticket.fromMap(Map<String, dynamic>.from(result['ticket'] as Map));
+        if (mounted) setState(() => _ticket = t);
+      } else {
+        // If ticket not returned immediately, it might be async, but usually for amount:0 it is.
+        // Fallback: poll for it.
+        _pollForTicket();
       }
     } catch (e) {
       if (mounted) {
