@@ -19,10 +19,10 @@ class BrutalistDataCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
         color: backgroundColor ?? Colors.white,
-        border: Border.all(color: AppTheme.textMain, width: 1.5),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 1.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -32,16 +32,16 @@ class BrutalistDataCell extends StatelessWidget {
             style: GoogleFonts.spaceMono(
               fontWeight: FontWeight.w900,
               fontSize: 12,
-              color: textColor ?? AppTheme.textMain,
+              color: textColor ?? Theme.of(context).colorScheme.onSurface,
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Text(
             value.toUpperCase(),
             style: GoogleFonts.spaceMono(
               fontWeight: FontWeight.w400,
               fontSize: 12,
-              color: textColor ?? AppTheme.textMain,
+              color: textColor ?? Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],
@@ -64,10 +64,10 @@ class MissionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: AppTheme.primaryMagenta,
-        border: Border.all(color: AppTheme.textMain, width: 1.5),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 1.5),
       ),
       child: Center(
         child: RichText(
@@ -81,7 +81,7 @@ class MissionBar extends StatelessWidget {
               TextSpan(text: '$label : '),
               TextSpan(
                 text: value.toUpperCase(),
-                style: const TextStyle(fontWeight: FontWeight.w400),
+                style: TextStyle(fontWeight: FontWeight.w400),
               ),
             ],
           ),
@@ -104,10 +104,10 @@ class LogInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: AppTheme.textMain, width: 1.5),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 1.5),
       ),
       child: Column(
         children: [
@@ -116,19 +116,19 @@ class LogInfoCard extends StatelessWidget {
             style: GoogleFonts.spaceMono(
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: AppTheme.textMain.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
             ),
           ),
-          const SizedBox(height: 8),
-          const Divider(height: 1, color: AppTheme.textMain),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
+          Divider(height: 1, color: Theme.of(context).colorScheme.onSurface),
+          SizedBox(height: 8),
           Text(
             content.toUpperCase(),
             textAlign: TextAlign.center,
             style: GoogleFonts.spaceMono(
               fontSize: 11,
               fontWeight: FontWeight.w900,
-              color: AppTheme.textMain,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],

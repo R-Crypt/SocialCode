@@ -133,9 +133,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     final dateStr = DateFormat('EEEE, d MMMM yyyy • HH:mm').format(widget.event.eventDate.toLocal());
 
     return Scaffold(
-      backgroundColor: AppTheme.lightBg,
+      
       appBar: AppBar(
-        backgroundColor: AppTheme.lightBg,
+        
         elevation: 0,
         title: Text('EVENT DETAILS',
             style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 18)),
@@ -189,7 +189,7 @@ class _BookingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       child: Form(
         key: formKey,
         child: Column(
@@ -204,14 +204,14 @@ class _BookingView extends StatelessWidget {
                   child: Image.network(event.bannerUrl!, fit: BoxFit.cover),
                 ),
               ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(event.title.toUpperCase(),
                 style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 22)),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             _InfoRow(Icons.calendar_today, dateStr),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             _InfoRow(Icons.location_on, event.location),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             _InfoRow(
               Icons.confirmation_number,
               event.isSoldOut
@@ -219,35 +219,35 @@ class _BookingView extends StatelessWidget {
                   : '${event.slotsRemaining} / ${event.totalSlots} slots remaining',
             ),
             if (event.description != null) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(event.description!,
                   style: GoogleFonts.inter(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
             ],
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             _SectionHeader('SELECT TIER'),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             ...event.priceTiers.map((tier) => _TierRadio(
                   tier: tier,
                   selected: selectedTier == tier,
                   onTap: () => onTierChanged(tier),
                 )),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             _SectionHeader('ATTENDEE DETAILS'),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             _BrutalField(ctrl: nameCtrl,  label: 'FULL NAME',      hint: 'As on ID'),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _BrutalField(ctrl: emailCtrl, label: 'EMAIL',          hint: 'Ticket sent here',
                 keyboardType: TextInputType.emailAddress),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _BrutalField(ctrl: phoneCtrl, label: 'PHONE (optional)', hint: '+91 XXXXXXXXXX',
                 required: false, keyboardType: TextInputType.phone),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             // DPDPA Consent
             Container(
-              padding: const EdgeInsets.all(14),
+              padding: EdgeInsets.all(14),
               decoration: BoxDecoration(
                 border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 1.5),
                 color: AppTheme.primaryMagenta.withOpacity(0.04),
@@ -261,7 +261,7 @@ class _BookingView extends StatelessWidget {
                     activeColor: AppTheme.primaryMagenta,
                     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'I consent to my personal data being processed for ticket issuance '
@@ -275,15 +275,15 @@ class _BookingView extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             if (pollingForTicket)
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 color: AppTheme.accentPurple.withOpacity(0.08),
                 child: Row(children: [
-                  const SizedBox(width: 20, height: 20,
+                  SizedBox(width: 20, height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.accentPurple)),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Text('Confirming payment & issuing ticket…',
                       style: GoogleFonts.spaceMono(fontSize: 11)),
                 ]),
@@ -313,7 +313,7 @@ class _BookingView extends StatelessWidget {
                         ),
                 ),
               ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40),
           ],
         ),
       ),
@@ -337,35 +337,35 @@ class _TicketView extends StatelessWidget {
             : Colors.red;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       child: Column(
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: Theme.of(context).cardTheme.color,
               border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
-              boxShadow: const [BoxShadow(color: Color(0xFF111111), offset: Offset(6, 6))],
+              boxShadow: [BoxShadow(color: Color(0xFF111111), offset: Offset(6, 6))],
             ),
             child: Column(
               children: [
                 Text('YOUR TICKET',
                     style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 20)),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(event.title.toUpperCase(),
                     textAlign: TextAlign.center,
                     style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 12)),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // QR Code
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   color: AppTheme.lightBg,
                   child: ticket.status == TicketStatus.used
                       ? Column(children: [
-                          const Icon(Icons.check_circle, size: 80, color: Colors.orange),
-                          const SizedBox(height: 8),
+                          Icon(Icons.check_circle, size: 80, color: Colors.orange),
+                          SizedBox(height: 8),
                           Text('TICKET USED', style: GoogleFonts.outfit(fontWeight: FontWeight.w900,
                               fontSize: 16, color: Colors.orange)),
                         ])
@@ -384,27 +384,27 @@ class _TicketView extends StatelessWidget {
                         ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // Status badge
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   color: statusColor,
                   child: Text(ticket.status.name.toUpperCase(),
                       style: GoogleFonts.spaceMono(
                           color: Theme.of(context).cardTheme.color, fontWeight: FontWeight.bold)),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 _TicketRow('NAME', ticket.attendeeName),
                 _TicketRow('TIER', ticket.priceTierLabel),
                 _TicketRow('PAID', ticket.formattedAmount),
                 if (ticket.scannedAt != null)
                   _TicketRow('SCANNED AT',
                       DateFormat('d MMM yyyy • HH:mm').format(ticket.scannedAt!.toLocal())),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Divider(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.15)),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   'Show this QR at the gate. Each code is single-use only.',
                   textAlign: TextAlign.center,
@@ -426,7 +426,7 @@ class _TicketRow extends StatelessWidget {
   const _TicketRow(this.label, this.value);
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: EdgeInsets.symmetric(vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -455,7 +455,7 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(children: [
         Icon(icon, size: 13, color: AppTheme.primaryMagenta),
-        const SizedBox(width: 6),
+        SizedBox(width: 6),
         Expanded(
           child: Text(text,
               style: GoogleFonts.spaceMono(fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
@@ -472,8 +472,8 @@ class _TierRadio extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.all(14),
+          margin: EdgeInsets.only(bottom: 8),
+          padding: EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: selected ? AppTheme.primaryMagenta.withOpacity(0.06) : Colors.white,
             border: Border.all(
@@ -486,7 +486,7 @@ class _TierRadio extends StatelessWidget {
               Icon(selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
                   color: selected ? AppTheme.primaryMagenta : Theme.of(context).colorScheme.onSurface,
                   size: 20),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Text(tier.label,
                     style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15)),
@@ -516,7 +516,7 @@ class _BrutalField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           TextFormField(
             controller: ctrl,
             keyboardType: keyboardType,
@@ -532,11 +532,11 @@ class _BrutalField extends StatelessWidget {
                 borderRadius: BorderRadius.zero,
                 borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
               ),
-              errorBorder: const OutlineInputBorder(
+              errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.zero,
                 borderSide: BorderSide(color: Colors.red, width: 2),
               ),
-              focusedErrorBorder: const OutlineInputBorder(
+              focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.zero,
                 borderSide: BorderSide(color: Colors.red, width: 2),
               ),

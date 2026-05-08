@@ -49,13 +49,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final pending = _submissions.where((s) => s.status == SubmissionStatus.pending).length;
 
     return Scaffold(
-      backgroundColor: AppTheme.lightBg,
+      
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -64,10 +64,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         if (Navigator.canPop(context)) ...[
                           IconButton(
-                            icon: const Icon(Icons.arrow_back),
+                            icon: Icon(Icons.arrow_back),
                             onPressed: () => Navigator.pop(context),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                         ],
                         CircleAvatar(
                           radius: 36,
@@ -87,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 )
                               : null,
                         ),
-                        const SizedBox(width: 16),
+                        SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,12 +100,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Text(
                                 user.email,
                                 style: TextStyle(
-                                    color: AppTheme.textMain.withOpacity(0.4),
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                                     fontSize: 12),
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: 4),
                               Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
                                   color: AppTheme.accentPurple.withOpacity(0.1),
@@ -124,11 +124,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.edit, size: 20),
+                          icon: Icon(Icons.edit, size: 20),
                           onPressed: () => _showEditProfileSheet(context),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.settings, size: 20),
+                          icon: Icon(Icons.settings, size: 20),
                           onPressed: () => Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => SettingsScreen(user: user)),
@@ -136,64 +136,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         if (!Navigator.canPop(context)) ...[
                           IconButton(
-                            icon: const Icon(Icons.logout),
+                            icon: Icon(Icons.logout),
                             onPressed: () =>
                                 context.read<AuthBloc>().add(LogoutRequested()),
                           ),
                         ],
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
                     // Stats row
                     Row(
                       children: [
                         _StatBox(label: 'POINTS', value: '${user.points}',
                             color: AppTheme.primaryMagenta),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         _StatBox(label: 'APPROVED', value: '$approved',
                             color: Colors.green),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         _StatBox(label: 'PENDING', value: '$pending',
                             color: Colors.orange),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // Region
                     Row(
                       children: [
-                        const Icon(Icons.location_on,
+                        Icon(Icons.location_on,
                             size: 16, color: AppTheme.primaryMagenta),
-                        const SizedBox(width: 6),
+                        SizedBox(width: 6),
                         Text(user.region,
                             style: GoogleFonts.spaceMono(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: AppTheme.textMain.withOpacity(0.6))),
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6))),
                       ],
                     ),
 
                     if (user.bio != null && user.bio!.isNotEmpty) ...[
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       Text(user.bio!,
                           style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: AppTheme.textMain.withOpacity(0.7),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                               height: 1.5)),
                     ],
 
                     if (user.role == UserRole.creator) ...[
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       if (user.creatorDetails != null && user.creatorDetails!.isNotEmpty) ...[
                         Text('UPCOMING MOVEMENTS',
                             style: GoogleFonts.spaceMono(
                                 fontWeight: FontWeight.bold, fontSize: 12, color: AppTheme.primaryMagenta)),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(user.creatorDetails!,
                             style: GoogleFonts.inter(
-                                fontSize: 14, color: AppTheme.textMain, height: 1.5)),
-                        const SizedBox(height: 16),
+                                fontSize: 14, color: Theme.of(context).colorScheme.onSurface, height: 1.5)),
+                        SizedBox(height: 16),
                       ],
                       if (user.websiteUrl != null && user.websiteUrl!.isNotEmpty) ...[
                         Builder(
@@ -212,8 +212,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               },
                               child: Row(
                                 children: [
-                                  const Icon(Icons.link, size: 16, color: AppTheme.textMain),
-                                  const SizedBox(width: 6),
+                                  Icon(Icons.link, size: 16, color: Theme.of(context).colorScheme.onSurface),
+                                  SizedBox(width: 6),
                                   Expanded(
                                     child: Text(displayUrl,
                                         style: GoogleFonts.spaceMono(
@@ -227,7 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             );
                           }
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                       ],
                       if (user.instagramUrl != null && user.instagramUrl!.isNotEmpty) ...[
                         Builder(
@@ -255,8 +255,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               },
                               child: Row(
                                 children: [
-                                  const Icon(Icons.camera_alt_outlined, size: 16, color: AppTheme.textMain),
-                                  const SizedBox(width: 6),
+                                  Icon(Icons.camera_alt_outlined, size: 16, color: Theme.of(context).colorScheme.onSurface),
+                                  SizedBox(width: 6),
                                   Text('@$username',
                                       style: GoogleFonts.spaceMono(
                                           fontSize: 12,
@@ -271,15 +271,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ],
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
                     Text('MY SUBMISSIONS',
                         style: GoogleFonts.outfit(
                             fontWeight: FontWeight.w900,
                             fontSize: 18,
                             letterSpacing: 0.5)),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -299,24 +299,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.inbox, size: 48,
-                          color: AppTheme.textMain.withOpacity(0.2)),
-                      const SizedBox(height: 12),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
+                      SizedBox(height: 12),
                       Text('NO SUBMISSIONS YET.',
                           style: GoogleFonts.spaceMono(
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.textMain.withOpacity(0.4))),
-                      const SizedBox(height: 4),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4))),
+                      SizedBox(height: 4),
                       Text('JOIN A MISSION AND SUBMIT PROOF.',
                           style: TextStyle(
                               fontSize: 12,
-                              color: AppTheme.textMain.withOpacity(0.3))),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3))),
                     ],
                   ),
                 ),
               )
             else
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+                padding: EdgeInsets.fromLTRB(16, 0, 16, 80),
                 sliver: SliverGrid(
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 200,
@@ -371,7 +371,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text('EDIT PROFILE',
                         style: GoogleFonts.outfit(
                             fontWeight: FontWeight.w900, fontSize: 18)),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     GestureDetector(
                       onTap: () async {
                         final picker = ImagePicker();
@@ -394,15 +394,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ? NetworkImage(user.profileImageUrl!)
                                 : null) as ImageProvider?,
                         child: (newImageBytes == null && user.profileImageUrl == null)
-                            ? const Icon(Icons.camera_alt, color: AppTheme.primaryMagenta)
+                            ? Icon(Icons.camera_alt, color: AppTheme.primaryMagenta)
                             : null,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text('TAP TO CHANGE PHOTO',
                         style: GoogleFonts.spaceMono(
                             fontSize: 10, color: AppTheme.primaryMagenta)),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     TextField(
                       controller: nameController,
                       decoration: InputDecoration(
@@ -410,17 +410,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         errorText: errorText,
                         labelStyle: GoogleFonts.spaceMono(
                             fontSize: 12, fontWeight: FontWeight.bold),
-                        enabledBorder: const OutlineInputBorder(
+                        enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(color: AppTheme.textMain, width: 2),
+                          borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
                         ),
-                        focusedBorder: const OutlineInputBorder(
+                        focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.zero,
                           borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     TextField(
                       controller: bioController,
                       maxLines: 3,
@@ -428,18 +428,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         labelText: 'BIO',
                         labelStyle: GoogleFonts.spaceMono(
                             fontSize: 12, fontWeight: FontWeight.bold),
-                        enabledBorder: const OutlineInputBorder(
+                        enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(color: AppTheme.textMain, width: 2),
+                          borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
                         ),
-                        focusedBorder: const OutlineInputBorder(
+                        focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.zero,
                           borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
                         ),
                       ),
                     ),
                     if (user.role == UserRole.creator) ...[
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       TextField(
                         controller: detailsController,
                         maxLines: 3,
@@ -447,52 +447,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           labelText: 'UPCOMING MOVEMENTS / DETAILS',
                           labelStyle: GoogleFonts.spaceMono(
                               fontSize: 12, fontWeight: FontWeight.bold),
-                          enabledBorder: const OutlineInputBorder(
+                          enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
-                            borderSide: BorderSide(color: AppTheme.textMain, width: 2),
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
                             borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       TextField(
                         controller: webController,
                         decoration: InputDecoration(
                           labelText: 'WEBSITE URL',
                           labelStyle: GoogleFonts.spaceMono(
                               fontSize: 12, fontWeight: FontWeight.bold),
-                          enabledBorder: const OutlineInputBorder(
+                          enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
-                            borderSide: BorderSide(color: AppTheme.textMain, width: 2),
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
                             borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       TextField(
                         controller: instaController,
                         decoration: InputDecoration(
                           labelText: 'INSTAGRAM URL',
                           labelStyle: GoogleFonts.spaceMono(
                               fontSize: 12, fontWeight: FontWeight.bold),
-                          enabledBorder: const OutlineInputBorder(
+                          enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
-                            borderSide: BorderSide(color: AppTheme.textMain, width: 2),
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.zero,
                             borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
                           ),
                         ),
                       ),
                     ],
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
                       height: 50,
@@ -558,21 +558,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 }
                               },
                         child: isSaving
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
                                     color: Colors.white, strokeWidth: 2))
-                            : const Text('SAVE CHANGES'),
+                            : Text('SAVE CHANGES'),
                       ),
                     ),
-                    const SizedBox(height: 32),
-                    Divider(color: AppTheme.textMain.withOpacity(0.2), thickness: 2),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 32),
+                    Divider(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2), thickness: 2),
+                    SizedBox(height: 16),
                     Text('DATA & PRIVACY (GDPR/DPDPA)',
                         style: GoogleFonts.outfit(
                             fontWeight: FontWeight.w900, fontSize: 14)),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       height: 50,
@@ -595,13 +595,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           }
                         },
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppTheme.textMain, width: 2),
+                          side: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
                           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                         ),
-                        child: Text('EXPORT MY DATA', style: GoogleFonts.spaceMono(color: AppTheme.textMain, fontWeight: FontWeight.bold)),
+                        child: Text('EXPORT MY DATA', style: GoogleFonts.spaceMono(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,
                       height: 50,
@@ -614,11 +614,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               title: Text('DELETE ACCOUNT?', style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
                               content: Text('This action is permanent and cannot be undone. All your data will be erased.', style: GoogleFonts.inter()),
                               actions: [
-                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('CANCEL', style: TextStyle(color: AppTheme.textMain))),
+                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('CANCEL', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
                                   onPressed: () => Navigator.pop(ctx, true),
-                                  child: const Text('DELETE FOR GOOD'),
+                                  child: Text('DELETE FOR GOOD'),
                                 ),
                               ],
                             ),
@@ -641,13 +641,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           }
                         },
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.red, width: 2),
+                          side: BorderSide(color: Colors.red, width: 2),
                           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                         ),
                         child: Text('DELETE ACCOUNT', style: GoogleFonts.spaceMono(color: Colors.red, fontWeight: FontWeight.bold)),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -669,7 +669,7 @@ class _StatBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: color.withOpacity(0.05),
           border: Border.all(color: color, width: 2),
@@ -683,7 +683,7 @@ class _StatBox extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.textMain.withOpacity(0.5))),
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
           ],
         ),
       ),
@@ -707,7 +707,7 @@ class _SubmissionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: AppTheme.textMain, width: 2),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -718,14 +718,14 @@ class _SubmissionTile extends StatelessWidget {
               fit: BoxFit.cover,
               width: double.infinity,
               errorBuilder: (_, __, ___) => Container(
-                color: AppTheme.textMain.withOpacity(0.05),
-                child: const Icon(Icons.broken_image, size: 32),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+                child: Icon(Icons.broken_image, size: 32),
               ),
             ),
           ),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             color: _statusColor,
             child: Text(
               submission.status.name.toUpperCase(),

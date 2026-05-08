@@ -83,7 +83,7 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
                       ? _buildGridView(filtered) 
                       : _buildListView(filtered);
                   }
-                  return const SizedBox.shrink();
+                  return SizedBox.shrink();
                 },
               ),
             ),
@@ -95,21 +95,21 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const SocialCodeLogo(fontSize: 28),
           Row(
             children: [
-              IconButton(icon: const Icon(Icons.notifications_none_outlined), onPressed: () {}),
-              const SizedBox(width: 8),
+              IconButton(icon: Icon(Icons.notifications_none_outlined), onPressed: () {}),
+              SizedBox(width: 8),
               CircleAvatar(
                 radius: 20,
                 backgroundImage: widget.user.profileImageUrl != null 
                   ? NetworkImage(widget.user.profileImageUrl!) 
                   : null,
-                child: widget.user.profileImageUrl == null ? const Icon(Icons.person) : null,
+                child: widget.user.profileImageUrl == null ? Icon(Icons.person) : null,
               ),
             ],
           ),
@@ -120,13 +120,13 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
 
   Widget _buildSearchAndToggle() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
           Expanded(
             child: Container(
               height: 48,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardTheme.color,
                 borderRadius: BorderRadius.circular(12),
@@ -146,7 +146,7 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           _buildFilterButton(),
         ],
       ),
@@ -156,7 +156,7 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
   Widget _buildFilterButton() {
     return Container(
       height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
@@ -170,9 +170,9 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.filter_alt_outlined, color: AppTheme.primaryMagenta, size: 18),
-            const SizedBox(width: 6),
-            Text('Filter', style: GoogleFonts.outfit(color: AppTheme.textMain, fontWeight: FontWeight.bold, fontSize: 13)),
+            Icon(Icons.filter_alt_outlined, color: AppTheme.primaryMagenta, size: 18),
+            SizedBox(width: 6),
+            Text('Filter', style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 13)),
           ],
         ),
       ),
@@ -182,9 +182,9 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
   Widget _buildFilters() {
     return Column(
       children: [
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).cardTheme.color,
@@ -200,36 +200,36 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             children: [
               _filterChip('Category', selectedCategory?.name ?? 'All', () => _showCategoryPicker()),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               _filterChip('City', selectedCity ?? 'All', () => _showOptionsPicker('City', ['All', 'San Francisco', 'New York', 'London', 'Berlin', 'Tokyo'], (v) => setState(() => selectedCity = v == 'All' ? null : v))),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               _filterChip('Days Left', selectedDaysLeft ?? 'Any', () => _showOptionsPicker('Days Left', ['Any', 'Under 7 days', '7-14 days', '14+ days'], (v) => setState(() => selectedDaysLeft = v == 'Any' ? null : v))),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               _filterChip('Points', selectedPointsOrder ?? 'Any', () => _showOptionsPicker('Points', ['Any', 'Low to High', 'High to Low'], (v) => setState(() => selectedPointsOrder = v == 'Any' ? null : v))),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               _filterChip('Creator', selectedCreator ?? 'Any', () => _showTextInputDialog('Filter by Creator', (v) => setState(() => selectedCreator = v.isEmpty ? null : v))),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               TextButton(
                 onPressed: () => setState(() { selectedCategory = null; searchQuery = ''; selectedCity = null; selectedDaysLeft = null; selectedPointsOrder = null; selectedCreator = null; }),
                 child: Row(
                   children: [
-                    const Text('Reset', style: TextStyle(color: AppTheme.primaryMagenta, fontSize: 12)),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.refresh, size: 14, color: AppTheme.primaryMagenta),
+                    Text('Reset', style: TextStyle(color: AppTheme.primaryMagenta, fontSize: 12)),
+                    SizedBox(width: 4),
+                    Icon(Icons.refresh, size: 14, color: AppTheme.primaryMagenta),
                   ],
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
       ],
     );
   }
@@ -239,7 +239,7 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
     return GestureDetector(
       onTap: () => setState(() => isGridView = grid),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
           color: active ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E1E24) : const Color(0xFF22252A)) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
@@ -248,8 +248,8 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 16, color: active ? Colors.white : AppTheme.textDim.withOpacity(0.8)),
-            const SizedBox(width: 8),
-            Text(label, style: GoogleFonts.outfit(color: active ? Colors.white : AppTheme.textMain, fontWeight: FontWeight.bold, fontSize: 13)),
+            SizedBox(width: 8),
+            Text(label, style: GoogleFonts.outfit(color: active ? Colors.white : Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 13)),
           ],
         ),
       ),
@@ -260,7 +260,7 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(10),
@@ -268,9 +268,9 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
         ),
         child: Row(
           children: [
-            Text(label, style: GoogleFonts.outfit(color: AppTheme.textMain, fontSize: 13)),
-            const SizedBox(width: 6),
-            const Icon(Icons.keyboard_arrow_down, size: 16, color: AppTheme.textMain),
+            Text(label, style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
+            SizedBox(width: 6),
+            Icon(Icons.keyboard_arrow_down, size: 16, color: Theme.of(context).colorScheme.onSurface),
           ],
         ),
       ),
@@ -281,11 +281,11 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
     showModalBottomSheet(
       context: context,
       builder: (_) => Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(title: const Text('All Categories'), onTap: () { setState(() => selectedCategory = null); Navigator.pop(context); }),
+            ListTile(title: Text('All Categories'), onTap: () { setState(() => selectedCategory = null); Navigator.pop(context); }),
             ...ChallengeCategory.values.map((c) => ListTile(
               title: Text(c.name.toUpperCase()),
               onTap: () { setState(() => selectedCategory = c); Navigator.pop(context); },
@@ -298,7 +298,7 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
 
   Widget _buildGridView(List<Challenge> items) {
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
+      padding: EdgeInsets.fromLTRB(20, 0, 20, 80),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 0.75,
@@ -312,7 +312,7 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
 
   Widget _buildListView(List<Challenge> items) {
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
+      padding: EdgeInsets.fromLTRB(20, 0, 20, 80),
       itemCount: items.length,
       itemBuilder: (ctx, i) => _ChallengeCard(challenge: items[i], user: widget.user, isGrid: false),
     );
@@ -335,18 +335,18 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
       backgroundColor: Theme.of(context).cardTheme.color,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24),
+        padding: EdgeInsets.symmetric(vertical: 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: 24),
               child: Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 20)),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ...options.map((opt) => ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 24),
                   title: Text(opt, style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold)),
                   onTap: () {
                     onSelect(opt);
@@ -368,16 +368,16 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
         title: Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         content: TextField(
           controller: ctrl,
-          decoration: const InputDecoration(hintText: 'Enter name...'),
+          decoration: InputDecoration(hintText: 'Enter name...'),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('CANCEL')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('CANCEL')),
           ElevatedButton(
             onPressed: () {
               onSubmit(ctrl.text.trim());
               Navigator.pop(ctx);
             },
-            child: const Text('APPLY'),
+            child: Text('APPLY'),
           ),
         ],
       ),
@@ -423,7 +423,7 @@ class _ChallengeCard extends StatelessWidget {
                   child: Container(
                     width: 42,
                     height: 52,
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                     decoration: BoxDecoration(
                       color: AppTheme.primaryMagenta.withOpacity(0.95),
                       borderRadius: BorderRadius.circular(8),
@@ -440,7 +440,7 @@ class _ChallengeCard extends StatelessWidget {
                 Positioned(
                   bottom: 12, left: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: _getCategoryColor(challenge.category).withOpacity(0.95),
                       borderRadius: BorderRadius.circular(6),
@@ -448,7 +448,7 @@ class _ChallengeCard extends StatelessWidget {
                     child: Row(
                       children: [
                         Text(challenge.category.name.toUpperCase(), style: GoogleFonts.outfit(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4),
                         Icon(_getCategoryIcon(challenge.category), size: 12, color: Colors.white),
                       ],
                     ),
@@ -457,7 +457,7 @@ class _ChallengeCard extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -475,26 +475,26 @@ class _ChallengeCard extends StatelessWidget {
                    ),
                    if (challenge.artistName != null && challenge.artistName!.isNotEmpty)
                      Padding(
-                       padding: const EdgeInsets.only(top: 2),
+                       padding: EdgeInsets.only(top: 2),
                        child: Text('BY ${challenge.artistName!.toUpperCase()}', 
-                         style: const TextStyle(color: AppTheme.primaryMagenta, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+                         style: TextStyle(color: AppTheme.primaryMagenta, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
                      ),
-                   const SizedBox(height: 10),
+                   SizedBox(height: 10),
                    Row(
                      children: [
-                       const Icon(Icons.location_on_outlined, size: 14, color: AppTheme.textDim),
-                       const SizedBox(width: 4),
+                       Icon(Icons.location_on_outlined, size: 14, color: AppTheme.textDim),
+                       SizedBox(width: 4),
                        Text(challenge.city, style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontSize: 11)),
                        const Padding(
                          padding: EdgeInsets.symmetric(horizontal: 6),
                          child: Icon(Icons.circle, size: 3, color: AppTheme.textDim),
                        ),
-                       const Icon(Icons.access_time, size: 14, color: AppTheme.textDim),
-                       const SizedBox(width: 4),
+                       Icon(Icons.access_time, size: 14, color: AppTheme.textDim),
+                       SizedBox(width: 4),
                        Text('${challenge.daysRemaining} days left', style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontSize: 11)),
                      ],
                    ),
-                   const SizedBox(height: 16),
+                   SizedBox(height: 16),
                    Row(
                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                      children: [
@@ -503,7 +503,7 @@ class _ChallengeCard extends StatelessWidget {
                          style: GoogleFonts.spaceMono(color: AppTheme.primaryMagenta, fontSize: 10, fontWeight: FontWeight.bold)),
                      ],
                    ),
-                   const SizedBox(height: 8),
+                   SizedBox(height: 8),
                    ClipRRect(
                      borderRadius: BorderRadius.circular(100),
                      child: LinearProgressIndicator(

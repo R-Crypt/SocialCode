@@ -88,7 +88,7 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
                     Marker(
                       point: LatLng(
                           _userPosition!.latitude, _userPosition!.longitude),
-                      child: const Icon(Icons.my_location,
+                      child: Icon(Icons.my_location,
                           color: AppTheme.accentPurple, size: 28),
                     ),
                   ..._filteredReports.map(
@@ -114,7 +114,7 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
                           child: Center(
                             child: Text(
                               report.categoryEmoji,
-                              style: const TextStyle(fontSize: 20),
+                              style: TextStyle(fontSize: 20),
                             ),
                           ),
                         ),
@@ -131,10 +131,10 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   child: Container(
                     height: 52,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardTheme.color,
                       borderRadius: BorderRadius.circular(16),
@@ -142,15 +142,15 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.map, size: 20),
-                        const SizedBox(width: 12),
+                        Icon(Icons.map, size: 20),
+                        SizedBox(width: 12),
                         Text('CITY ISSUE MAP',
                             style: GoogleFonts.outfit(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 16)),
                         const Spacer(),
                         if (_loading)
-                          const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                          SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                         else
                           Text('${_filteredReports.length} ISSUES',
                               style: GoogleFonts.spaceMono(
@@ -174,7 +174,7 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
               onPressed: () => _showReportForm(),
               backgroundColor: AppTheme.primaryMagenta,
               shape: const CircleBorder(),
-              child: const Icon(Icons.add_location_alt, color: Colors.white),
+              child: Icon(Icons.add_location_alt, color: Colors.white),
             ),
           ),
           
@@ -191,7 +191,7 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
   Widget _buildCategoryFilters() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           _filterChip(null, 'ALL', '🌍'),
@@ -206,8 +206,8 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
     return GestureDetector(
       onTap: () => setState(() => _filterCategory = cat),
       child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        margin: EdgeInsets.only(right: 8),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: active ? AppTheme.primaryMagenta : Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(20),
@@ -216,8 +216,8 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 12)),
-            const SizedBox(width: 4),
+            Text(emoji, style: TextStyle(fontSize: 12)),
+            SizedBox(width: 4),
             Text(
               label,
               style: GoogleFonts.spaceMono(
@@ -272,15 +272,15 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
       context: context,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (_) => Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Text(report.categoryEmoji, style: const TextStyle(fontSize: 28)),
-                const SizedBox(width: 12),
+                Text(report.categoryEmoji, style: TextStyle(fontSize: 28)),
+                SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     report.title.toUpperCase(),
@@ -290,9 +290,9 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: _statusColor(report.status).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -303,20 +303,20 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
                       fontWeight: FontWeight.bold,
                       color: _statusColor(report.status))),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             if (report.description != null) ...[
               Text(report.description!,
                   style: GoogleFonts.inter(fontSize: 14, height: 1.5)),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
             ],
             Text('REPORTED BY ${report.userName.toUpperCase()}',
                 style: GoogleFonts.spaceMono(
                     fontSize: 10, color: AppTheme.textDim.withOpacity(0.6))),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Row(
               children: [
                 Icon(Icons.thumb_up, size: 16, color: AppTheme.textDim.withOpacity(0.6)),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Text('${report.upvotes} UPVOTES',
                     style: GoogleFonts.spaceMono(fontSize: 11)),
                 const Spacer(),
@@ -326,8 +326,8 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
                     Navigator.pop(context);
                     _loadReports();
                   },
-                  icon: const Icon(Icons.thumb_up, size: 14),
-                  label: const Text('UPVOTE'),
+                  icon: Icon(Icons.thumb_up, size: 14),
+                  label: Text('UPVOTE'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryMagenta,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -365,7 +365,7 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
               Text('REPORT AN ISSUE',
                   style: GoogleFonts.outfit(
                       fontWeight: FontWeight.w900, fontSize: 22)),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -375,9 +375,9 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
                     return GestureDetector(
                       onTap: () => setModalState(() => selectedCategory = cat),
                       child: Container(
-                        margin: const EdgeInsets.only(right: 8),
+                        margin: EdgeInsets.only(right: 8),
                         padding:
-                            const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? AppTheme.primaryMagenta
@@ -400,7 +400,7 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
                   }).toList(),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               TextField(
                 controller: titleController,
@@ -409,7 +409,7 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextField(
                 controller: descController,
                 maxLines: 2,
@@ -418,7 +418,7 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -446,7 +446,7 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
                       _loadReports();
                     }
                   },
-                  child: const Text('SUBMIT REPORT →'),
+                  child: Text('SUBMIT REPORT →'),
                 ),
               ),
             ],
@@ -466,7 +466,7 @@ class _StatsBanner extends StatelessWidget {
     final resolved = reports.where((r) => r.status == ReportStatus.resolved).length;
     final inProgress = reports.where((r) => r.status == ReportStatus.in_progress).length;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
@@ -476,9 +476,9 @@ class _StatsBanner extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _Stat('${reports.length}', 'REPORTED'),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           _Stat('$inProgress', 'ONGOING'),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           _Stat('$resolved', 'FIXED'),
         ],
       ),
@@ -501,7 +501,7 @@ class _Stat extends StatelessWidget {
                 fontSize: 16,
                 fontWeight: FontWeight.w900)),
         Text(label,
-            style: const TextStyle(
+            style: TextStyle(
                 fontSize: 7,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5)),

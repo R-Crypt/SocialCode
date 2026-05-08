@@ -40,9 +40,9 @@ class _EventsListScreenState extends State<EventsListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightBg,
+      
       appBar: AppBar(
-        backgroundColor: AppTheme.lightBg,
+        
         elevation: 0,
         title: Text('EVENTS',
             style: GoogleFonts.outfit(
@@ -62,7 +62,7 @@ class _EventsListScreenState extends State<EventsListScreen> {
                       onRefresh: _load,
                       color: AppTheme.primaryMagenta,
                       child: ListView.builder(
-                        padding: const EdgeInsets.all(20),
+                        padding: EdgeInsets.all(20),
                         itemCount: _events.length,
                         itemBuilder: (ctx, i) => _EventCard(
                           event: _events[i],
@@ -96,11 +96,11 @@ class _EventCard extends StatelessWidget {
         MaterialPageRoute(builder: (_) => EventDetailScreen(event: event, user: user)),
       ),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
-          boxShadow: const [BoxShadow(color: Color(0xFF111111), offset: Offset(4, 4))],
+          boxShadow: [BoxShadow(color: Color(0xFF111111), offset: Offset(4, 4))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +120,7 @@ class _EventCard extends StatelessWidget {
               _BannerPlaceholder(),
 
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -131,7 +131,7 @@ class _EventCard extends StatelessWidget {
                         label: event.isFree ? 'FREE' : event.priceTiers.first.formattedPrice,
                         color: event.isFree ? Colors.green : AppTheme.primaryMagenta,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       _Chip(
                         label: event.isSoldOut
                             ? 'SOLD OUT'
@@ -140,24 +140,24 @@ class _EventCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
 
                   Text(event.title.toUpperCase(),
                       style: GoogleFonts.outfit(
                           fontWeight: FontWeight.w900, fontSize: 18)),
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
 
                   Row(children: [
-                    const Icon(Icons.calendar_today, size: 12, color: AppTheme.primaryMagenta),
-                    const SizedBox(width: 4),
+                    Icon(Icons.calendar_today, size: 12, color: AppTheme.primaryMagenta),
+                    SizedBox(width: 4),
                     Text(dateStr,
                         style: GoogleFonts.spaceMono(
                             fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
                   ]),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Row(children: [
-                    const Icon(Icons.location_on, size: 12, color: AppTheme.primaryMagenta),
-                    const SizedBox(width: 4),
+                    Icon(Icons.location_on, size: 12, color: AppTheme.primaryMagenta),
+                    SizedBox(width: 4),
                     Expanded(
                       child: Text(event.location,
                           style: GoogleFonts.spaceMono(
@@ -167,7 +167,7 @@ class _EventCard extends StatelessWidget {
                   ]),
 
                   if (event.description != null) ...[
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Text(event.description!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -175,7 +175,7 @@ class _EventCard extends StatelessWidget {
                             fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
                   ],
 
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14),
                   SizedBox(
                     width: double.infinity,
                     height: 44,
@@ -215,7 +215,7 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       color: color,
       child: Text(label,
           style: GoogleFonts.spaceMono(
@@ -244,10 +244,10 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 40, color: Colors.red),
-            const SizedBox(height: 8),
+            Icon(Icons.error_outline, size: 40, color: Colors.red),
+            SizedBox(height: 8),
             Text('Failed to load events', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-            TextButton(onPressed: onRetry, child: const Text('RETRY')),
+            TextButton(onPressed: onRetry, child: Text('RETRY')),
           ],
         ),
       );
@@ -260,10 +260,10 @@ class _EmptyView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.event_busy, size: 56, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.15)),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text('NO EVENTS YET',
                 style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 18)),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text('Check back soon.',
                 style: GoogleFonts.spaceMono(
                     fontSize: 11, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4))),

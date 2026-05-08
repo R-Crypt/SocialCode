@@ -112,25 +112,25 @@ class _AdminPanelState extends State<AdminPanel> {
               children: [
                 Text(existing == null ? 'CREATE CHALLENGE' : 'EDIT CHALLENGE',
                     style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 22)),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 ChallengeImagePicker(
                   initialImageUrl: existing?.imageUrl,
                   onUploaded: (url) => selectedImageUrl = url,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 _FormField(controller: titleCtrl, label: 'CHALLENGE TITLE'),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _FormField(controller: artistCtrl, label: 'ARTIST / CREATOR NAME'),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _FormField(controller: descCtrl, label: 'DESCRIPTION', maxLines: 2),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _FormField(controller: briefingCtrl, label: 'MISSION BRIEFING', maxLines: 3),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 Text('CATEGORY', style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -139,8 +139,8 @@ class _AdminPanelState extends State<AdminPanel> {
                       return GestureDetector(
                         onTap: () => setModal(() => selectedCategory = cat),
                         child: Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          margin: EdgeInsets.only(right: 8),
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
                             color: isSelected ? AppTheme.primaryMagenta : Theme.of(context).cardTheme.color,
                             borderRadius: BorderRadius.circular(12),
@@ -153,18 +153,18 @@ class _AdminPanelState extends State<AdminPanel> {
                     }).toList(),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 Row(
                   children: [
                     Expanded(child: _FormField(controller: pointsCtrl, label: 'POINTS', keyboardType: TextInputType.number)),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(child: _FormField(controller: targetCtrl, label: 'TARGET', keyboardType: TextInputType.number)),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _FormField(controller: cityCtrl, label: 'CITY'),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 SizedBox(
                   width: double.infinity,
@@ -241,7 +241,7 @@ class _AdminPanelState extends State<AdminPanel> {
                 child: SingleChildScrollView(
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -254,38 +254,38 @@ class _AdminPanelState extends State<AdminPanel> {
                               fontSize: 10,
                               color: AppTheme.textDim,
                               fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 28),
+                      SizedBox(height: 28),
 
                       // Metrics grid
                       _buildMetricsGrid(),
-                      const SizedBox(height: 36),
+                      SizedBox(height: 36),
 
                       _buildPendingIssuesBox(),
-                      const SizedBox(height: 36),
+                      SizedBox(height: 36),
 
                       _buildResolvedIssuesBox(),
-                      const SizedBox(height: 36),
+                      SizedBox(height: 36),
 
                       _buildPendingReviewsBox(),
-                      const SizedBox(height: 36),
+                      SizedBox(height: 36),
 
                       _buildChallengesSection(),
-                      const SizedBox(height: 36),
+                      SizedBox(height: 36),
 
                       Text('ROLE MANAGEMENT',
                           style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       const _RoleAssignmentSection(),
 
-                      const SizedBox(height: 36),
+                      SizedBox(height: 36),
                       _AdminEventsSection(user: widget.user),
 
-                      const SizedBox(height: 36),
+                      SizedBox(height: 36),
                       Text('DATA & INSIGHTS',
                           style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       const _AdminDataExport(),
-                      const SizedBox(height: 80),
+                      SizedBox(height: 80),
                     ],
                   ),
                 ),
@@ -370,9 +370,9 @@ class _AdminPanelState extends State<AdminPanel> {
             Text('${_pendingIssues.length} TOTAL', style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.red)),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(20),
@@ -384,15 +384,15 @@ class _AdminPanelState extends State<AdminPanel> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _pendingIssues.length.clamp(0, 5),
-                separatorBuilder: (_, __) => const Divider(),
+                separatorBuilder: (_, __) => Divider(),
                 itemBuilder: (ctx, i) {
                   final issue = _pendingIssues[i];
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: Text(issue.categoryEmoji, style: const TextStyle(fontSize: 20)),
-                    title: Text(issue.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                    subtitle: Text('By ${issue.userName} · ${issue.locationName ?? "Unknown location"}', style: const TextStyle(fontSize: 11)),
-                    trailing: const Icon(Icons.chevron_right, size: 16),
+                    leading: Text(issue.categoryEmoji, style: TextStyle(fontSize: 20)),
+                    title: Text(issue.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    subtitle: Text('By ${issue.userName} · ${issue.locationName ?? "Unknown location"}', style: TextStyle(fontSize: 11)),
+                    trailing: Icon(Icons.chevron_right, size: 16),
                     onTap: () => _showIssueDetails(issue),
                   );
                 },
@@ -413,9 +413,9 @@ class _AdminPanelState extends State<AdminPanel> {
             Text('${_resolvedIssues.length} TOTAL', style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.green)),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(20),
@@ -427,15 +427,15 @@ class _AdminPanelState extends State<AdminPanel> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _resolvedIssues.length.clamp(0, 5),
-                separatorBuilder: (_, __) => const Divider(),
+                separatorBuilder: (_, __) => Divider(),
                 itemBuilder: (ctx, i) {
                   final issue = _resolvedIssues[i];
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: Text(issue.categoryEmoji, style: const TextStyle(fontSize: 20)),
-                    title: Text(issue.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                    subtitle: Text('By ${issue.userName} · ${issue.locationName ?? "Unknown location"}', style: const TextStyle(fontSize: 11)),
-                    trailing: const Icon(Icons.chevron_right, size: 16),
+                    leading: Text(issue.categoryEmoji, style: TextStyle(fontSize: 20)),
+                    title: Text(issue.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    subtitle: Text('By ${issue.userName} · ${issue.locationName ?? "Unknown location"}', style: TextStyle(fontSize: 11)),
+                    trailing: Icon(Icons.chevron_right, size: 16),
                     onTap: () => _showIssueDetails(issue),
                   );
                 },
@@ -451,29 +451,29 @@ class _AdminPanelState extends State<AdminPanel> {
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Text(issue.categoryEmoji, style: const TextStyle(fontSize: 28)),
-                const SizedBox(width: 12),
+                Text(issue.categoryEmoji, style: TextStyle(fontSize: 28)),
+                SizedBox(width: 12),
                 Expanded(child: Text(issue.title, style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 20))),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _detailRow('Status', issue.statusLabel, color: issue.status == ReportStatus.resolved ? Colors.green : Colors.orange),
             _detailRow('Reporter', issue.userName),
             _detailRow('Location', issue.locationName ?? 'Not specified'),
             _detailRow('Coordinates', '${issue.latitude}, ${issue.longitude}'),
             if (issue.description != null) ...[
-              const SizedBox(height: 12),
-              const Text('Description', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-              Text(issue.description!, style: const TextStyle(fontSize: 13, height: 1.5)),
+              SizedBox(height: 12),
+              Text('Description', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+              Text(issue.description!, style: TextStyle(fontSize: 13, height: 1.5)),
             ],
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Row(
               children: [
                 if (issue.status != ReportStatus.resolved)
@@ -485,7 +485,7 @@ class _AdminPanelState extends State<AdminPanel> {
                         _loadData();
                       },
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                      child: const Text('MARK RESOLVED'),
+                      child: Text('MARK RESOLVED'),
                     ),
                   )
                 else
@@ -496,10 +496,10 @@ class _AdminPanelState extends State<AdminPanel> {
                         Navigator.pop(ctx);
                         _loadData();
                       },
-                      child: const Text('MOVE TO PENDING'),
+                      child: Text('MOVE TO PENDING'),
                     ),
                   ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 if (issue.status != ReportStatus.resolved)
                   Expanded(
                     child: OutlinedButton(
@@ -508,15 +508,15 @@ class _AdminPanelState extends State<AdminPanel> {
                         Navigator.pop(ctx);
                         _loadData();
                       },
-                      style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red)),
-                      child: const Text('REJECT', style: TextStyle(color: Colors.red)),
+                      style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.red)),
+                      child: Text('REJECT', style: TextStyle(color: Colors.red)),
                     ),
                   )
                 else
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(ctx),
-                      child: const Text('CLOSE'),
+                      child: Text('CLOSE'),
                     ),
                   ),
               ],
@@ -529,10 +529,10 @@ class _AdminPanelState extends State<AdminPanel> {
 
   Widget _detailRow(String label, String value, {Color? color}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Text('$label: ', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textDim)),
+          Text('$label: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textDim)),
           Text(value, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color)),
         ],
       ),
@@ -550,9 +550,9 @@ class _AdminPanelState extends State<AdminPanel> {
             Text('${_pendingReviews.length} WAITING', style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.orange)),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         if (_pendingReviews.isEmpty)
-          const Text('No submissions to review.')
+          Text('No submissions to review.')
         else
           ListView.builder(
             shrinkWrap: true,
@@ -576,10 +576,10 @@ class _AdminPanelState extends State<AdminPanel> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('ACTIVE CHALLENGES', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
-            IconButton(icon: const Icon(Icons.add_circle, color: AppTheme.primaryMagenta), onPressed: () => _showCreateForm(context)),
+            IconButton(icon: Icon(Icons.add_circle, color: AppTheme.primaryMagenta), onPressed: () => _showCreateForm(context)),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         ..._activeChallenges.map((c) => _AdminChallengeItem(
           challenge: c,
           onEdit: () => _showCreateForm(context, existing: c),
@@ -619,12 +619,12 @@ class _AdminPanelState extends State<AdminPanel> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(c.title.toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 24)),
-              const SizedBox(height: 8),
-              Text('Artist / Creator: ${c.artistName ?? "Unknown"}', style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta)),
-              const SizedBox(height: 20),
+              SizedBox(height: 8),
+              Text('Artist / Creator: ${c.artistName ?? "Unknown"}', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta)),
+              SizedBox(height: 20),
               
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardTheme.color,
                   borderRadius: BorderRadius.circular(16),
@@ -641,26 +641,26 @@ class _AdminPanelState extends State<AdminPanel> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               if (c.description != null && c.description!.isNotEmpty) ...[
-                const Text('DESCRIPTION', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
-                const SizedBox(height: 6),
+                Text('DESCRIPTION', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
+                SizedBox(height: 6),
                 Text(c.description!, style: GoogleFonts.inter(fontSize: 13, height: 1.5)),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
               ],
               
               if (c.missionBriefing.isNotEmpty) ...[
-                const Text('MISSION BRIEFING', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
-                const SizedBox(height: 6),
+                Text('MISSION BRIEFING', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
+                SizedBox(height: 6),
                 Text(c.missionBriefing, style: GoogleFonts.inter(fontSize: 13, height: 1.5)),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
               ],
 
-              const Text('TOP CONTRIBUTORS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
-              const SizedBox(height: 12),
+              Text('TOP CONTRIBUTORS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
+              SizedBox(height: 12),
               if (sortedUids.isEmpty)
-                const Text('No approved submissions yet.', style: TextStyle(fontSize: 13))
+                Text('No approved submissions yet.', style: TextStyle(fontSize: 13))
               else
                 Container(
                   decoration: BoxDecoration(
@@ -678,19 +678,19 @@ class _AdminPanelState extends State<AdminPanel> {
                       return ListTile(
                         leading: CircleAvatar(
                           backgroundColor: AppTheme.primaryMagenta.withOpacity(0.1),
-                          child: Text('${i+1}', style: const TextStyle(color: AppTheme.primaryMagenta, fontWeight: FontWeight.bold)),
+                          child: Text('${i+1}', style: TextStyle(color: AppTheme.primaryMagenta, fontWeight: FontWeight.bold)),
                         ),
-                        title: Text(names[uid]!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                        trailing: Text('${counts[uid]} subs', style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta, fontSize: 13)),
+                        title: Text(names[uid]!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        trailing: Text('${counts[uid]} subs', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta, fontSize: 13)),
                       );
                     },
                   ),
                 ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
                 height: 50,
-                child: ElevatedButton(onPressed: () => Navigator.pop(ctx), child: const Text('CLOSE')),
+                child: ElevatedButton(onPressed: () => Navigator.pop(ctx), child: Text('CLOSE')),
               ),
             ],
           ),
@@ -727,7 +727,7 @@ class _MetricCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Theme.of(context).cardTheme.color,
           border: Border.all(color: color.withOpacity(0.4), width: 1.5),
@@ -775,9 +775,9 @@ class _VerificationItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         child: Column(
           children: [
             Row(
@@ -785,26 +785,26 @@ class _VerificationItem extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(submission.imageUrl, width: 60, height: 60, fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const Icon(Icons.image, size: 40)),
+                    errorBuilder: (_, __, ___) => Icon(Icons.image, size: 40)),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('BY ${submission.userName.toUpperCase()}', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13)),
-                      if (submission.caption != null) Text(submission.caption!, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AppTheme.textDim)),
+                      Text('BY ${submission.userName.toUpperCase()}', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13)),
+                      if (submission.caption != null) Text(submission.caption!, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: AppTheme.textDim)),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Row(
               children: [
-                Expanded(child: OutlinedButton(onPressed: onReject, child: const Text('REJECT', style: TextStyle(fontSize: 11)))),
-                const SizedBox(width: 8),
-                Expanded(child: ElevatedButton(onPressed: onApprove, child: const Text('APPROVE', style: TextStyle(fontSize: 11)))),
+                Expanded(child: OutlinedButton(onPressed: onReject, child: Text('REJECT', style: TextStyle(fontSize: 11)))),
+                SizedBox(width: 8),
+                Expanded(child: ElevatedButton(onPressed: onApprove, child: Text('APPROVE', style: TextStyle(fontSize: 11)))),
               ],
             ),
           ],
@@ -824,12 +824,12 @@ class _AdminChallengeItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12),
       child: ListTile(
         onTap: onTap,
-        title: Text(challenge.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text('Artist: ${challenge.artistName ?? "Unknown"} · ${challenge.city}', style: const TextStyle(fontSize: 11)),
-        trailing: onEdit != null ? IconButton(icon: const Icon(Icons.edit, size: 20), onPressed: onEdit) : null,
+        title: Text(challenge.title, style: TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text('Artist: ${challenge.artistName ?? "Unknown"} · ${challenge.city}', style: TextStyle(fontSize: 11)),
+        trailing: onEdit != null ? IconButton(icon: Icon(Icons.edit, size: 20), onPressed: onEdit) : null,
       ),
     );
   }
@@ -857,7 +857,7 @@ class _AdminDataExport extends StatelessWidget {
     return Column(
       children: [
         _expBtn(context, 'DOWNLOAD CITIZEN PROFILES', Icons.people, 'profiles'),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         _expBtn(context, 'DOWNLOAD ALL CHALLENGES', Icons.flash_on, 'challenges'),
       ],
     );
@@ -869,7 +869,7 @@ class _AdminDataExport extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: () => _exportData(context, table),
         icon: Icon(icon, size: 16),
-        label: Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+        label: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -890,20 +890,20 @@ class _RoleAssignmentSectionState extends State<_RoleAssignmentSection> {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(controller: _emailCtrl, decoration: const InputDecoration(labelText: 'Email Address')),
-            const SizedBox(height: 12),
+            TextField(controller: _emailCtrl, decoration: InputDecoration(labelText: 'Email Address')),
+            SizedBox(height: 12),
             DropdownButtonFormField<UserRole>(
               value: _selectedRole,
-              items: const [
+              items: [
                 DropdownMenuItem(value: UserRole.admin, child: Text('ADMIN')),
                 DropdownMenuItem(value: UserRole.creator, child: Text('CREATOR')),
               ],
               onChanged: (v) => setState(() => _selectedRole = v!),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -917,7 +917,7 @@ class _RoleAssignmentSectionState extends State<_RoleAssignmentSection> {
                   }
                   setState(() => _isLoading = false);
                 },
-                child: const Text('ASSIGN ROLE'),
+                child: Text('ASSIGN ROLE'),
               ),
             ),
           ],
@@ -974,23 +974,23 @@ class _AdminEventsSectionState extends State<_AdminEventsSection> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('EVENTS', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
-            IconButton(icon: const Icon(Icons.add_circle, color: AppTheme.primaryMagenta), 
+            IconButton(icon: Icon(Icons.add_circle, color: AppTheme.primaryMagenta), 
               onPressed: () => showModalBottomSheet(context: context, isScrollControlled: true, 
                 shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
                 builder: (_) => _EventForm(user: widget.user, onSaved: _load))),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         if (_loading) const Center(child: CircularProgressIndicator())
         else ..._events.map((e) => Card(
           child: ListTile(
-            title: Text(e.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(e.title, style: TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Text('${e.location} · ${e.slotsSold}/${e.totalSlots} slots'),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit, size: 20),
+                  icon: Icon(Icons.edit, size: 20),
                   onPressed: () => showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
@@ -999,19 +999,19 @@ class _AdminEventsSectionState extends State<_AdminEventsSection> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                  icon: Icon(Icons.delete, color: Colors.red, size: 20),
                   onPressed: () async {
                     final confirm = await showDialog<bool>(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        title: const Text('Delete Event?'),
-                        content: const Text('This action cannot be undone.'),
+                        title: Text('Delete Event?'),
+                        content: Text('This action cannot be undone.'),
                         actions: [
-                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('CANCEL')),
+                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('CANCEL')),
                           ElevatedButton(
                             onPressed: () => Navigator.pop(ctx, true),
                             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                            child: const Text('DELETE', style: TextStyle(color: Colors.white)),
+                            child: Text('DELETE', style: TextStyle(color: Colors.white)),
                           ),
                         ],
                       ),
@@ -1019,7 +1019,7 @@ class _AdminEventsSectionState extends State<_AdminEventsSection> {
                     if (confirm == true) _deleteEvent(e.id);
                   },
                 ),
-                IconButton(icon: const Icon(Icons.qr_code_scanner, size: 20), 
+                IconButton(icon: Icon(Icons.qr_code_scanner, size: 20), 
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => GateCheckScreen(user: widget.user)))),
               ],
             ),
@@ -1086,13 +1086,13 @@ class _EventFormState extends State<_EventForm> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: labelCtrl, decoration: const InputDecoration(labelText: 'Tier Name (e.g. VIP)')),
-            const SizedBox(height: 12),
-            TextField(controller: priceCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Price (INR)')),
+            TextField(controller: labelCtrl, decoration: InputDecoration(labelText: 'Tier Name (e.g. VIP)')),
+            SizedBox(height: 12),
+            TextField(controller: priceCtrl, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: 'Price (INR)')),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('CANCEL')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('CANCEL')),
           ElevatedButton(
             onPressed: () {
               final priceInr = double.tryParse(priceCtrl.text) ?? 0;
@@ -1101,7 +1101,7 @@ class _EventFormState extends State<_EventForm> {
               });
               Navigator.pop(ctx);
             },
-            child: const Text('ADD'),
+            child: Text('ADD'),
           ),
         ],
       ),
@@ -1116,52 +1116,52 @@ class _EventFormState extends State<_EventForm> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('EVENT DETAILS', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 22)),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           _FormField(controller: _titleCtrl, label: 'TITLE'),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _FormField(controller: _descCtrl, label: 'DESCRIPTION', maxLines: 3),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Expanded(child: _FormField(controller: _locationCtrl, label: 'LOCATION')),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(child: _FormField(controller: _slotsCtrl, label: 'SLOTS', keyboardType: TextInputType.number)),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('DATE: ${DateFormat('MMM d, yyyy').format(_date)}', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 12)),
-              TextButton(onPressed: _pickDate, child: const Text('CHANGE')),
+              TextButton(onPressed: _pickDate, child: Text('CHANGE')),
             ],
           ),
-          const Divider(height: 24),
+          Divider(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('PRICE TIERS', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 12)),
-              TextButton(onPressed: _addTier, child: const Text('+ ADD TIER')),
+              TextButton(onPressed: _addTier, child: Text('+ ADD TIER')),
             ],
           ),
           ..._tiers.asMap().entries.map((e) => ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: Text(e.value.label, style: const TextStyle(fontWeight: FontWeight.bold)),
+                title: Text(e.value.label, style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(e.value.formattedPrice),
                 trailing: IconButton(
-                  icon: const Icon(Icons.remove_circle, color: Colors.red, size: 20),
+                  icon: Icon(Icons.remove_circle, color: Colors.red, size: 20),
                   onPressed: () => setState(() => _tiers.removeAt(e.key)),
                 ),
               )),
-          const Divider(height: 24),
-          const Text('MEDIA UPLOAD', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
+          Divider(height: 24),
+          Text('MEDIA UPLOAD', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+          SizedBox(height: 8),
           ChallengeImagePicker(
             initialImageUrl: _selectedImageUrl,
             onUploaded: (url) => _selectedImageUrl = url,
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -1221,7 +1221,7 @@ class _FormField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: GoogleFonts.spaceMono(fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta)),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         TextField(
           controller: controller, 
           maxLines: maxLines, 
@@ -1230,11 +1230,11 @@ class _FormField extends StatelessWidget {
           decoration: InputDecoration(
             filled: true,
             fillColor: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.02),
-            enabledBorder: const OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.zero,
-              borderSide: BorderSide(color: AppTheme.textMain, width: 2),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
             ),
-            focusedBorder: const OutlineInputBorder(
+            focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.zero,
               borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
             ),

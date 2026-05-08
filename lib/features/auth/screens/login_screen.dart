@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightBg,
+      
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthFailure) {
@@ -82,24 +82,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SocialCodeLogo(fontSize: 56),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           'GOOD IS THE NEW FLEX.',
                           style: GoogleFonts.spaceMono(
                             fontSize: 13,
                             fontWeight: FontWeight.w900,
-                            color: AppTheme.textMain.withOpacity(0.4),
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                             letterSpacing: 1.2,
                           ),
                         ),
-                        const SizedBox(height: 48),
+                        SizedBox(height: 48),
 
                         // Card
                         Container(
-                          padding: const EdgeInsets.all(24),
+                          padding: EdgeInsets.all(24),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            border: Border.all(color: AppTheme.textMain, width: 2.5),
+                            border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2.5),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     isActive: !_isSignUp,
                                     onTap: () => setState(() => _isSignUp = false),
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   _TabButton(
                                     label: 'JOIN',
                                     isActive: _isSignUp,
@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 28),
+                              SizedBox(height: 28),
 
                               // Name field (sign up only)
                               AnimatedSize(
@@ -133,10 +133,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                             label: 'YOUR NAME',
                                             hint: 'DISPLAY NAME',
                                           ),
-                                          const SizedBox(height: 20),
+                                          SizedBox(height: 20),
                                         ],
                                       )
-                                    : const SizedBox.shrink(),
+                                    : SizedBox.shrink(),
                               ),
 
                               _BrutalistField(
@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hint: 'YOUR@EMAIL.COM',
                                 keyboardType: TextInputType.emailAddress,
                               ),
-                              const SizedBox(height: 20),
+                              SizedBox(height: 20),
                               _BrutalistField(
                                 controller: _passwordController,
                                 label: 'PASSWORD',
@@ -156,14 +156,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                     _obscurePassword
                                         ? Icons.visibility_off
                                         : Icons.visibility,
-                                    color: AppTheme.textMain.withOpacity(0.4),
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                                     size: 20,
                                   ),
                                   onPressed: () => setState(
                                       () => _obscurePassword = !_obscurePassword),
                                 ),
                               ),
-                              const SizedBox(height: 32),
+                              SizedBox(height: 32),
 
                               // Submit button
                               BlocBuilder<AuthBloc, AuthState>(
@@ -174,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: ElevatedButton(
                                       onPressed: state is AuthLoading ? null : _submit,
                                       child: state is AuthLoading
-                                          ? const SizedBox(
+                                          ? SizedBox(
                                               width: 20,
                                               height: 20,
                                               child: CircularProgressIndicator(
@@ -192,9 +192,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                               ),
 
-                              const SizedBox(height: 20),
+                              SizedBox(height: 20),
                               const _Divider(label: 'OR'),
-                              const SizedBox(height: 20),
+                              SizedBox(height: 20),
 
                               // Google Sign In
                               BlocBuilder<AuthBloc, AuthState>(
@@ -213,19 +213,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                         width: 20,
                                         height: 20,
                                         errorBuilder: (_, __, ___) =>
-                                            const Icon(Icons.g_mobiledata, size: 20),
+                                            Icon(Icons.g_mobiledata, size: 20),
                                       ),
                                       label: Text(
                                         'CONTINUE WITH GOOGLE',
                                         style: GoogleFonts.spaceMono(
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
-                                          color: AppTheme.textMain,
+                                          color: Theme.of(context).colorScheme.onSurface,
                                         ),
                                       ),
                                       style: OutlinedButton.styleFrom(
-                                        side: const BorderSide(
-                                            color: AppTheme.textMain, width: 2),
+                                        side: BorderSide(
+                                            color: Theme.of(context).colorScheme.onSurface, width: 2),
                                         shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.zero),
                                       ),
@@ -260,17 +260,17 @@ class _TabButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? AppTheme.textMain : Colors.transparent,
-          border: Border.all(color: AppTheme.textMain, width: 2),
+          color: isActive ? Theme.of(context).colorScheme.onSurface : Colors.transparent,
+          border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
         ),
         child: Text(
           label,
           style: GoogleFonts.spaceMono(
             fontWeight: FontWeight.w900,
             fontSize: 12,
-            color: isActive ? Colors.white : AppTheme.textMain,
+            color: isActive ? Colors.white : Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
@@ -305,32 +305,32 @@ class _BrutalistField extends StatelessWidget {
           style: GoogleFonts.spaceMono(
             fontSize: 11,
             fontWeight: FontWeight.w900,
-            color: AppTheme.textMain,
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: 1.5,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         TextField(
           controller: controller,
           obscureText: isObscure,
           keyboardType: keyboardType,
-          style: GoogleFonts.spaceMono(color: AppTheme.textMain, fontSize: 14),
+          style: GoogleFonts.spaceMono(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: AppTheme.textMain.withOpacity(0.2)),
+            hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
             filled: true,
             fillColor: Colors.white,
             suffixIcon: suffixIcon,
-            enabledBorder: const OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.zero,
-              borderSide: BorderSide(color: AppTheme.textMain, width: 2),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
             ),
-            focusedBorder: const OutlineInputBorder(
+            focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.zero,
               borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
             ),
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
         ),
       ],
@@ -346,19 +346,19 @@ class _Divider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Expanded(child: Divider(color: AppTheme.textMain, thickness: 1)),
+        Expanded(child: Divider(color: Theme.of(context).colorScheme.onSurface, thickness: 1)),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12),
           child: Text(
             label,
             style: GoogleFonts.spaceMono(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textMain.withOpacity(0.4),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
             ),
           ),
         ),
-        const Expanded(child: Divider(color: AppTheme.textMain, thickness: 1)),
+        Expanded(child: Divider(color: Theme.of(context).colorScheme.onSurface, thickness: 1)),
       ],
     );
   }

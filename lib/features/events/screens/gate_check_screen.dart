@@ -98,9 +98,9 @@ class _GateCheckScreenState extends State<GateCheckScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.textMain,
+      backgroundColor: Theme.of(context).colorScheme.onSurface,
       appBar: AppBar(
-        backgroundColor: AppTheme.textMain,
+        backgroundColor: Theme.of(context).colorScheme.onSurface,
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           'GATE CHECK',
@@ -116,8 +116,8 @@ class _GateCheckScreenState extends State<GateCheckScreen>
         children: [
           // ── Top: Title ──────────────────────────────────────
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            color: AppTheme.textMain,
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            color: Theme.of(context).colorScheme.onSurface,
             width: double.infinity,
             child: Text(
               'SCAN TICKET QR',
@@ -146,7 +146,7 @@ class _GateCheckScreenState extends State<GateCheckScreen>
 
           // ── Bottom: Recent scans counter ─────────────────────────────────
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             color: Colors.white10,
             child: Text(
               'LOGGED IN AS: ${widget.user.displayName.toUpperCase()}  •  ROLE: ${widget.user.role.name.toUpperCase()}',
@@ -178,35 +178,35 @@ class _ResultView extends StatelessWidget {
     return Container(
       width: double.infinity,
       color: bgColor,
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 96, color: accentColor),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           Text(
             headline,
             style: GoogleFonts.outfit(
                 fontWeight: FontWeight.w900, fontSize: 32, color: accentColor),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             result.message,
             textAlign: TextAlign.center,
             style: GoogleFonts.spaceMono(fontSize: 12, color: Colors.white70),
           ),
           if (result.attendeeName != null) ...[
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             _ResultRow('ATTENDEE', result.attendeeName!),
           ],
           if (result.eventTitle != null) _ResultRow('EVENT', result.eventTitle!),
           if (result.tierLabel != null) _ResultRow('TIER', result.tierLabel!),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           Text(
             DateFormat('HH:mm:ss · d MMM yyyy').format(DateTime.now()),
             style: GoogleFonts.spaceMono(fontSize: 10, color: Colors.white38),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
           ElevatedButton(
             onPressed: () {
                // Reset to allow scanning again
@@ -217,7 +217,7 @@ class _ResultView extends StatelessWidget {
               backgroundColor: Colors.white,
               foregroundColor: Colors.black,
             ),
-            child: const Text('SCAN NEXT TICKET'),
+            child: Text('SCAN NEXT TICKET'),
           ),
         ],
       ),
@@ -231,7 +231,7 @@ class _ResultRow extends StatelessWidget {
   const _ResultRow(this.label, this.value);
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: EdgeInsets.symmetric(vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

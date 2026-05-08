@@ -58,14 +58,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightBg,
+      
       appBar: AppBar(
-        backgroundColor: AppTheme.lightBg,
+        
         title: Text(
           'USER DIRECTORY',
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.w900,
-            color: AppTheme.textMain,
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: 1.0,
           ),
         ),
@@ -78,7 +78,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               children: [
                 // Custom brutalist tabs
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   child: Row(
                     children: [
                       Expanded(
@@ -91,7 +91,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                   ? AppTheme.primaryMagenta
                                   : Colors.white,
                               border: Border.all(
-                                  color: AppTheme.textMain, width: 2),
+                                  color: Theme.of(context).colorScheme.onSurface, width: 2),
                             ),
                             alignment: Alignment.center,
                             child: Text(
@@ -100,13 +100,13 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: _tabIndex == 0
                                     ? Colors.white
-                                    : AppTheme.textMain,
+                                    : Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: GestureDetector(
                           onTap: () => setState(() => _tabIndex = 1),
@@ -117,7 +117,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                   ? AppTheme.accentPurple
                                   : Colors.white,
                               border: Border.all(
-                                  color: AppTheme.textMain, width: 2),
+                                  color: Theme.of(context).colorScheme.onSurface, width: 2),
                             ),
                             alignment: Alignment.center,
                             child: Text(
@@ -126,7 +126,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: _tabIndex == 1
                                     ? Colors.white
-                                    : AppTheme.textMain,
+                                    : Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -141,7 +141,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   child: RefreshIndicator(
                     onRefresh: _loadUsers,
                     child: ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                      padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
                       itemCount: _tabIndex == 0
                           ? _citizens.length
                           : _creators.length,
@@ -166,12 +166,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                             );
                           },
                           child: Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(16),
+                            margin: EdgeInsets.only(bottom: 12),
+                            padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
-                                  color: AppTheme.textMain, width: 2),
+                                  color: Theme.of(context).colorScheme.onSurface, width: 2),
                             ),
                             child: Row(
                               children: [
@@ -193,7 +193,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                       )
                                     : null,
                               ),
-                              const SizedBox(width: 16),
+                              SizedBox(width: 16),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,23 +209,23 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                       email,
                                       style: TextStyle(
                                           fontSize: 12,
-                                          color: AppTheme.textMain
+                                          color: Theme.of(context).colorScheme.onSurface
                                               .withOpacity(0.5)),
                                     ),
-                                    const SizedBox(height: 4),
+                                    SizedBox(height: 4),
                                     Row(
                                       children: [
                                         Icon(Icons.location_on,
                                             size: 12,
-                                            color: AppTheme.textMain
+                                            color: Theme.of(context).colorScheme.onSurface
                                                 .withOpacity(0.5)),
-                                        const SizedBox(width: 4),
+                                        SizedBox(width: 4),
                                         Text(
                                           region,
                                           style: GoogleFonts.spaceMono(
                                               fontSize: 10,
                                               fontWeight: FontWeight.bold,
-                                              color: AppTheme.textMain
+                                              color: Theme.of(context).colorScheme.onSurface
                                                   .withOpacity(0.5)),
                                         ),
                                       ],

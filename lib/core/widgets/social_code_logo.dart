@@ -59,13 +59,13 @@ class SocialCodeLogo extends StatelessWidget {
           ],
         ),
         if (showTagline) ...[
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             'GOOD IS THE NEW FLEX',
             style: GoogleFonts.spaceMono(
               fontSize: fontSize * 0.3,
               fontWeight: FontWeight.bold,
-              color: (Theme.of(context).brightness == Brightness.dark ? Colors.white : AppTheme.textMain).withOpacity(0.5),
+              color: (Theme.of(context).brightness == Brightness.dark ? Colors.white : Theme.of(context).colorScheme.onSurface).withOpacity(0.5),
               letterSpacing: 1.0,
             ),
           ),

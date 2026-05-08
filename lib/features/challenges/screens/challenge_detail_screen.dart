@@ -58,14 +58,14 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
   Widget build(BuildContext context) {
     final challenge = widget.challenge;
     return Scaffold(
-      backgroundColor: AppTheme.lightBg,
+      
       body: CustomScrollView(
         slivers: [
           // Hero
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
-            backgroundColor: AppTheme.textMain,
+            backgroundColor: Theme.of(context).colorScheme.onSurface,
             iconTheme: const IconThemeData(color: Colors.white),
             flexibleSpace: FlexibleSpaceBar(
               background: challenge.imageUrl != null
@@ -79,13 +79,13 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         fit: BoxFit.cover,
                       ),
                     )
-                  : Container(color: AppTheme.textMain),
+                  : Container(color: Theme.of(context).colorScheme.onSurface),
             ),
           ),
 
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -94,11 +94,11 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     spacing: 8,
                     children: [
                       _Tag('${challenge.pointsReward} POINTS', AppTheme.primaryMagenta),
-                      _Tag('${challenge.daysRemaining} DAYS LEFT', AppTheme.textMain),
+                      _Tag('${challenge.daysRemaining} DAYS LEFT', Theme.of(context).colorScheme.onSurface),
                       _Tag(challenge.city.toUpperCase(), AppTheme.accentPurple),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   Text(
                     challenge.title.toUpperCase(),
@@ -106,12 +106,12 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                       fontSize: 32,
                       fontWeight: FontWeight.w900,
                       height: 0.95,
-                      color: AppTheme.textMain,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   if (challenge.artistName != null && challenge.artistName!.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
+                      padding: EdgeInsets.only(bottom: 4),
                       child: Text(
                         'ARTIST: ${challenge.artistName!.toUpperCase()}',
                         style: GoogleFonts.spaceMono(
@@ -125,17 +125,17 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     'BY ${challenge.creatorName.toUpperCase()}',
                     style: GoogleFonts.spaceMono(
                       fontSize: 10,
-                      color: AppTheme.textMain.withOpacity(0.4),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Progress
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppTheme.textMain, width: 2),
+                      border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
                       color: Colors.white,
                     ),
                     child: Column(
@@ -148,7 +148,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                                 style: GoogleFonts.spaceMono(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: AppTheme.textMain.withOpacity(0.5))),
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
                             Text(
                               '${challenge.currentCount} / ${challenge.targetCount}',
                               style: GoogleFonts.outfit(
@@ -158,26 +158,26 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         LinearProgressIndicator(
                           value: challenge.progressPercent,
                           minHeight: 8,
-                          backgroundColor: AppTheme.textMain.withOpacity(0.1),
+                          backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
                           valueColor:
                               const AlwaysStoppedAnimation(AppTheme.primaryMagenta),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         Text(
                           '$_participants CITIZENS JOINED',
                           style: GoogleFonts.spaceMono(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.textMain.withOpacity(0.6)),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Mission briefing
                   Text(
@@ -189,18 +189,18 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                       color: AppTheme.accentPurple,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   Text(
                     challenge.missionBriefing.isNotEmpty
                         ? challenge.missionBriefing
                         : challenge.description,
                     style: GoogleFonts.inter(
                       fontSize: 15,
-                      color: AppTheme.textMain.withOpacity(0.8),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                       height: 1.6,
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40),
 
                   // Actions
                   if (!_checkingJoin) ...[
@@ -212,7 +212,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         style: OutlinedButton.styleFrom(
                           side: BorderSide(
                             color: _hasJoined
-                                ? AppTheme.textMain.withOpacity(0.3)
+                                ? Theme.of(context).colorScheme.onSurface.withOpacity(0.3)
                                 : AppTheme.primaryMagenta,
                             width: 2,
                           ),
@@ -224,13 +224,13 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                           style: GoogleFonts.spaceMono(
                             fontWeight: FontWeight.bold,
                             color: _hasJoined
-                                ? AppTheme.textMain.withOpacity(0.4)
+                                ? Theme.of(context).colorScheme.onSurface.withOpacity(0.4)
                                 : AppTheme.primaryMagenta,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -244,14 +244,14 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                             ),
                           ),
                         ),
-                        child: const Text('SUBMIT PROOF →'),
+                        child: Text('SUBMIT PROOF →'),
                       ),
                     ),
                   ] else
                     const Center(
                         child: CircularProgressIndicator(
                             color: AppTheme.primaryMagenta)),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40),
                 ],
               ),
             ),
@@ -270,7 +270,7 @@ class _Tag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         border: Border.all(color: color, width: 1.5),

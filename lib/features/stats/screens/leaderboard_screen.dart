@@ -46,14 +46,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightBg,
+      
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
             // ---- TITLE HEADER ----
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Row(
                   children: [
                     Text(
@@ -68,7 +68,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     const Spacer(),
                     GestureDetector(
                       onTap: _loadLeaderboard,
-                      child: const Icon(Icons.refresh, size: 20, color: AppTheme.primaryMagenta),
+                      child: Icon(Icons.refresh, size: 20, color: AppTheme.primaryMagenta),
                     ),
                   ],
                 ),
@@ -78,7 +78,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             // ---- REGION LABEL ----
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
+                padding: EdgeInsets.fromLTRB(24, 4, 24, 20),
                 child: Text(
                   'BENGALURU LEADERBOARD',
                   style: GoogleFonts.spaceMono(
@@ -108,7 +108,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             if (!_loading && _leaders.length > 3)
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+                  padding: EdgeInsets.fromLTRB(24, 20, 24, 8),
                   child: Text(
                     'RANKINGS',
                     style: GoogleFonts.spaceMono(
@@ -125,19 +125,19 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             if (_error != null)
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   child: Column(children: [
                     Text('COULD NOT LOAD LEADERBOARD',
                         style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold)),
                     ElevatedButton(
-                        onPressed: _loadLeaderboard, child: const Text('RETRY')),
+                        onPressed: _loadLeaderboard, child: Text('RETRY')),
                   ]),
                 ),
               ),
 
             // ---- LIST (rank 4+) ----
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 24),
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -168,7 +168,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   Widget _buildPodium() {
     final top3 = _leaders.take(3).toList();
-    if (top3.isEmpty) return const SizedBox();
+    if (top3.isEmpty) return SizedBox();
 
     final first = top3[0];
     final second = top3.length > 1 ? top3[1] : null;
@@ -177,7 +177,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 60),
+        padding: EdgeInsets.only(bottom: 60),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -203,14 +203,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final textColor = rank == 1 ? Theme.of(context).cardTheme.color : Theme.of(context).colorScheme.onSurface;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(horizontal: 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (isFirst)
-            const Icon(Icons.workspace_premium, color: AppTheme.primaryMagenta, size: 28),
-          if (!isFirst) const SizedBox(height: 28),
-          const SizedBox(height: 4),
+            Icon(Icons.workspace_premium, color: AppTheme.primaryMagenta, size: 28),
+          if (!isFirst) SizedBox(height: 28),
+          SizedBox(height: 4),
           
           // Avatar
           Container(
@@ -231,7 +231,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   : null,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           
           // Name
           Text(
@@ -243,7 +243,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 fontSize: 13,
                 color: Theme.of(context).colorScheme.onSurface),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           
           // Pedestal Block
           Container(
@@ -270,7 +270,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   '$pts',
                   style: GoogleFonts.outfit(
@@ -302,8 +302,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final region = user['region'] as String? ?? '';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 1.5),
@@ -331,12 +331,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                         color: AppTheme.primaryMagenta))
                 : null,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                Text(name, style: TextStyle(fontWeight: FontWeight.w600)),
                 if (region.isNotEmpty)
                   Text(region,
                       style: TextStyle(

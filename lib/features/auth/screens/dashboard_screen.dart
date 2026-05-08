@@ -63,15 +63,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
           canPop: false, // Prevent back button
           child: Container(
             color: Theme.of(context).scaffoldBackgroundColor,
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('YOUR DATA. YOUR RULES.', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 24)),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text('SocialCode requires basic cookies to function. We also use optional cookies for analytics and marketing.', style: GoogleFonts.inter(fontSize: 14)),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 CheckboxListTile(
                   value: true,
                   onChanged: null,
@@ -96,13 +96,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   controlAffinity: ListTileControlAffinity.leading,
                   contentPadding: EdgeInsets.zero,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16),
                           side: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
                           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                         ),
@@ -110,11 +110,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: Text('REJECT ALL', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16),
                           backgroundColor: AppTheme.primaryMagenta,
                           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                         ),
@@ -124,7 +124,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
               ],
             ),
           ),
@@ -281,14 +281,14 @@ class _SideNav extends StatelessWidget {
           children: [
             // Logo
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               child: SocialCodeLogo(
                 fontSize: 28,
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Theme.of(context).colorScheme.onSurface,
               ),
             ),
             Divider(height: 1, thickness: 2, color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Nav items
             ...items.asMap().entries.map((entry) {
@@ -298,8 +298,8 @@ class _SideNav extends StatelessWidget {
               return GestureDetector(
                 onTap: () => onTap(i),
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppTheme.primaryMagenta
@@ -317,7 +317,7 @@ class _SideNav extends StatelessWidget {
                             ? Colors.white
                             : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Text(
                         item.label,
                         style: GoogleFonts.spaceMono(
@@ -339,7 +339,7 @@ class _SideNav extends StatelessWidget {
 
             // User + logout
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Row(
                 children: [
                   CircleAvatar(
@@ -360,7 +360,7 @@ class _SideNav extends StatelessWidget {
                           )
                         : null,
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,7 +386,7 @@ class _SideNav extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.logout, size: 18),
+                    icon: Icon(Icons.logout, size: 18),
                     onPressed: () =>
                         context.read<AuthBloc>().add(LogoutRequested()),
                   ),

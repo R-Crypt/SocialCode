@@ -26,10 +26,10 @@ class _CreatorPanelState extends State<CreatorPanel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightBg,
+      
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -37,14 +37,14 @@ class _CreatorPanelState extends State<CreatorPanel> {
                   style: GoogleFonts.outfit(
                       fontSize: 30,
                       fontWeight: FontWeight.w900,
-                      color: AppTheme.textMain)),
-              const SizedBox(height: 4),
+                      color: Theme.of(context).colorScheme.onSurface)),
+              SizedBox(height: 4),
               Text('BUILD YOUR LEGACY. SPARK THE MOVEMENT.',
                   style: GoogleFonts.spaceMono(
-                      color: AppTheme.textMain.withOpacity(0.4),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                       fontWeight: FontWeight.bold,
                       fontSize: 10)),
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // Quick stats
               BlocBuilder<ChallengesBloc, ChallengesState>(
@@ -62,13 +62,13 @@ class _CreatorPanelState extends State<CreatorPanel> {
                   return Row(
                     children: [
                       _StatCard('MY CODES', '$myCount', AppTheme.accentPurple),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16),
                       _StatCard('TOTAL IMPACT', '$totalImpact', AppTheme.primaryMagenta),
                     ],
                   );
                 },
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Action buttons
               _ActionButton(
@@ -78,14 +78,14 @@ class _CreatorPanelState extends State<CreatorPanel> {
                 color: AppTheme.primaryMagenta,
                 onTap: () => _showCreateForm(context),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // My challenges
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Text('MY CHALLENGES',
                   style: GoogleFonts.outfit(
                       fontWeight: FontWeight.w900, fontSize: 16)),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               BlocBuilder<ChallengesBloc, ChallengesState>(
                 builder: (context, state) {
@@ -100,17 +100,17 @@ class _CreatorPanelState extends State<CreatorPanel> {
                         .toList();
                     if (mine.isEmpty) {
                       return Container(
-                        padding: const EdgeInsets.all(24),
+                        padding: EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           border: Border.all(
-                              color: AppTheme.textMain.withOpacity(0.2)),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
                         ),
                         child: Center(
                           child: Text(
                             'NO CHALLENGES YET.\nCREATE YOUR FIRST CODE.',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.spaceMono(
-                                color: AppTheme.textMain.withOpacity(0.4),
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 11),
                           ),
@@ -138,7 +138,7 @@ class _CreatorPanelState extends State<CreatorPanel> {
                       ),
                     );
                   }
-                  return const SizedBox.shrink();
+                  return SizedBox.shrink();
                 },
               ),
             ],
@@ -176,27 +176,27 @@ class _CreatorPanelState extends State<CreatorPanel> {
                 Text(existing == null ? 'CREATE CHALLENGE' : 'EDIT CHALLENGE',
                     style: GoogleFonts.outfit(
                         fontWeight: FontWeight.w900, fontSize: 22)),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // Image picker
                 ChallengeImagePicker(
                   initialImageUrl: existing?.imageUrl,
                   onUploaded: (url) => selectedImageUrl = url,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 _FormField(controller: titleCtrl, label: 'CHALLENGE TITLE'),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _FormField(controller: descCtrl, label: 'DESCRIPTION', maxLines: 2),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _FormField(controller: briefingCtrl, label: 'MISSION BRIEFING', maxLines: 3),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 // Category
                 Text('CATEGORY',
                     style: GoogleFonts.spaceMono(
                         fontSize: 10, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -205,8 +205,8 @@ class _CreatorPanelState extends State<CreatorPanel> {
                       return GestureDetector(
                         onTap: () => setModal(() => selectedCategory = cat),
                         child: Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.symmetric(
+                          margin: EdgeInsets.only(right: 8),
+                          padding: EdgeInsets.symmetric(
                               horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
                             color: isSelected
@@ -215,7 +215,7 @@ class _CreatorPanelState extends State<CreatorPanel> {
                             border: Border.all(
                               color: isSelected
                                   ? AppTheme.primaryMagenta
-                                  : AppTheme.textMain,
+                                  : Theme.of(context).colorScheme.onSurface,
                               width: 2,
                             ),
                           ),
@@ -224,7 +224,7 @@ class _CreatorPanelState extends State<CreatorPanel> {
                             style: GoogleFonts.spaceMono(
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
-                              color: isSelected ? Colors.white : AppTheme.textMain,
+                              color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
@@ -232,18 +232,18 @@ class _CreatorPanelState extends State<CreatorPanel> {
                     }).toList(),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 Row(
                   children: [
                     Expanded(child: _FormField(controller: pointsCtrl, label: 'POINTS', keyboardType: TextInputType.number)),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(child: _FormField(controller: targetCtrl, label: 'TARGET', keyboardType: TextInputType.number)),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _FormField(controller: cityCtrl, label: 'CITY'),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 SizedBox(
                   width: double.infinity,
@@ -316,7 +316,7 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: color.withOpacity(0.05),
           border: Border.all(color: color, width: 2),
@@ -328,8 +328,8 @@ class _StatCard extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.textMain.withOpacity(0.4))),
-            const SizedBox(height: 4),
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4))),
+            SizedBox(height: 4),
             Text(value,
                 style: GoogleFonts.spaceMono(
                     fontSize: 22, fontWeight: FontWeight.w900, color: color)),
@@ -359,22 +359,22 @@ class _ActionButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: AppTheme.textMain, width: 2),
+          border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
                 border: Border.all(color: color, width: 1.5),
               ),
               child: Icon(icon, color: color, size: 22),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -384,13 +384,13 @@ class _ActionButton extends StatelessWidget {
                           fontWeight: FontWeight.w900, fontSize: 12)),
                   Text(subtitle,
                       style: TextStyle(
-                          color: AppTheme.textMain.withOpacity(0.4),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                           fontSize: 9,
                           fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 14),
+            Icon(Icons.arrow_forward_ios, size: 14),
           ],
         ),
       ),
@@ -407,11 +407,11 @@ class _MyChallengeItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: AppTheme.textMain, width: 1.5),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,22 +425,22 @@ class _MyChallengeItem extends StatelessWidget {
               ),
               if (onEdit != null)
                 IconButton(
-                  icon: const Icon(Icons.edit, size: 18),
+                  icon: Icon(Icons.edit, size: 18),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: onEdit,
                 ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               if (onDelete != null)
                 IconButton(
-                  icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+                  icon: Icon(Icons.delete, size: 18, color: Colors.red),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: onDelete,
                 ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Row(
             children: [
               Text('${challenge.currentCount}/${challenge.targetCount} PROOFS',
@@ -448,15 +448,15 @@ class _MyChallengeItem extends StatelessWidget {
                       fontSize: 10,
                       color: AppTheme.primaryMagenta,
                       fontWeight: FontWeight.bold)),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Text('${challenge.daysRemaining} DAYS LEFT',
                   style: GoogleFonts.spaceMono(
                       fontSize: 10,
-                      color: AppTheme.textMain.withOpacity(0.4),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                       fontWeight: FontWeight.bold)),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: challenge.status == ChallengeStatus.active
                       ? Colors.green.withOpacity(0.1)
@@ -483,11 +483,11 @@ class _MyChallengeItem extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           LinearProgressIndicator(
             value: challenge.progressPercent,
             minHeight: 5,
-            backgroundColor: AppTheme.textMain.withOpacity(0.1),
+            backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
             valueColor: const AlwaysStoppedAnimation(AppTheme.primaryMagenta),
           ),
         ],
@@ -515,17 +515,17 @@ class _FormField extends StatelessWidget {
       children: [
         Text(label,
             style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         TextField(
           controller: controller,
           maxLines: maxLines,
           keyboardType: keyboardType,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
             enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.zero,
-                borderSide: BorderSide(color: AppTheme.textMain, width: 2)),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2)),
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.zero,
                 borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2)),

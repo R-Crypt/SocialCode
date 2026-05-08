@@ -105,23 +105,23 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
     if (_submitted) return _SuccessScreen(challenge: widget.challenge);
 
     return Scaffold(
-      backgroundColor: AppTheme.lightBg,
+      
       appBar: AppBar(
         title: Text(
           'SUBMIT PROOF',
           style: GoogleFonts.spaceMono(
-              fontWeight: FontWeight.w900, color: AppTheme.textMain, fontSize: 14),
+              fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Challenge badge
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: AppTheme.primaryMagenta.withOpacity(0.05),
                 border: Border.all(color: AppTheme.primaryMagenta, width: 2),
@@ -135,7 +135,7 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // Image picker
             Text('PROOF PHOTO',
@@ -143,8 +143,8 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.5,
-                    color: AppTheme.textMain)),
-            const SizedBox(height: 8),
+                    color: Theme.of(context).colorScheme.onSurface)),
+            SizedBox(height: 8),
             GestureDetector(
               onTap: () => _showImageSourceSheet(),
               child: Container(
@@ -154,8 +154,8 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                   color: Colors.white,
                   border: Border.all(
                     color: _image == null
-                        ? AppTheme.textMain.withOpacity(0.15)
-                        : AppTheme.textMain,
+                        ? Theme.of(context).colorScheme.onSurface.withOpacity(0.15)
+                        : Theme.of(context).colorScheme.onSurface,
                     width: 2,
                   ),
                 ),
@@ -164,22 +164,22 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.add_a_photo,
-                              color: AppTheme.textMain.withOpacity(0.3),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                               size: 48),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           Text(
                             'TAP TO ADD YOUR PROOF',
                             style: GoogleFonts.spaceMono(
-                              color: AppTheme.textMain.withOpacity(0.3),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4),
                           Text(
                             'CAMERA OR GALLERY',
                             style: GoogleFonts.spaceMono(
-                              color: AppTheme.textMain.withOpacity(0.2),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
                               fontSize: 10,
                             ),
                           ),
@@ -187,10 +187,10 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                       )
                     : _imageBytes != null
                         ? Image.memory(_imageBytes!, fit: BoxFit.cover)
-                        : const SizedBox.shrink(),
+                        : SizedBox.shrink(),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // Location
             Text('LOCATION',
@@ -198,13 +198,13 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.5,
-                    color: AppTheme.textMain)),
-            const SizedBox(height: 8),
+                    color: Theme.of(context).colorScheme.onSurface)),
+            SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.white,
-                border: Border.all(color: AppTheme.textMain, width: 2),
+                border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
               ),
               child: Row(
                 children: [
@@ -212,27 +212,27 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                     Icons.location_on,
                     color: _position != null
                         ? AppTheme.primaryMagenta
-                        : AppTheme.textMain.withOpacity(0.3),
+                        : Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                     size: 20,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: _gettingLocation
                         ? Text('GETTING LOCATION...',
                             style: GoogleFonts.spaceMono(
                                 fontSize: 11,
-                                color: AppTheme.textMain.withOpacity(0.4)))
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4)))
                         : _position != null
                             ? Text(
                                 '${_position!.latitude.toStringAsFixed(4)}, ${_position!.longitude.toStringAsFixed(4)}',
                                 style: GoogleFonts.spaceMono(
                                     fontSize: 11,
-                                    color: AppTheme.textMain,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                     fontWeight: FontWeight.bold))
                             : Text('LOCATION UNAVAILABLE',
                                 style: GoogleFonts.spaceMono(
                                     fontSize: 11,
-                                    color: AppTheme.textMain.withOpacity(0.4))),
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4))),
                   ),
                   if (_position != null)
                     Text('VERIFIED',
@@ -249,7 +249,7 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // Caption
             Text('YOUR STORY',
@@ -257,28 +257,28 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.5,
-                    color: AppTheme.textMain)),
-            const SizedBox(height: 8),
+                    color: Theme.of(context).colorScheme.onSurface)),
+            SizedBox(height: 8),
             TextField(
               controller: _captionController,
               maxLines: 4,
-              style: GoogleFonts.inter(color: AppTheme.textMain, fontSize: 14),
+              style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'TELL THE STORY BEHIND YOUR ACTION...',
-                hintStyle: TextStyle(color: AppTheme.textMain.withOpacity(0.2)),
+                hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
                 filled: true,
                 fillColor: Colors.white,
-                enabledBorder: const OutlineInputBorder(
+                enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.zero,
-                  borderSide: BorderSide(color: AppTheme.textMain, width: 2),
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
                 ),
-                focusedBorder: const OutlineInputBorder(
+                focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.zero,
                   borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40),
 
             SizedBox(
               width: double.infinity,
@@ -286,23 +286,23 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
               child: ElevatedButton(
                 onPressed: (_image == null || _submitting) ? null : _submit,
                 child: _submitting
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
                             color: Colors.white, strokeWidth: 2),
                       )
-                    : const Text('SUBMIT TO THE CODE →'),
+                    : Text('SUBMIT TO THE CODE →'),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Center(
               child: Text(
                 'YOUR SUBMISSION WILL BE REVIEWED BEFORE POINTS ARE AWARDED',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.spaceMono(
                   fontSize: 9,
-                  color: AppTheme.textMain.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                 ),
               ),
             ),
@@ -322,13 +322,13 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
       context: context,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       builder: (_) => Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('ADD YOUR PROOF',
                 style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 18)),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
@@ -341,7 +341,7 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                     },
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: _SourceButton(
                     icon: Icons.photo_library,
@@ -354,7 +354,7 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
           ],
         ),
       ),
@@ -373,14 +373,14 @@ class _SourceButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          border: Border.all(color: AppTheme.textMain, width: 2),
+          border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
         ),
         child: Column(
           children: [
             Icon(icon, size: 32, color: AppTheme.primaryMagenta),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(label,
                 style: GoogleFonts.spaceMono(
                     fontWeight: FontWeight.bold, fontSize: 11)),
@@ -398,38 +398,38 @@ class _SuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightBg,
+      
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: EdgeInsets.all(32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.check_circle, size: 80, color: AppTheme.primaryMagenta),
-              const SizedBox(height: 24),
+              Icon(Icons.check_circle, size: 80, color: AppTheme.primaryMagenta),
+              SizedBox(height: 24),
               Text(
                 'PROOF SUBMITTED!',
                 style: GoogleFonts.outfit(
-                    fontSize: 32, fontWeight: FontWeight.w900, color: AppTheme.textMain),
+                    fontSize: 32, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 'YOUR SUBMISSION FOR "${challenge.title.toUpperCase()}" IS IN REVIEW.\nPOINTS WILL BE AWARDED UPON APPROVAL.',
                 style: GoogleFonts.spaceMono(
-                  color: AppTheme.textMain.withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                   fontSize: 11,
                   height: 1.6,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
                   onPressed: () => Navigator.popUntil(context, (r) => r.isFirst),
-                  child: const Text('BACK TO CODES'),
+                  child: Text('BACK TO CODES'),
                 ),
               ),
             ],

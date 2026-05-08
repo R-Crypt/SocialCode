@@ -102,7 +102,7 @@ class _ChallengeImagePickerState extends State<ChallengeImagePicker> {
                         right: 8,
                         bottom: 8,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           color: Colors.black87,
                           child: Text(
                             'TAP TO CHANGE',
@@ -119,9 +119,9 @@ class _ChallengeImagePickerState extends State<ChallengeImagePicker> {
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.add_photo_alternate_outlined,
+                      Icon(Icons.add_photo_alternate_outlined,
                           size: 40, color: AppTheme.primaryMagenta),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text(
                         'TAP TO ADD CHALLENGE IMAGE',
                         style: GoogleFonts.spaceMono(
