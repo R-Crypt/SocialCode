@@ -62,7 +62,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         builder: (context, setState) => PopScope(
           canPop: false, // Prevent back button
           child: Container(
-            color: Colors.white,
+            color: Theme.of(context).scaffoldBackgroundColor,
             padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -75,7 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 CheckboxListTile(
                   value: true,
                   onChanged: null,
-                  activeColor: AppTheme.textMain,
+                  activeColor: Theme.of(context).colorScheme.onSurface,
                   title: Text('ESSENTIAL (REQUIRED)', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 12)),
                   controlAffinity: ListTileControlAffinity.leading,
                   contentPadding: EdgeInsets.zero,
@@ -103,11 +103,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: const BorderSide(color: AppTheme.textMain, width: 2),
+                          side: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
                           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                         ),
                         onPressed: () => _saveConsent(false, false),
-                        child: Text('REJECT ALL', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, color: AppTheme.textMain)),
+                        child: Text('REJECT ALL', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -227,9 +227,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: BottomNavigationBar(
               currentIndex: _selectedIndex,
               onTap: (i) => setState(() => _selectedIndex = i),
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               selectedItemColor: AppTheme.primaryMagenta,
-              unselectedItemColor: AppTheme.textMain,
+              unselectedItemColor: Theme.of(context).colorScheme.onSurface,
               showUnselectedLabels: true,
               selectedLabelStyle: GoogleFonts.spaceMono(
                 fontWeight: FontWeight.w900,
@@ -274,7 +274,7 @@ class _SideNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 220,
-      color: Colors.white,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +287,7 @@ class _SideNav extends StatelessWidget {
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : AppTheme.textMain,
               ),
             ),
-            const Divider(height: 1, thickness: 2, color: AppTheme.textMain),
+            const Divider(height: 1, thickness: 2, color: AppTheme.borderLight),
             const SizedBox(height: 16),
 
             // Nav items
@@ -315,7 +315,7 @@ class _SideNav extends StatelessWidget {
                         size: 20,
                         color: isSelected
                             ? Colors.white
-                            : AppTheme.textMain.withOpacity(0.6),
+                            : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                       ),
                       const SizedBox(width: 12),
                       Text(
@@ -325,7 +325,7 @@ class _SideNav extends StatelessWidget {
                           fontSize: 12,
                           color: isSelected
                               ? Colors.white
-                              : AppTheme.textMain.withOpacity(0.7),
+                              : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -335,7 +335,7 @@ class _SideNav extends StatelessWidget {
             }),
 
             const Spacer(),
-            const Divider(height: 1, thickness: 2, color: AppTheme.textMain),
+            const Divider(height: 1, thickness: 2, color: AppTheme.borderLight),
 
             // User + logout
             Padding(

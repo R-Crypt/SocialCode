@@ -955,6 +955,16 @@ class _AdminEventsSectionState extends State<_AdminEventsSection> {
     }
   }
 
+  Future<void> _deleteEvent(String id) async {
+    try {
+      await _svc.deleteEvent(id);
+      _load();
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Event deleted')));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -976,8 +986,43 @@ class _AdminEventsSectionState extends State<_AdminEventsSection> {
           child: ListTile(
             title: Text(e.title, style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Text('${e.location} · ${e.slotsSold}/${e.totalSlots} slots'),
-            trailing: IconButton(icon: const Icon(Icons.qr_code_scanner), 
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => GateCheckScreen(user: widget.user)))),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 20),
+                  onPressed: () => showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+                    builder: (_) => _EventForm(user: widget.user, existing: e, onSaved: _load),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                  onPressed: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Delete Event?'),
+                        content: const Text('This action cannot be undone.'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('CANCEL')),
+                          ElevatedButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                            child: const Text('DELETE', style: TextStyle(color: Colors.white)),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirm == true) _deleteEvent(e.id);
+                  },
+                ),
+                IconButton(icon: const Icon(Icons.qr_code_scanner, size: 20), 
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => GateCheckScreen(user: widget.user)))),
+              ],
+            ),
           ),
         )),
       ],

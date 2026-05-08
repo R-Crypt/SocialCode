@@ -104,12 +104,12 @@ class _SettingsTile extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, color: color ?? AppTheme.textMain, size: 20),
+              Icon(icon, color: color ?? Theme.of(context).colorScheme.onSurface, size: 20),
               const SizedBox(width: 12),
-              Text(label, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: color)),
+              Text(label, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: color ?? Theme.of(context).colorScheme.onSurface)),
             ],
           ),
-          if (trailing != null) trailing! else const Icon(Icons.chevron_right, size: 20),
+          if (trailing != null) trailing! else Icon(Icons.chevron_right, size: 20, color: Theme.of(context).colorScheme.onSurface),
         ],
       ),
     );

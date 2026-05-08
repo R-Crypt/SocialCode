@@ -5,12 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:social_code/core/theme/app_theme.dart';
 import 'package:social_code/models/app_user.dart';
 import 'package:social_code/services/ticket_service.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 /// Gate Check Screen — admin/staff scans QR codes at the event entrance.
 ///
 /// Platform behaviour:
-///   • On mobile: [mobile_scanner] opens the camera for QR scanning.
-///   • On web: falls back to a token text-field (paste/type QR token).
+///   • On mobile/web: [mobile_scanner] opens the camera for QR scanning.
+///   • Fallback to a token text-field (paste/type QR token).
 ///
 /// The verify_and_use_ticket() PostgreSQL function provides:
 ///   • Atomic status update (SELECT … FOR UPDATE)
@@ -59,7 +60,7 @@ class _GateCheckScreenState extends State<GateCheckScreen>
     final token = rawToken.trim();
     if (token.isEmpty) return;
 
-    setState(() { _scanning = true; _lastResult = null; });
+    setState(() { _scanning = true; });
 
     try {
       final res = await _svc.verifyAndUseTicket(token);
@@ -184,7 +185,14 @@ class _GateCheckScreenState extends State<GateCheckScreen>
           // ── Middle: Result display ────────────────────────────────────────
           Expanded(
             child: _lastResult == null
-                ? _IdleView()
+                ? MobileScanner(
+                    onDetect: (capture) {
+                      final List<Barcode> barcodes = capture.barcodes;
+                      if (barcodes.isNotEmpty && barcodes.first.rawValue != null && !_scanning) {
+                        _verify(barcodes.first.rawValue!);
+                      }
+                    },
+                  )
                 : FadeTransition(
                     opacity: _flashAnim,
                     child: _ResultView(result: _lastResult!),
@@ -206,27 +214,7 @@ class _GateCheckScreenState extends State<GateCheckScreen>
   }
 }
 
-// ─── Idle ─────────────────────────────────────────────────────────────────────
-
-class _IdleView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.qr_code_scanner,
-                size: 80, color: Colors.white.withOpacity(0.12)),
-            const SizedBox(height: 16),
-            Text('AWAITING SCAN',
-                style: GoogleFonts.outfit(
-                    fontWeight: FontWeight.w900, fontSize: 20, color: Colors.white30)),
-            const SizedBox(height: 6),
-            Text('Enter a QR token above to validate entry',
-                style: GoogleFonts.spaceMono(fontSize: 10, color: Colors.white24)),
-          ],
-        ),
-      );
-}
+// ─── Scanner view removed, using MobileScanner inline ───────────────
 
 // ─── Result ───────────────────────────────────────────────────────────────────
 
@@ -272,6 +260,19 @@ class _ResultView extends StatelessWidget {
           Text(
             DateFormat('HH:mm:ss · d MMM yyyy').format(DateTime.now()),
             style: GoogleFonts.spaceMono(fontSize: 10, color: Colors.white38),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: () {
+               // Reset to allow scanning again
+               final state = context.findAncestorStateOfType<_GateCheckScreenState>();
+               state?.setState(() => state._lastResult = null);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+            ),
+            child: const Text('SCAN NEXT TICKET'),
           ),
         ],
       ),

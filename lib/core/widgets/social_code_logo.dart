@@ -18,6 +18,8 @@ class SocialCodeLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     final logoWidget = Text(
       'SOCIAL CODE',
       style: GoogleFonts.outfit(
@@ -25,9 +27,9 @@ class SocialCodeLogo extends StatelessWidget {
         fontSize: fontSize,
         letterSpacing: -1.0,
         shadows: [
-          const Shadow(
-            color: Colors.black,
-            offset: Offset(4, 4),
+          Shadow(
+            color: isDark ? Colors.white.withOpacity(0.2) : Colors.black,
+            offset: const Offset(4, 4),
             blurRadius: 0,
           ),
         ],
@@ -39,8 +41,10 @@ class SocialCodeLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [Color(0xFFE91E63), Color(0xFF9C27B0)],
+          shaderCallback: (bounds) => LinearGradient(
+            colors: isDark 
+               ? [const Color(0xFFF48FB1), const Color(0xFFCE93D8)] // Lighter pink/purple for dark mode
+               : [const Color(0xFFE91E63), const Color(0xFF9C27B0)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ).createShader(bounds),

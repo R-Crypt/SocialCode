@@ -396,7 +396,7 @@ class _ChallengeCard extends StatelessWidget {
                            maxLines: 1, overflow: TextOverflow.ellipsis,
                            style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16)),
                        ),
-                       const Icon(Icons.bookmark_outline, size: 20, color: AppTheme.textMain),
+                       Icon(Icons.bookmark_outline, size: 20, color: Theme.of(context).colorScheme.onSurface),
                      ],
                    ),
                    if (challenge.artistName != null && challenge.artistName!.isNotEmpty)
@@ -410,14 +410,14 @@ class _ChallengeCard extends StatelessWidget {
                      children: [
                        const Icon(Icons.location_on_outlined, size: 14, color: AppTheme.textDim),
                        const SizedBox(width: 4),
-                       Text(challenge.city, style: GoogleFonts.outfit(color: AppTheme.textMain, fontSize: 11)),
+                       Text(challenge.city, style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontSize: 11)),
                        const Padding(
                          padding: EdgeInsets.symmetric(horizontal: 6),
                          child: Icon(Icons.circle, size: 3, color: AppTheme.textDim),
                        ),
                        const Icon(Icons.access_time, size: 14, color: AppTheme.textDim),
                        const SizedBox(width: 4),
-                       Text('${challenge.daysRemaining} days left', style: GoogleFonts.outfit(color: AppTheme.textMain, fontSize: 11)),
+                       Text('${challenge.daysRemaining} days left', style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontSize: 11)),
                      ],
                    ),
                    const SizedBox(height: 16),

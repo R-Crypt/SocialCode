@@ -105,9 +105,8 @@ class _SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.lightBg,
-      body: const Center(
+    return const Scaffold(
+      body: Center(
         child: CircularProgressIndicator(
           color: AppTheme.primaryMagenta,
           strokeWidth: 3,
