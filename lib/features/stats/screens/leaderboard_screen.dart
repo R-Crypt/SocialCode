@@ -62,7 +62,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                         fontWeight: FontWeight.w900,
                         fontSize: 26,
                         letterSpacing: 0.5,
-                        color: AppTheme.textMain,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const Spacer(),
@@ -82,7 +82,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 child: Text(
                   'BENGALURU LEADERBOARD',
                   style: GoogleFonts.spaceMono(
-                    color: AppTheme.textMain.withOpacity(0.4),
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                     fontWeight: FontWeight.bold,
                     fontSize: 11,
                     letterSpacing: 1.2,
@@ -115,7 +115,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 11,
                       letterSpacing: 1.5,
-                      color: AppTheme.textMain.withOpacity(0.4),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
                     ),
                   ),
                 ),
@@ -199,8 +199,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     
     final pedestalHeight = rank == 1 ? 140.0 : rank == 2 ? 100.0 : 80.0;
     final pedestalWidth = rank == 1 ? 110.0 : 90.0;
-    final pedestalColor = rank == 1 ? AppTheme.primaryMagenta : Colors.white;
-    final textColor = rank == 1 ? Colors.white : AppTheme.textMain;
+    final pedestalColor = rank == 1 ? AppTheme.primaryMagenta : Theme.of(context).cardTheme.color;
+    final textColor = rank == 1 ? Theme.of(context).cardTheme.color : Theme.of(context).colorScheme.onSurface;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -216,7 +216,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppTheme.textMain, width: 2),
+              border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
             ),
             child: CircleAvatar(
               radius: size / 2,
@@ -241,7 +241,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             style: GoogleFonts.outfit(
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
-                color: AppTheme.textMain),
+                color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(height: 8),
           
@@ -251,11 +251,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             width: pedestalWidth,
             decoration: BoxDecoration(
               color: pedestalColor,
-              border: Border.all(color: AppTheme.textMain, width: 2),
-              boxShadow: const [
+              border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
+              boxShadow: [
                 BoxShadow(
-                  color: AppTheme.textMain,
-                  offset: Offset(4, 4),
+                  color: Theme.of(context).colorScheme.onSurface,
+                  offset: const Offset(4, 4),
                 ),
               ],
             ),
@@ -265,7 +265,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 Text(
                   'RANK $rank',
                   style: GoogleFonts.spaceMono(
-                    color: textColor.withOpacity(0.7),
+                    color: textColor?.withOpacity(0.7) ?? Colors.white.withOpacity(0.7),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
@@ -305,8 +305,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: AppTheme.textMain, width: 1.5),
+        color: Theme.of(context).cardTheme.color,
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 1.5),
       ),
       child: Row(
         children: [
@@ -315,7 +315,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             child: Text(
               '#$rank',
               style: GoogleFonts.spaceMono(
-                  color: AppTheme.textMain.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                   fontWeight: FontWeight.bold,
                   fontSize: 12),
             ),
@@ -341,7 +341,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   Text(region,
                       style: TextStyle(
                           fontSize: 10,
-                          color: AppTheme.textMain.withOpacity(0.4))),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4))),
               ],
             ),
           ),
@@ -349,7 +349,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             '$pts PTS',
             style: GoogleFonts.outfit(
                 fontWeight: FontWeight.w900,
-                color: AppTheme.textMain.withOpacity(0.8)),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
           ),
         ],
       ),

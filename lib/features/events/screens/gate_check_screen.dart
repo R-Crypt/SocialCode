@@ -114,71 +114,16 @@ class _GateCheckScreenState extends State<GateCheckScreen>
       ),
       body: Column(
         children: [
-          // ── Top: scan mode selector ──────────────────────────────────────
+          // ── Top: Title ──────────────────────────────────────
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             color: AppTheme.textMain,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'SCAN / ENTER TICKET TOKEN',
-                  style: GoogleFonts.spaceMono(
-                      fontSize: 10, color: Colors.white54, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Row(children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _tokenCtrl,
-                      style: GoogleFonts.spaceMono(color: Colors.white, fontSize: 13),
-                      decoration: InputDecoration(
-                        hintText: 'Paste QR token here…',
-                        hintStyle: GoogleFonts.spaceMono(color: Colors.white38, fontSize: 12),
-                        filled: true,
-                        fillColor: Colors.white10,
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(color: Colors.white24),
-                        ),
-                        enabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(color: Colors.white24),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                      ),
-                      onSubmitted: _verify,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: _scanning ? null : () => _verify(_tokenCtrl.text),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryMagenta,
-                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                      child: _scanning
-                          ? const SizedBox(width: 18, height: 18,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                          : Text('VERIFY',
-                              style: GoogleFonts.spaceMono(
-                                  fontWeight: FontWeight.bold, color: Colors.white)),
-                    ),
-                  ),
-                ]),
-                const SizedBox(height: 6),
-                Text(
-                  'On mobile: scan the QR directly with your camera app and paste the token.',
-                  style: GoogleFonts.spaceMono(fontSize: 8, color: Colors.white24),
-                ),
-              ],
+            width: double.infinity,
+            child: Text(
+              'SCAN TICKET QR',
+              style: GoogleFonts.spaceMono(
+                  fontSize: 12, color: Colors.white54, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
           ),
 

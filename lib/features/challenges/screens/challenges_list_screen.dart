@@ -25,6 +25,10 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
   bool isGridView = true;
   String searchQuery = '';
   ChallengeCategory? selectedCategory;
+  String? selectedCity;
+  String? selectedDaysLeft;
+  String? selectedPointsOrder;
+  String? selectedCreator;
 
   @override
   void initState() {
@@ -51,11 +55,25 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
                     return _buildError();
                   }
                   if (state is ChallengesLoaded) {
-                    final filtered = state.challenges.where((c) {
+                    var filtered = state.challenges.where((c) {
                       final matchesSearch = c.title.toLowerCase().contains(searchQuery.toLowerCase());
                       final matchesCat = selectedCategory == null || c.category == selectedCategory;
-                      return matchesSearch && matchesCat;
+                      final matchesCity = selectedCity == null || c.city == selectedCity;
+                      final matchesCreator = selectedCreator == null || (c.artistName != null && c.artistName!.toLowerCase().contains(selectedCreator!.toLowerCase()));
+                      
+                      bool matchesDays = true;
+                      if (selectedDaysLeft == 'Under 7 days') matchesDays = c.daysRemaining < 7;
+                      else if (selectedDaysLeft == '7-14 days') matchesDays = c.daysRemaining >= 7 && c.daysRemaining <= 14;
+                      else if (selectedDaysLeft == '14+ days') matchesDays = c.daysRemaining > 14;
+
+                      return matchesSearch && matchesCat && matchesCity && matchesCreator && matchesDays;
                     }).toList();
+
+                    if (selectedPointsOrder == 'Low to High') {
+                      filtered.sort((a, b) => a.pointsReward.compareTo(b.pointsReward));
+                    } else if (selectedPointsOrder == 'High to Low') {
+                      filtered.sort((a, b) => b.pointsReward.compareTo(a.pointsReward));
+                    }
 
                     if (filtered.isEmpty) {
                       return _buildEmpty();
@@ -190,14 +208,16 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
             children: [
               _filterChip('Category', selectedCategory?.name ?? 'All', () => _showCategoryPicker()),
               const SizedBox(width: 8),
-              _filterChip('City', 'All', () {}),
+              _filterChip('City', selectedCity ?? 'All', () => _showOptionsPicker('City', ['All', 'San Francisco', 'New York', 'London', 'Berlin', 'Tokyo'], (v) => setState(() => selectedCity = v == 'All' ? null : v))),
               const SizedBox(width: 8),
-              _filterChip('Days Left', 'Any', () {}),
+              _filterChip('Days Left', selectedDaysLeft ?? 'Any', () => _showOptionsPicker('Days Left', ['Any', 'Under 7 days', '7-14 days', '14+ days'], (v) => setState(() => selectedDaysLeft = v == 'Any' ? null : v))),
               const SizedBox(width: 8),
-              _filterChip('Points', 'Any', () {}),
+              _filterChip('Points', selectedPointsOrder ?? 'Any', () => _showOptionsPicker('Points', ['Any', 'Low to High', 'High to Low'], (v) => setState(() => selectedPointsOrder = v == 'Any' ? null : v))),
+              const SizedBox(width: 8),
+              _filterChip('Creator', selectedCreator ?? 'Any', () => _showTextInputDialog('Filter by Creator', (v) => setState(() => selectedCreator = v.isEmpty ? null : v))),
               const SizedBox(width: 12),
               TextButton(
-                onPressed: () => setState(() { selectedCategory = null; searchQuery = ''; }),
+                onPressed: () => setState(() { selectedCategory = null; searchQuery = ''; selectedCity = null; selectedDaysLeft = null; selectedPointsOrder = null; selectedCreator = null; }),
                 child: Row(
                   children: [
                     const Text('Reset', style: TextStyle(color: AppTheme.primaryMagenta, fontSize: 12)),
@@ -308,6 +328,60 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
 
   Widget _buildEmpty() {
     return Center(child: Text('No challenges found', style: GoogleFonts.outfit()));
+  }
+  void _showOptionsPicker(String title, List<String> options, Function(String) onSelect) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).cardTheme.color,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 20)),
+            ),
+            const SizedBox(height: 16),
+            ...options.map((opt) => ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                  title: Text(opt, style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold)),
+                  onTap: () {
+                    onSelect(opt);
+                    Navigator.pop(ctx);
+                  },
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showTextInputDialog(String title, Function(String) onSubmit) {
+    final ctrl = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+        content: TextField(
+          controller: ctrl,
+          decoration: const InputDecoration(hintText: 'Enter name...'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('CANCEL')),
+          ElevatedButton(
+            onPressed: () {
+              onSubmit(ctrl.text.trim());
+              Navigator.pop(ctx);
+            },
+            child: const Text('APPLY'),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -467,4 +541,5 @@ class _ChallengeCard extends StatelessWidget {
       case ChallengeCategory.civic: return Icons.location_city_rounded;
     }
   }
+
 }

@@ -46,10 +46,10 @@ class _EventsListScreenState extends State<EventsListScreen> {
         elevation: 0,
         title: Text('EVENTS',
             style: GoogleFonts.outfit(
-                fontWeight: FontWeight.w900, fontSize: 22, color: AppTheme.textMain)),
+                fontWeight: FontWeight.w900, fontSize: 22, color: Theme.of(context).colorScheme.onSurface)),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(2),
-          child: Container(height: 2, color: AppTheme.textMain),
+          child: Container(height: 2, color: Theme.of(context).colorScheme.onSurface),
         ),
       ),
       body: _loading
@@ -99,7 +99,7 @@ class _EventCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: AppTheme.textMain, width: 2),
+          border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
           boxShadow: const [BoxShadow(color: Color(0xFF111111), offset: Offset(4, 4))],
         ),
         child: Column(
@@ -152,7 +152,7 @@ class _EventCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(dateStr,
                         style: GoogleFonts.spaceMono(
-                            fontSize: 10, color: AppTheme.textMain.withOpacity(0.7))),
+                            fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
                   ]),
                   const SizedBox(height: 4),
                   Row(children: [
@@ -161,7 +161,7 @@ class _EventCard extends StatelessWidget {
                     Expanded(
                       child: Text(event.location,
                           style: GoogleFonts.spaceMono(
-                              fontSize: 10, color: AppTheme.textMain.withOpacity(0.7)),
+                              fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
                           overflow: TextOverflow.ellipsis),
                     ),
                   ]),
@@ -172,7 +172,7 @@ class _EventCard extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.inter(
-                            fontSize: 13, color: AppTheme.textMain.withOpacity(0.7))),
+                            fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
                   ],
 
                   const SizedBox(height: 14),
@@ -188,7 +188,7 @@ class _EventCard extends StatelessWidget {
                                     builder: (_) => EventDetailScreen(event: event, user: user)),
                               ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: event.isSoldOut ? Colors.grey : AppTheme.textMain,
+                        backgroundColor: event.isSoldOut ? Colors.grey : Theme.of(context).colorScheme.onSurface,
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                       ),
                       child: Text(
@@ -259,14 +259,14 @@ class _EmptyView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.event_busy, size: 56, color: AppTheme.textMain.withOpacity(0.15)),
+            Icon(Icons.event_busy, size: 56, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.15)),
             const SizedBox(height: 12),
             Text('NO EVENTS YET',
                 style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 18)),
             const SizedBox(height: 4),
             Text('Check back soon.',
                 style: GoogleFonts.spaceMono(
-                    fontSize: 11, color: AppTheme.textMain.withOpacity(0.4))),
+                    fontSize: 11, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4))),
           ],
         ),
       );

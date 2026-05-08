@@ -1047,6 +1047,7 @@ class _EventFormState extends State<_EventForm> {
   DateTime _date = DateTime.now().add(const Duration(days: 7));
   String? _selectedImageUrl;
   bool _saving = false;
+  List<PriceTier> _tiers = [const PriceTier(label: 'General', pricePaise: 0)];
 
   @override
   void initState() {
@@ -1058,7 +1059,53 @@ class _EventFormState extends State<_EventForm> {
       _slotsCtrl.text = '${widget.existing!.totalSlots}';
       _date = widget.existing!.eventDate;
       _selectedImageUrl = widget.existing!.bannerUrl;
+      _tiers = widget.existing!.priceTiers.toList();
     }
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null) {
+      setState(() => _date = picked);
+    }
+  }
+
+  void _addTier() {
+    final labelCtrl = TextEditingController();
+    final priceCtrl = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text('Add Tier', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: labelCtrl, decoration: const InputDecoration(labelText: 'Tier Name (e.g. VIP)')),
+            const SizedBox(height: 12),
+            TextField(controller: priceCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Price (INR)')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('CANCEL')),
+          ElevatedButton(
+            onPressed: () {
+              final priceInr = double.tryParse(priceCtrl.text) ?? 0;
+              setState(() {
+                _tiers.add(PriceTier(label: labelCtrl.text.trim(), pricePaise: (priceInr * 100).toInt()));
+              });
+              Navigator.pop(ctx);
+            },
+            child: const Text('ADD'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -1072,10 +1119,42 @@ class _EventFormState extends State<_EventForm> {
           const SizedBox(height: 20),
           _FormField(controller: _titleCtrl, label: 'TITLE'),
           const SizedBox(height: 12),
-          _FormField(controller: _locationCtrl, label: 'LOCATION'),
+          _FormField(controller: _descCtrl, label: 'DESCRIPTION', maxLines: 3),
           const SizedBox(height: 12),
-          _FormField(controller: _slotsCtrl, label: 'TOTAL SLOTS', keyboardType: TextInputType.number),
+          Row(
+            children: [
+              Expanded(child: _FormField(controller: _locationCtrl, label: 'LOCATION')),
+              const SizedBox(width: 12),
+              Expanded(child: _FormField(controller: _slotsCtrl, label: 'SLOTS', keyboardType: TextInputType.number)),
+            ],
+          ),
           const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('DATE: ${DateFormat('MMM d, yyyy').format(_date)}', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 12)),
+              TextButton(onPressed: _pickDate, child: const Text('CHANGE')),
+            ],
+          ),
+          const Divider(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('PRICE TIERS', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, fontSize: 12)),
+              TextButton(onPressed: _addTier, child: const Text('+ ADD TIER')),
+            ],
+          ),
+          ..._tiers.asMap().entries.map((e) => ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: Text(e.value.label, style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(e.value.formattedPrice),
+                trailing: IconButton(
+                  icon: const Icon(Icons.remove_circle, color: Colors.red, size: 20),
+                  onPressed: () => setState(() => _tiers.removeAt(e.key)),
+                ),
+              )),
+          const Divider(height: 24),
           const Text('MEDIA UPLOAD', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           ChallengeImagePicker(
@@ -1093,8 +1172,11 @@ class _EventFormState extends State<_EventForm> {
                   if (widget.existing != null) {
                     await svc.updateEvent(widget.existing!.id, {
                       'title': _titleCtrl.text, 
+                      'description': _descCtrl.text,
                       'location': _locationCtrl.text, 
+                      'event_date': _date.toUtc().toIso8601String(),
                       'total_slots': int.tryParse(_slotsCtrl.text) ?? 100,
+                      'price_tiers': _tiers.map((t) => t.toMap()).toList(),
                       if (_selectedImageUrl != null) 'banner_url': _selectedImageUrl,
                     });
                   } else {
@@ -1104,7 +1186,7 @@ class _EventFormState extends State<_EventForm> {
                       location: _locationCtrl.text,
                       eventDate: _date,
                       totalSlots: int.tryParse(_slotsCtrl.text) ?? 100,
-                      priceTiers: [const PriceTier(label: 'Free', pricePaise: 0)],
+                      priceTiers: _tiers.isEmpty ? [const PriceTier(label: 'General', pricePaise: 0)] : _tiers,
                       createdBy: widget.user.id,
                       bannerUrl: _selectedImageUrl,
                     );

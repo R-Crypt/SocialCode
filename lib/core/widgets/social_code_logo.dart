@@ -20,35 +20,43 @@ class SocialCodeLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    final logoWidget = Text(
-      'SOCIAL CODE',
-      style: GoogleFonts.outfit(
-        fontWeight: FontWeight.w900,
-        fontSize: fontSize,
-        letterSpacing: -1.0,
-        shadows: [
-          Shadow(
-            color: isDark ? Colors.white.withOpacity(0.2) : Colors.black,
-            offset: const Offset(4, 4),
-            blurRadius: 0,
-          ),
-        ],
-      ),
+    final baseStyle = GoogleFonts.outfit(
+      fontWeight: FontWeight.w900,
+      fontSize: fontSize,
+      letterSpacing: -1.0,
     );
 
     return Column(
       crossAxisAlignment: crossAxisAlignment,
       mainAxisSize: MainAxisSize.min,
       children: [
-        ShaderMask(
-          shaderCallback: (bounds) => LinearGradient(
-            colors: isDark 
-               ? [const Color(0xFFF48FB1), const Color(0xFFCE93D8)] // Lighter pink/purple for dark mode
-               : [const Color(0xFFE91E63), const Color(0xFF9C27B0)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(bounds),
-          child: logoWidget,
+        Stack(
+          children: [
+            // Shadow text
+            Transform.translate(
+              offset: const Offset(4, 4),
+              child: Text(
+                'SOCIAL CODE',
+                style: baseStyle.copyWith(
+                  color: isDark ? Colors.white.withOpacity(0.2) : Colors.black,
+                ),
+              ),
+            ),
+            // Gradient text
+            ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: isDark 
+                   ? [const Color(0xFFF48FB1), const Color(0xFFCE93D8)] // Lighter pink/purple for dark mode
+                   : [const Color(0xFFE91E63), const Color(0xFF9C27B0)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: Text(
+                'SOCIAL CODE',
+                style: baseStyle.copyWith(color: Colors.white), // Color must be white for ShaderMask to work fully
+              ),
+            ),
+          ],
         ),
         if (showTagline) ...[
           const SizedBox(height: 4),

@@ -141,7 +141,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 18)),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(2),
-          child: Container(height: 2, color: AppTheme.textMain),
+          child: Container(height: 2, color: Theme.of(context).colorScheme.onSurface),
         ),
       ),
       body: _ticket != null ? _TicketView(ticket: _ticket!, event: widget.event) : _BookingView(
@@ -221,7 +221,7 @@ class _BookingView extends StatelessWidget {
             if (event.description != null) ...[
               const SizedBox(height: 12),
               Text(event.description!,
-                  style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textMain.withOpacity(0.7))),
+                  style: GoogleFonts.inter(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
             ],
 
             const SizedBox(height: 24),
@@ -249,7 +249,7 @@ class _BookingView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                border: Border.all(color: AppTheme.textMain, width: 1.5),
+                border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 1.5),
                 color: AppTheme.primaryMagenta.withOpacity(0.04),
               ),
               child: Row(
@@ -268,7 +268,7 @@ class _BookingView extends StatelessWidget {
                       'and event entry verification under the Digital Personal Data '
                       'Protection Act 2023 (DPDPA). Policy v1.0.',
                       style: GoogleFonts.inter(fontSize: 12,
-                          color: AppTheme.textMain.withOpacity(0.7)),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
                     ),
                   ),
                 ],
@@ -300,8 +300,8 @@ class _BookingView extends StatelessWidget {
                     disabledBackgroundColor: Colors.grey.shade300,
                   ),
                   child: loading
-                      ? const SizedBox(width: 22, height: 22,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      ? SizedBox(width: 22, height: 22,
+                          child: CircularProgressIndicator(color: Theme.of(context).cardTheme.color, strokeWidth: 2))
                       : Text(
                           event.isSoldOut
                               ? 'SOLD OUT'
@@ -309,7 +309,7 @@ class _BookingView extends StatelessWidget {
                                   ? 'REGISTER FREE →'
                                   : 'PAY ${selectedTier?.formattedPrice ?? ''} →',
                           style: GoogleFonts.spaceMono(
-                              fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white),
+                              fontWeight: FontWeight.bold, fontSize: 14, color: Theme.of(context).cardTheme.color),
                         ),
                 ),
               ),
@@ -344,8 +344,8 @@ class _TicketView extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: AppTheme.textMain, width: 2),
+              color: Theme.of(context).cardTheme.color,
+              border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
               boxShadow: const [BoxShadow(color: Color(0xFF111111), offset: Offset(6, 6))],
             ),
             child: Column(
@@ -373,13 +373,13 @@ class _TicketView extends StatelessWidget {
                           data: ticket.qrToken,
                           version: QrVersions.auto,
                           size: 220,
-                          eyeStyle: const QrEyeStyle(
+                          eyeStyle: QrEyeStyle(
                             eyeShape: QrEyeShape.square,
-                            color: AppTheme.textMain,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
-                          dataModuleStyle: const QrDataModuleStyle(
+                          dataModuleStyle: QrDataModuleStyle(
                             dataModuleShape: QrDataModuleShape.square,
-                            color: AppTheme.textMain,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                 ),
@@ -392,7 +392,7 @@ class _TicketView extends StatelessWidget {
                   color: statusColor,
                   child: Text(ticket.status.name.toUpperCase(),
                       style: GoogleFonts.spaceMono(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
+                          color: Theme.of(context).cardTheme.color, fontWeight: FontWeight.bold)),
                 ),
 
                 const SizedBox(height: 20),
@@ -403,13 +403,13 @@ class _TicketView extends StatelessWidget {
                   _TicketRow('SCANNED AT',
                       DateFormat('d MMM yyyy • HH:mm').format(ticket.scannedAt!.toLocal())),
                 const SizedBox(height: 12),
-                Divider(color: AppTheme.textMain.withOpacity(0.15)),
+                Divider(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.15)),
                 const SizedBox(height: 8),
                 Text(
                   'Show this QR at the gate. Each code is single-use only.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.spaceMono(
-                      fontSize: 9, color: AppTheme.textMain.withOpacity(0.5)),
+                      fontSize: 9, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
                 ),
               ],
             ),
@@ -431,7 +431,7 @@ class _TicketRow extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label, style: GoogleFonts.spaceMono(fontSize: 10,
-                color: AppTheme.textMain.withOpacity(0.5), fontWeight: FontWeight.bold)),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontWeight: FontWeight.bold)),
             Text(value, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13)),
           ],
         ),
@@ -458,7 +458,7 @@ class _InfoRow extends StatelessWidget {
         const SizedBox(width: 6),
         Expanded(
           child: Text(text,
-              style: GoogleFonts.spaceMono(fontSize: 10, color: AppTheme.textMain.withOpacity(0.7))),
+              style: GoogleFonts.spaceMono(fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
         ),
       ]);
 }
@@ -477,14 +477,14 @@ class _TierRadio extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected ? AppTheme.primaryMagenta.withOpacity(0.06) : Colors.white,
             border: Border.all(
-              color: selected ? AppTheme.primaryMagenta : AppTheme.textMain.withOpacity(0.3),
+              color: selected ? AppTheme.primaryMagenta : Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
               width: selected ? 2 : 1.5,
             ),
           ),
           child: Row(
             children: [
               Icon(selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                  color: selected ? AppTheme.primaryMagenta : AppTheme.textMain,
+                  color: selected ? AppTheme.primaryMagenta : Theme.of(context).colorScheme.onSurface,
                   size: 20),
               const SizedBox(width: 12),
               Expanded(
@@ -494,7 +494,7 @@ class _TierRadio extends StatelessWidget {
               Text(tier.formattedPrice,
                   style: GoogleFonts.outfit(
                       fontWeight: FontWeight.w900, fontSize: 16,
-                      color: selected ? AppTheme.primaryMagenta : AppTheme.textMain)),
+                      color: selected ? AppTheme.primaryMagenta : Theme.of(context).colorScheme.onSurface)),
             ],
           ),
         ),
@@ -523,12 +523,12 @@ class _BrutalField extends StatelessWidget {
             decoration: InputDecoration(
               hintText: hint,
               filled: true,
-              fillColor: Colors.white,
-              enabledBorder: const OutlineInputBorder(
+              fillColor: Theme.of(context).cardTheme.color,
+              enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.zero,
-                borderSide: BorderSide(color: AppTheme.textMain, width: 2),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
               ),
-              focusedBorder: const OutlineInputBorder(
+              focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.zero,
                 borderSide: BorderSide(color: AppTheme.primaryMagenta, width: 2),
               ),
