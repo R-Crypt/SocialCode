@@ -34,6 +34,7 @@ class AdminPanel extends StatefulWidget {
 class _AdminPanelState extends State<AdminPanel> {
   List<Submission> _pendingReviews = [];
   List<CivicReport> _pendingIssues = [];
+  List<CivicReport> _resolvedIssues = [];
   Map<String, dynamic> _metrics = {};
   List<Challenge> _activeChallenges = [];
   bool _loading = true;
@@ -66,12 +67,14 @@ class _AdminPanelState extends State<AdminPanel> {
         setState(() {
           _pendingReviews = pendingSubs;
           _pendingIssues = pendingIssues;
+          _resolvedIssues = resolvedReports;
           _metrics = {
             'active_challenges': allChalls.length,
             'citizens': (profiles as List).length,
             'resolved_reports': resolvedReports.length,
             'pending_reviews': pendingSubs.length,
             'pending_issues': pendingIssues.length,
+            'resolved': resolvedReports.length,
           };
           _loading = false;
         });
@@ -260,6 +263,9 @@ class _AdminPanelState extends State<AdminPanel> {
                       _buildPendingIssuesBox(),
                       const SizedBox(height: 36),
 
+                      _buildResolvedIssuesBox(),
+                      const SizedBox(height: 36),
+
                       _buildPendingReviewsBox(),
                       const SizedBox(height: 36),
 
@@ -341,7 +347,11 @@ class _AdminPanelState extends State<AdminPanel> {
             icon: Icons.check_circle_outline, 
             color: Colors.green,
             onTap: () {
-               // Show resolved list
+               _scrollController.animateTo(
+                300, // Approximate position of resolved issues
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+              );
             },
           ),
         ],
@@ -392,6 +402,49 @@ class _AdminPanelState extends State<AdminPanel> {
     );
   }
 
+  Widget _buildResolvedIssuesBox() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('RESOLVED ISSUES', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('${_resolvedIssues.length} TOTAL', style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.green)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardTheme.color,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
+          ),
+          child: _resolvedIssues.isEmpty 
+            ? const Center(child: Text('No resolved issues yet.'))
+            : ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _resolvedIssues.length.clamp(0, 5),
+                separatorBuilder: (_, __) => const Divider(),
+                itemBuilder: (ctx, i) {
+                  final issue = _resolvedIssues[i];
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Text(issue.categoryEmoji, style: const TextStyle(fontSize: 20)),
+                    title: Text(issue.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    subtitle: Text('By ${issue.userName} · ${issue.locationName ?? "Unknown location"}', style: const TextStyle(fontSize: 11)),
+                    trailing: const Icon(Icons.chevron_right, size: 16),
+                    onTap: () => _showIssueDetails(issue),
+                  );
+                },
+              ),
+        ),
+      ],
+    );
+  }
+
   void _showIssueDetails(CivicReport issue) {
     showModalBottomSheet(
       context: context,
@@ -423,29 +476,49 @@ class _AdminPanelState extends State<AdminPanel> {
             const SizedBox(height: 24),
             Row(
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await context.read<ReportService>().updateReportStatus(issue.id, ReportStatus.resolved);
-                      Navigator.pop(ctx);
-                      _loadData();
-                    },
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                    child: const Text('MARK RESOLVED'),
+                if (issue.status != ReportStatus.resolved)
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await context.read<ReportService>().updateReportStatus(issue.id, ReportStatus.resolved);
+                        Navigator.pop(ctx);
+                        _loadData();
+                      },
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      child: const Text('MARK RESOLVED'),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        await context.read<ReportService>().updateReportStatus(issue.id, ReportStatus.in_progress);
+                        Navigator.pop(ctx);
+                        _loadData();
+                      },
+                      child: const Text('MOVE TO PENDING'),
+                    ),
                   ),
-                ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () async {
-                      await context.read<ReportService>().updateReportStatus(issue.id, ReportStatus.rejected);
-                      Navigator.pop(ctx);
-                      _loadData();
-                    },
-                    style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red)),
-                    child: const Text('REJECT', style: TextStyle(color: Colors.red)),
+                if (issue.status != ReportStatus.resolved)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        await context.read<ReportService>().updateReportStatus(issue.id, ReportStatus.rejected);
+                        Navigator.pop(ctx);
+                        _loadData();
+                      },
+                      style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red)),
+                      child: const Text('REJECT', style: TextStyle(color: Colors.red)),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('CLOSE'),
+                    ),
                   ),
-                ),
               ],
             ),
           ],
@@ -538,43 +611,89 @@ class _AdminPanelState extends State<AdminPanel> {
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(c.title.toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 24)),
-            const SizedBox(height: 8),
-            Text('Artist: ${c.artistName ?? "Unknown"}', style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta)),
-            const SizedBox(height: 20),
-            _detailRow('Progress', '${c.currentCount} / ${c.targetCount}'),
-            _detailRow('Points Reward', '${c.pointsReward} PTS'),
-            _detailRow('City', c.city),
-            const SizedBox(height: 20),
-            const Text('TOP CONTRIBUTORS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1)),
-            const SizedBox(height: 12),
-            if (sortedUids.isEmpty)
-              const Text('No approved submissions yet.')
-            else
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: sortedUids.length.clamp(0, 5),
-                itemBuilder: (ctx, i) {
-                  final uid = sortedUids[i];
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(child: Text('${i+1}')),
-                    title: Text(names[uid]!, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    trailing: Text('${counts[uid]} subs', style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta)),
-                  );
-                },
+        padding: EdgeInsets.only(
+            left: 24, right: 24, top: 24, bottom: MediaQuery.of(ctx).viewInsets.bottom + 24),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(c.title.toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 24)),
+              const SizedBox(height: 8),
+              Text('Artist / Creator: ${c.artistName ?? "Unknown"}', style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta)),
+              const SizedBox(height: 20),
+              
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardTheme.color,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.5)),
+                ),
+                child: Column(
+                  children: [
+                    _detailRow('Category', c.category.name.toUpperCase()),
+                    _detailRow('City', c.city),
+                    _detailRow('Progress', '${c.currentCount} / ${c.targetCount}'),
+                    _detailRow('Points Reward', '${c.pointsReward} PTS'),
+                    _detailRow('Created By', c.creatorName),
+                    _detailRow('End Date', DateFormat.yMMMd().format(c.endDate)),
+                  ],
+                ),
               ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(onPressed: () => Navigator.pop(ctx), child: const Text('CLOSE')),
-            ),
-          ],
+              const SizedBox(height: 20),
+
+              if (c.description != null && c.description!.isNotEmpty) ...[
+                const Text('DESCRIPTION', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
+                const SizedBox(height: 6),
+                Text(c.description!, style: GoogleFonts.inter(fontSize: 13, height: 1.5)),
+                const SizedBox(height: 16),
+              ],
+              
+              if (c.missionBriefing.isNotEmpty) ...[
+                const Text('MISSION BRIEFING', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
+                const SizedBox(height: 6),
+                Text(c.missionBriefing, style: GoogleFonts.inter(fontSize: 13, height: 1.5)),
+                const SizedBox(height: 24),
+              ],
+
+              const Text('TOP CONTRIBUTORS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
+              const SizedBox(height: 12),
+              if (sortedUids.isEmpty)
+                const Text('No approved submissions yet.', style: TextStyle(fontSize: 13))
+              else
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardTheme.color,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.5)),
+                  ),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: sortedUids.length.clamp(0, 5),
+                    separatorBuilder: (_, __) => Divider(color: Theme.of(context).colorScheme.outline.withOpacity(0.2), height: 1),
+                    itemBuilder: (ctx, i) {
+                      final uid = sortedUids[i];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: AppTheme.primaryMagenta.withOpacity(0.1),
+                          child: Text('${i+1}', style: const TextStyle(color: AppTheme.primaryMagenta, fontWeight: FontWeight.bold)),
+                        ),
+                        title: Text(names[uid]!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        trailing: Text('${counts[uid]} subs', style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta, fontSize: 13)),
+                      );
+                    },
+                  ),
+                ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(onPressed: () => Navigator.pop(ctx), child: const Text('CLOSE')),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -881,6 +1000,7 @@ class _EventFormState extends State<_EventForm> {
   final _locationCtrl = TextEditingController();
   final _slotsCtrl = TextEditingController();
   DateTime _date = DateTime.now().add(const Duration(days: 7));
+  String? _selectedImageUrl;
   bool _saving = false;
 
   @override
@@ -892,6 +1012,7 @@ class _EventFormState extends State<_EventForm> {
       _locationCtrl.text = widget.existing!.location;
       _slotsCtrl.text = '${widget.existing!.totalSlots}';
       _date = widget.existing!.eventDate;
+      _selectedImageUrl = widget.existing!.bannerUrl;
     }
   }
 
@@ -912,10 +1033,9 @@ class _EventFormState extends State<_EventForm> {
           const SizedBox(height: 12),
           const Text('MEDIA UPLOAD', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          Container(
-            height: 80, width: double.infinity,
-            decoration: BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.outline), borderRadius: BorderRadius.circular(12)),
-            child: const Center(child: Icon(Icons.cloud_upload_outlined, color: AppTheme.textDim)),
+          ChallengeImagePicker(
+            initialImageUrl: _selectedImageUrl,
+            onUploaded: (url) => _selectedImageUrl = url,
           ),
           const SizedBox(height: 24),
           SizedBox(
@@ -926,7 +1046,12 @@ class _EventFormState extends State<_EventForm> {
                 try {
                   final svc = EventService();
                   if (widget.existing != null) {
-                    await svc.updateEvent(widget.existing!.id, {'title': _titleCtrl.text, 'location': _locationCtrl.text, 'total_slots': int.tryParse(_slotsCtrl.text) ?? 100});
+                    await svc.updateEvent(widget.existing!.id, {
+                      'title': _titleCtrl.text, 
+                      'location': _locationCtrl.text, 
+                      'total_slots': int.tryParse(_slotsCtrl.text) ?? 100,
+                      if (_selectedImageUrl != null) 'banner_url': _selectedImageUrl,
+                    });
                   } else {
                     await svc.createEvent(
                       title: _titleCtrl.text,
@@ -936,6 +1061,7 @@ class _EventFormState extends State<_EventForm> {
                       totalSlots: int.tryParse(_slotsCtrl.text) ?? 100,
                       priceTiers: [const PriceTier(label: 'Free', pricePaise: 0)],
                       createdBy: widget.user.id,
+                      bannerUrl: _selectedImageUrl,
                     );
                   }
                   widget.onSaved();

@@ -194,14 +194,14 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          _filterChip(null, 'ALL'),
-          ...ReportCategory.values.map((cat) => _filterChip(cat, cat.name.toUpperCase())),
+          _filterChip(null, 'ALL', '🌍'),
+          ...ReportCategory.values.map((cat) => _filterChip(cat, cat.name.toUpperCase(), _categoryEmoji(cat))),
         ],
       ),
     );
   }
 
-  Widget _filterChip(ReportCategory? cat, String label) {
+  Widget _filterChip(ReportCategory? cat, String label, String emoji) {
     final active = _filterCategory == cat;
     return GestureDetector(
       onTap: () => setState(() => _filterCategory = cat),
@@ -213,16 +213,36 @@ class _CivicReporterScreenState extends State<CivicReporterScreen> {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: active ? AppTheme.primaryMagenta : Theme.of(context).colorScheme.outline),
         ),
-        child: Text(
-          label,
-          style: GoogleFonts.spaceMono(
-            fontSize: 9,
-            fontWeight: FontWeight.bold,
-            color: active ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 12)),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: GoogleFonts.spaceMono(
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+                color: active ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
+              ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  String _categoryEmoji(ReportCategory cat) {
+    switch (cat) {
+      case ReportCategory.pothole: return '🕳️';
+      case ReportCategory.waste: return '🗑️';
+      case ReportCategory.streetlight: return '💡';
+      case ReportCategory.water: return '💧';
+      case ReportCategory.tree: return '🌳';
+      case ReportCategory.noise: return '🔊';
+      case ReportCategory.safety: return '🛡️';
+      case ReportCategory.misc: return '⚠️';
+    }
   }
 
   IconData _categoryIcon(ReportCategory cat) {

@@ -9,13 +9,10 @@ import 'package:social_code/models/app_user.dart';
 import 'package:social_code/models/ticket.dart';
 import 'package:social_code/services/event_service.dart';
 import 'package:social_code/services/ticket_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Payment flow:
-/// 1. User picks a tier → fills attendee details → taps "Proceed to Pay"
-/// 2. App calls create-razorpay-order Edge Function → gets Razorpay order URL
-/// 3. App opens Razorpay hosted checkout in browser (url_launcher)
-/// 4. Razorpay webhook (Edge Function) fires → issues ticket → QR token stored in DB
-/// 5. User taps "My Ticket" → app queries Supabase for their ticket → shows QR
+/// (Payment is temporarily skipped. Direct ticket generation is used).
 
 class EventDetailScreen extends StatefulWidget {
   final Event event;
@@ -78,29 +75,27 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
     setState(() => _loading = true);
     try {
-      final svc = EventService();
       final tier = _selectedTier!;
-
-      // User requested to SKIP payment part. 
-      // We will issue a ticket directly regardless of price.
-      final result = await svc.createRazorpayOrder(
-        eventId: widget.event.id,
-        userId: widget.user.id,
-        attendeeName: _nameCtrl.text.trim(),
-        attendeeEmail: _emailCtrl.text.trim(),
-        tierLabel: tier.label,
-        amountPaise: 0, // Mock as free for skipping payment
-      );
-
-      // In "skip" mode, we assume the edge function or service can handle amountPaise: 0
-      // or we just set the ticket if returned.
-      if (result['ticket'] != null) {
-        final t = Ticket.fromMap(Map<String, dynamic>.from(result['ticket'] as Map));
-        if (mounted) setState(() => _ticket = t);
-      } else {
-        // If ticket not returned immediately, it might be async, but usually for amount:0 it is.
-        // Fallback: poll for it.
-        _pollForTicket();
+      
+      // Directly insert ticket into DB to skip payment as requested
+      final qrToken = 'QR_${DateTime.now().millisecondsSinceEpoch}_${widget.user.id.substring(0, 5)}';
+      
+      final response = await Supabase.instance.client.from('tickets').insert({
+        'event_id': widget.event.id,
+        'user_id': widget.user.id,
+        'attendee_name': _nameCtrl.text.trim(),
+        'attendee_email': _emailCtrl.text.trim(),
+        'attendee_phone': _phoneCtrl.text.trim(),
+        'amount_paid_paise': 0, // Mock as free
+        'price_tier_label': tier.label,
+        'qr_token': qrToken,
+        'status': 'valid',
+      }).select().single();
+      
+      if (mounted) {
+        setState(() {
+          _ticket = Ticket.fromMap(response);
+        });
       }
     } catch (e) {
       if (mounted) {
@@ -115,6 +110,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
   /// Poll Supabase every 3 s (up to 10 attempts) after returning from payment
   Future<void> _pollForTicket() async {
+    // This is no longer strictly needed since we skip payment, but kept just in case.
     if (_pollingForTicket) return;
     setState(() => _pollingForTicket = true);
     final svc = TicketService();

@@ -107,17 +107,22 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
         children: [
           Expanded(
             child: Container(
+              height: 48,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardTheme.color,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Theme.of(context).colorScheme.outline),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.5)),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2)),
+                ],
               ),
               child: TextField(
                 onChanged: (val) => setState(() => searchQuery = val),
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.search, size: 20),
+                decoration: InputDecoration(
+                  icon: Icon(Icons.search, size: 20, color: AppTheme.textDim.withOpacity(0.8)),
                   hintText: 'Search codes by name...',
+                  hintStyle: TextStyle(color: AppTheme.textDim.withOpacity(0.8), fontSize: 13),
                   border: InputBorder.none,
                 ),
               ),
@@ -132,14 +137,26 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
 
   Widget _buildFilterButton() {
     return Container(
+      height: 48,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).colorScheme.outline),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.5)),
+        boxShadow: [
+           BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2)),
+        ],
       ),
-      child: IconButton(
-        icon: const Icon(Icons.tune, color: AppTheme.primaryMagenta),
-        onPressed: () {},
+      child: InkWell(
+        onTap: () {},
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.filter_alt_outlined, color: AppTheme.primaryMagenta, size: 18),
+            const SizedBox(width: 6),
+            Text('Filter', style: GoogleFonts.outfit(color: AppTheme.textMain, fontWeight: FontWeight.bold, fontSize: 13)),
+          ],
+        ),
       ),
     );
   }
@@ -202,17 +219,17 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
     return GestureDetector(
       onTap: () => setState(() => isGridView = grid),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: active ? (Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          color: active ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E1E24) : const Color(0xFF22252A)) : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 18, color: active ? Colors.white : AppTheme.textDim),
+            Icon(icon, size: 16, color: active ? Colors.white : AppTheme.textDim.withOpacity(0.8)),
             const SizedBox(width: 8),
-            Text(label, style: TextStyle(color: active ? Colors.white : AppTheme.textDim, fontWeight: FontWeight.bold, fontSize: 12)),
+            Text(label, style: GoogleFonts.outfit(color: active ? Colors.white : AppTheme.textMain, fontWeight: FontWeight.bold, fontSize: 13)),
           ],
         ),
       ),
@@ -223,18 +240,17 @@ class _ChallengesListScreenState extends State<ChallengesListScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: Theme.of(context).cardTheme.color,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outline),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.5)),
         ),
         child: Row(
           children: [
-            Text('$label: ', style: TextStyle(color: AppTheme.textDim, fontSize: 11)),
-            Text(value.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
-            const SizedBox(width: 4),
-            const Icon(Icons.keyboard_arrow_down, size: 14),
+            Text(label, style: GoogleFonts.outfit(color: AppTheme.textMain, fontSize: 13)),
+            const SizedBox(width: 6),
+            const Icon(Icons.keyboard_arrow_down, size: 16, color: AppTheme.textMain),
           ],
         ),
       ),
@@ -309,7 +325,13 @@ class _ChallengeCard extends StatelessWidget {
         context,
         MaterialPageRoute(builder: (_) => ChallengeDetailScreen(challenge: challenge, user: user)),
       ),
-      child: Card(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardTheme.color,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.3)),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))],
+        ),
         clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,40 +339,43 @@ class _ChallengeCard extends StatelessWidget {
             Stack(
               children: [
                 AspectRatio(
-                  aspectRatio: isGrid ? 1.2 : 16 / 9,
+                  aspectRatio: isGrid ? 1.4 : 16 / 9,
                   child: challenge.imageUrl != null 
                     ? CachedNetworkImage(imageUrl: challenge.imageUrl!, fit: BoxFit.cover)
-                    : Container(color: Colors.grey[200]),
+                    : Container(color: Colors.grey[300]),
                 ),
                 Positioned(
-                  top: 8, right: 8,
+                  top: 12, right: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    width: 42,
+                    height: 52,
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryMagenta,
+                      color: AppTheme.primaryMagenta.withOpacity(0.95),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('${challenge.pointsReward}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14)),
-                        const Text('PTS', style: TextStyle(color: Colors.white70, fontSize: 8, fontWeight: FontWeight.bold)),
+                        Text('${challenge.pointsReward}', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16)),
+                        Text('PTS', style: GoogleFonts.outfit(color: Colors.white70, fontSize: 9, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
                 ),
                 Positioned(
-                  bottom: 8, left: 8,
+                  bottom: 12, left: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: _getCategoryColor(challenge.category).withOpacity(0.9),
+                      color: _getCategoryColor(challenge.category).withOpacity(0.95),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
                       children: [
-                        Text(challenge.category.name.toUpperCase(), style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+                        Text(challenge.category.name.toUpperCase(), style: GoogleFonts.outfit(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                         const SizedBox(width: 4),
-                        Icon(_getCategoryIcon(challenge.category), size: 10, color: Colors.white),
+                        Icon(_getCategoryIcon(challenge.category), size: 12, color: Colors.white),
                       ],
                     ),
                   ),
@@ -358,58 +383,62 @@ class _ChallengeCard extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                    Row(
                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     crossAxisAlignment: CrossAxisAlignment.start,
                      children: [
                        Expanded(
                          child: Text(challenge.title, 
                            maxLines: 1, overflow: TextOverflow.ellipsis,
-                           style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 15)),
+                           style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16)),
                        ),
-                       const Icon(Icons.bookmark_border, size: 18),
+                       const Icon(Icons.bookmark_outline, size: 20, color: AppTheme.textMain),
                      ],
                    ),
                    if (challenge.artistName != null && challenge.artistName!.isNotEmpty)
                      Padding(
                        padding: const EdgeInsets.only(top: 2),
                        child: Text('BY ${challenge.artistName!.toUpperCase()}', 
-                         style: const TextStyle(color: AppTheme.primaryMagenta, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                         style: const TextStyle(color: AppTheme.primaryMagenta, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
                      ),
-                   const SizedBox(height: 6),
+                   const SizedBox(height: 10),
                    Row(
                      children: [
-                       const Icon(Icons.location_on_outlined, size: 12, color: AppTheme.textDim),
-                      const SizedBox(width: 4),
-                      Text(challenge.city, style: const TextStyle(color: AppTheme.textDim, fontSize: 10)),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.access_time, size: 12, color: AppTheme.textDim),
-                      const SizedBox(width: 4),
-                      Text('${challenge.daysRemaining} days left', style: const TextStyle(color: AppTheme.textDim, fontSize: 10)),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('PROGRESS', style: TextStyle(color: AppTheme.textDim, fontSize: 8, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                      Text('${challenge.currentCount} / ${challenge.targetCount}', 
-                        style: const TextStyle(color: AppTheme.primaryMagenta, fontSize: 9, fontWeight: FontWeight.w900)),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: LinearProgressIndicator(
-                      value: challenge.progressPercent,
-                      minHeight: 4,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation(_getCategoryColor(challenge.category)),
-                    ),
-                  ),
+                       const Icon(Icons.location_on_outlined, size: 14, color: AppTheme.textDim),
+                       const SizedBox(width: 4),
+                       Text(challenge.city, style: GoogleFonts.outfit(color: AppTheme.textMain, fontSize: 11)),
+                       const Padding(
+                         padding: EdgeInsets.symmetric(horizontal: 6),
+                         child: Icon(Icons.circle, size: 3, color: AppTheme.textDim),
+                       ),
+                       const Icon(Icons.access_time, size: 14, color: AppTheme.textDim),
+                       const SizedBox(width: 4),
+                       Text('${challenge.daysRemaining} days left', style: GoogleFonts.outfit(color: AppTheme.textMain, fontSize: 11)),
+                     ],
+                   ),
+                   const SizedBox(height: 16),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       Text('PROGRESS', style: GoogleFonts.spaceMono(color: AppTheme.textDim, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+                       Text('${challenge.currentCount} / ${challenge.targetCount}', 
+                         style: GoogleFonts.spaceMono(color: AppTheme.primaryMagenta, fontSize: 10, fontWeight: FontWeight.bold)),
+                     ],
+                   ),
+                   const SizedBox(height: 8),
+                   ClipRRect(
+                     borderRadius: BorderRadius.circular(100),
+                     child: LinearProgressIndicator(
+                       value: challenge.progressPercent,
+                       minHeight: 6,
+                       backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                       valueColor: AlwaysStoppedAnimation(_getCategoryColor(challenge.category)),
+                     ),
+                   ),
                 ],
               ),
             ),
