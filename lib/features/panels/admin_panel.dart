@@ -730,7 +730,7 @@ class _MetricCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Theme.of(context).cardTheme.color,
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
+          border: Border.all(color: color.withOpacity(0.4), width: 1.5),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(

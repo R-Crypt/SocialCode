@@ -210,7 +210,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   user: widget.user,
                   onTap: (i) => setState(() => _selectedIndex = i),
                 ),
-                const VerticalDivider(width: 1, thickness: 2, color: AppTheme.textMain),
+                VerticalDivider(width: 1, thickness: 2, color: Theme.of(context).colorScheme.onSurface),
                 Expanded(child: _currentScreen),
               ],
             ),
@@ -221,8 +221,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return Scaffold(
           body: _currentScreen,
           bottomNavigationBar: Container(
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AppTheme.textMain, width: 2)),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2)),
             ),
             child: BottomNavigationBar(
               currentIndex: _selectedIndex,
@@ -284,10 +284,10 @@ class _SideNav extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: SocialCodeLogo(
                 fontSize: 28,
-                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : AppTheme.textMain,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Theme.of(context).colorScheme.onSurface,
               ),
             ),
-            const Divider(height: 1, thickness: 2, color: AppTheme.borderLight),
+            Divider(height: 1, thickness: 2, color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
             const SizedBox(height: 16),
 
             // Nav items
@@ -335,7 +335,7 @@ class _SideNav extends StatelessWidget {
             }),
 
             const Spacer(),
-            const Divider(height: 1, thickness: 2, color: AppTheme.borderLight),
+            Divider(height: 1, thickness: 2, color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
 
             // User + logout
             Padding(
