@@ -376,7 +376,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onTap: () async {
                         final picker = ImagePicker();
                         final img = await picker.pickImage(
-                            source: ImageSource.gallery, imageQuality: 80);
+                            source: ImageSource.gallery, imageQuality: 80, maxWidth: 1024, maxHeight: 1024);
                         if (img != null) {
                           final bytes = await img.readAsBytes();
                           setState(() {

@@ -60,7 +60,7 @@ class _SubmitProofScreenState extends State<SubmitProofScreen> {
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
-    final image = await picker.pickImage(source: source, imageQuality: 80);
+    final image = await picker.pickImage(source: source, imageQuality: 80, maxWidth: 1024, maxHeight: 1024);
     if (image != null && mounted) {
       final bytes = await image.readAsBytes();
       setState(() { _image = image; _imageBytes = bytes; });
