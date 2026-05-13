@@ -87,10 +87,8 @@ class ReportService {
         'report_id': reportId,
         'user_id': userId,
       });
-      await _client.rpc('increment', params: {
-        'table_name': 'civic_reports',
-        'row_id': reportId,
-        'column_name': 'upvotes',
+      await _client.rpc('increment_report_upvote', params: {
+        'report_id': reportId,
       });
     } catch (_) {}
   }

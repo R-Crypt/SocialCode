@@ -116790,7 +116790,7 @@ s=6
 return A.i(n.bU("report_upvotes").fT(0,A.ab(["report_id",a,"user_id",b],m,m)),$async$Bu)
 case 6:n=t.z
 s=7
-return A.i(o.b.SL("increment",A.ab(["table_name","civic_reports","row_id",a,"column_name","upvotes"],m,n),n),$async$Bu)
+return A.i(o.b.SL("increment_report_upvote",A.ab(["report_id",a],m,n),n),$async$Bu)
 case 7:q=1
 s=5
 break
