@@ -6,6 +6,7 @@ import 'package:social_code/models/app_user.dart';
 import 'package:social_code/models/submission.dart';
 import 'package:social_code/services/submission_service.dart';
 import 'package:social_code/features/panels/admin_users_screen.dart';
+import 'package:social_code/features/panels/admin_challenge_submissions_screen.dart' as admin_subs;
 import 'package:social_code/features/challenges/screens/challenges_list_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
@@ -717,7 +718,36 @@ class _AdminPanelState extends State<AdminPanel> {
               SizedBox(
                 width: double.infinity,
                 height: 50,
-                child: ElevatedButton(onPressed: () => Navigator.pop(ctx), child: const Text('CLOSE')),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => admin_subs.AdminChallengeSubmissionsScreen(challenge: c),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryMagenta,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('VIEW ALL SUBMISSIONS', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx), 
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).cardTheme.color,
+                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    side: BorderSide(color: Theme.of(context).colorScheme.outline),
+                  ),
+                  child: const Text('CLOSE'),
+                ),
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:social_code/models/submission.dart';
+import 'package:crypto/crypto.dart';
 
 class SubmissionService {
   SupabaseClient get _client => Supabase.instance.client;
@@ -31,6 +32,15 @@ class SubmissionService {
     double? longitude,
     String? locationName,
   }) async {
+    // Compute image hash to prevent duplicate submissions
+    final hash = sha256.convert(imageBytes).toString();
+    
+    // Check if this image was already submitted globally (or just by this user depending on policy, we check globally to prevent stealing)
+    final existing = await _client.from('submissions').select('id').eq('image_hash', hash).maybeSingle();
+    if (existing != null) {
+      throw Exception('Duplicate detected! This exact image has already been submitted to the platform.');
+    }
+
     // Upload image first
     final imageUrl = await uploadProofImage(imageBytes, userId);
 
@@ -39,6 +49,7 @@ class SubmissionService {
       'user_id': userId,
       'user_name': userName,
       'image_url': imageUrl,
+      'image_hash': hash,
       'caption': caption,
       'status': 'pending',
       'latitude': latitude,
