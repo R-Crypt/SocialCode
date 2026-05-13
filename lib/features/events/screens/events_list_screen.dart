@@ -98,9 +98,9 @@ class _EventCard extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardTheme.color,
           border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
-          boxShadow: [BoxShadow(color: Color(0xFF111111), offset: Offset(4, 4))],
+          boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.onSurface, offset: Offset(4, 4))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +188,7 @@ class _EventCard extends StatelessWidget {
                                     builder: (_) => EventDetailScreen(event: event, user: user)),
                               ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: event.isSoldOut ? Colors.grey : Theme.of(context).colorScheme.onSurface,
+                        backgroundColor: event.isSoldOut ? Colors.grey : AppTheme.primaryMagenta,
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                       ),
                       child: Text(

@@ -311,8 +311,10 @@ class _AdminPanelState extends State<AdminPanel> {
             icon: Icons.people, 
             color: AppTheme.accentPurple,
             onTap: () {
-              // Scroll to user management or show dialog
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('CITIZEN LIST LOADING...')));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AdminUsersScreen()),
+              );
             },
           ),
           _MetricCard(
@@ -605,62 +607,87 @@ class _AdminPanelState extends State<AdminPanel> {
       names[uid] = s['user_name'];
     }
     final sortedUids = counts.keys.toList()..sort((a, b) => counts[b]!.compareTo(counts[a]!));
+    final completionPct = c.targetCount > 0 ? (c.currentCount / c.targetCount * 100) : 0.0;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (ctx) => Padding(
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border.all(color: AppTheme.primaryMagenta, width: 2),
+        ),
         padding: EdgeInsets.only(
             left: 24, right: 24, top: 24, bottom: MediaQuery.of(ctx).viewInsets.bottom + 24),
+        height: MediaQuery.of(context).size.height * 0.85,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(c.title.toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 24)),
-              SizedBox(height: 8),
-              Text('Artist / Creator: ${c.artistName ?? "Unknown"}', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta)),
-              SizedBox(height: 20),
-              
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardTheme.color,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.5)),
-                ),
-                child: Column(
-                  children: [
-                    _detailRow('Category', c.category.name.toUpperCase()),
-                    _detailRow('City', c.city),
-                    _detailRow('Progress', '${c.currentCount} / ${c.targetCount}'),
-                    _detailRow('Points Reward', '${c.pointsReward} PTS'),
-                    _detailRow('Created By', c.creatorName),
-                    _detailRow('End Date', DateFormat.yMMMd().format(c.endDate)),
-                  ],
+              Center(
+                child: Container(
+                  width: 40, height: 4,
+                  margin: const EdgeInsets.only(bottom: 24),
+                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.outline, borderRadius: BorderRadius.circular(2)),
                 ),
               ),
-              SizedBox(height: 20),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(c.title.toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 24)),
+                        const SizedBox(height: 4),
+                        Text('By ${c.creatorName} • ${c.category.name.toUpperCase()}', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta)),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryMagenta.withOpacity(0.1),
+                      border: Border.all(color: AppTheme.primaryMagenta, width: 1.5),
+                    ),
+                    child: Text('${c.pointsReward} PTS', style: GoogleFonts.spaceMono(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta, fontSize: 16)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              
+              Text('CODE STATISTICS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
+              const SizedBox(height: 12),
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: 1.5,
+                children: [
+                  _MetricCard(label: 'COMPLETION', value: '${completionPct.toStringAsFixed(1)}%', icon: Icons.pie_chart, color: AppTheme.primaryMagenta),
+                  _MetricCard(label: 'SUBMISSIONS', value: '${subsRaw.length}', icon: Icons.file_upload, color: AppTheme.accentPurple),
+                  _MetricCard(label: 'CONTRIBUTORS', value: '${counts.keys.length}', icon: Icons.people, color: Colors.blue),
+                  _MetricCard(label: 'DAYS LEFT', value: '${c.daysRemaining}', icon: Icons.timer, color: Colors.orange),
+                ],
+              ),
+              const SizedBox(height: 32),
 
               if (c.description != null && c.description!.isNotEmpty) ...[
                 Text('DESCRIPTION', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 Text(c.description!, style: GoogleFonts.inter(fontSize: 13, height: 1.5)),
-                SizedBox(height: 16),
+                const SizedBox(height: 24),
               ],
               
-              if (c.missionBriefing.isNotEmpty) ...[
-                Text('MISSION BRIEFING', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
-                SizedBox(height: 6),
-                Text(c.missionBriefing, style: GoogleFonts.inter(fontSize: 13, height: 1.5)),
-                SizedBox(height: 24),
-              ],
-
               Text('TOP CONTRIBUTORS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: AppTheme.textDim)),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               if (sortedUids.isEmpty)
-                Text('No approved submissions yet.', style: TextStyle(fontSize: 13))
+                const Text('No approved submissions yet.', style: TextStyle(fontSize: 13))
               else
                 Container(
                   decoration: BoxDecoration(
@@ -678,19 +705,19 @@ class _AdminPanelState extends State<AdminPanel> {
                       return ListTile(
                         leading: CircleAvatar(
                           backgroundColor: AppTheme.primaryMagenta.withOpacity(0.1),
-                          child: Text('${i+1}', style: TextStyle(color: AppTheme.primaryMagenta, fontWeight: FontWeight.bold)),
+                          child: Text('${i+1}', style: const TextStyle(color: AppTheme.primaryMagenta, fontWeight: FontWeight.bold)),
                         ),
-                        title: Text(names[uid]!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                        trailing: Text('${counts[uid]} subs', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta, fontSize: 13)),
+                        title: Text(names[uid]!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        trailing: Text('${counts[uid]} subs', style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryMagenta, fontSize: 13)),
                       );
                     },
                   ),
                 ),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
                 height: 50,
-                child: ElevatedButton(onPressed: () => Navigator.pop(ctx), child: Text('CLOSE')),
+                child: ElevatedButton(onPressed: () => Navigator.pop(ctx), child: const Text('CLOSE')),
               ),
             ],
           ),

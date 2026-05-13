@@ -346,7 +346,7 @@ class _TicketView extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).cardTheme.color,
               border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
-              boxShadow: [BoxShadow(color: Color(0xFF111111), offset: Offset(6, 6))],
+              boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.onSurface, offset: Offset(6, 6))],
             ),
             child: Column(
               children: [
@@ -475,7 +475,7 @@ class _TierRadio extends StatelessWidget {
           margin: EdgeInsets.only(bottom: 8),
           padding: EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: selected ? AppTheme.primaryMagenta.withOpacity(0.06) : Colors.white,
+            color: selected ? AppTheme.primaryMagenta.withOpacity(0.06) : Theme.of(context).cardTheme.color,
             border: Border.all(
               color: selected ? AppTheme.primaryMagenta : Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
               width: selected ? 2 : 1.5,
