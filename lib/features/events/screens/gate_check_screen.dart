@@ -130,13 +130,52 @@ class _GateCheckScreenState extends State<GateCheckScreen>
           // ── Middle: Result display ────────────────────────────────────────
           Expanded(
             child: _lastResult == null
-                ? MobileScanner(
-                    onDetect: (capture) {
-                      final List<Barcode> barcodes = capture.barcodes;
-                      if (barcodes.isNotEmpty && barcodes.first.rawValue != null && !_scanning) {
-                        _verify(barcodes.first.rawValue!);
-                      }
-                    },
+                ? Stack(
+                    children: [
+                      MobileScanner(
+                        onDetect: (capture) {
+                          final List<Barcode> barcodes = capture.barcodes;
+                          if (barcodes.isNotEmpty && barcodes.first.rawValue != null && !_scanning) {
+                            _verify(barcodes.first.rawValue!);
+                          }
+                        },
+                      ),
+                      Positioned(
+                        bottom: 0, left: 0, right: 0,
+                        child: Container(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _tokenCtrl,
+                                  style: const TextStyle(fontSize: 12),
+                                  decoration: InputDecoration(
+                                    hintText: 'Or enter token manually...',
+                                    filled: true,
+                                    fillColor: Theme.of(context).cardTheme.color,
+                                    border: const OutlineInputBorder(),
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (_tokenCtrl.text.isNotEmpty) _verify(_tokenCtrl.text);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.primaryMagenta,
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                ),
+                                child: const Text('VERIFY', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   )
                 : FadeTransition(
                     opacity: _flashAnim,
