@@ -29,6 +29,7 @@ class GateCheckScreen extends StatefulWidget {
 class _GateCheckScreenState extends State<GateCheckScreen>
     with SingleTickerProviderStateMixin {
   final _svc = TicketService();
+  final _tokenCtrl = TextEditingController();
   final MobileScannerController _scannerController = MobileScannerController();
   bool _scanning = false;
   bool _scannerActive = false;
@@ -235,9 +236,8 @@ class _GateCheckScreenState extends State<GateCheckScreen>
       ),
     );
   }
-}
 
-// ─── Scanner view removed, using MobileScanner inline ───────────────
+  // ─── Scanner view removed, using MobileScanner inline ───────────────
 
   void _showManualEntry(BuildContext context) {
     showModalBottomSheet(
