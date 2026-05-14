@@ -135,15 +135,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> _saveConsent(bool analytics, bool marketing) async {
     try {
-      await Supabase.instance.client.from('user_consents').insert({
+      // Use upsert to handle both new and existing consent records
+      await Supabase.instance.client.from('user_consents').upsert({
         'user_id': widget.user.id,
         'analytics_consent': analytics,
         'marketing_consent': marketing,
-      });
+      }, onConflict: 'user_id');
+      
       if (mounted) Navigator.pop(context);
     } catch (e) {
+      debugPrint('Consent save error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save preferences.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not save to cloud, but you can proceed.'),
+            action: SnackBarAction(label: 'OK', onPressed: () => Navigator.pop(context)),
+          )
+        );
+        // Also allow proceeding after a short delay so they aren't stuck
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted && Navigator.canPop(context)) Navigator.pop(context);
+        });
       }
     }
   }
