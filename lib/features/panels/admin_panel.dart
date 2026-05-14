@@ -16,6 +16,7 @@ import 'package:social_code/models/civic_report.dart';
 import 'package:social_code/services/report_service.dart';
 import 'package:social_code/features/challenges/bloc/challenges_bloc.dart';
 import 'package:social_code/core/widgets/challenge_image_picker.dart';
+import 'package:social_code/core/widgets/creator_dropdown.dart';
 import 'package:social_code/core/utils/download.dart';
 import 'package:intl/intl.dart';
 import 'package:social_code/models/event.dart';
@@ -92,7 +93,7 @@ class _AdminPanelState extends State<AdminPanel> {
     final descCtrl = TextEditingController(text: existing?.description ?? '');
     final briefingCtrl = TextEditingController(text: existing?.missionBriefing ?? '');
     final cityCtrl = TextEditingController(text: existing?.city ?? 'Bengaluru');
-    final artistCtrl = TextEditingController(text: existing?.artistName ?? '');
+    String? artistName = existing?.artistName ?? '';
     final pointsCtrl = TextEditingController(text: '${existing?.pointsReward ?? 50}');
     final targetCtrl = TextEditingController(text: '${existing?.targetCount ?? 100}');
     ChallengeCategory selectedCategory = existing?.category ?? ChallengeCategory.environment;
@@ -125,7 +126,10 @@ class _AdminPanelState extends State<AdminPanel> {
 
                 _FormField(controller: titleCtrl, label: 'CHALLENGE TITLE'),
                 SizedBox(height: 12),
-                _FormField(controller: artistCtrl, label: 'ARTIST / CREATOR NAME'),
+                CreatorDropdown(
+                  initialValue: artistName,
+                  onChanged: (val) => artistName = val ?? '',
+                ),
                 SizedBox(height: 12),
                 _FormField(controller: descCtrl, label: 'DESCRIPTION', maxLines: 2),
                 SizedBox(height: 12),
@@ -181,7 +185,7 @@ class _AdminPanelState extends State<AdminPanel> {
                         if (isEditing) {
                           await Supabase.instance.client.from('challenges').update({
                             'title': titleCtrl.text.trim(),
-                            'artist_name': artistCtrl.text.trim(),
+                            'artist_name': artistName,
                             'description': descCtrl.text.trim(),
                             'mission_briefing': briefingCtrl.text.trim(),
                             'points_reward': int.tryParse(pointsCtrl.text) ?? 50,
@@ -194,7 +198,7 @@ class _AdminPanelState extends State<AdminPanel> {
                           final challenge = Challenge(
                             id: '',
                             title: titleCtrl.text.trim(),
-                            artistName: artistCtrl.text.trim(),
+                            artistName: artistName,
                             description: descCtrl.text.trim(),
                             missionBriefing: briefingCtrl.text.trim(),
                             creatorId: widget.user.id,

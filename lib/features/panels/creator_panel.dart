@@ -7,6 +7,7 @@ import 'package:social_code/models/app_user.dart';
 import 'package:social_code/models/challenge.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:social_code/core/widgets/challenge_image_picker.dart';
+import 'package:social_code/core/widgets/creator_dropdown.dart';
 
 class CreatorPanel extends StatefulWidget {
   final AppUser user;
@@ -155,6 +156,7 @@ class _CreatorPanelState extends State<CreatorPanel> {
     final cityCtrl = TextEditingController(text: existing?.city ?? 'Bengaluru');
     final pointsCtrl = TextEditingController(text: '${existing?.pointsReward ?? 50}');
     final targetCtrl = TextEditingController(text: '${existing?.targetCount ?? 100}');
+    String? artistName = existing?.artistName ?? '';
     ChallengeCategory selectedCategory = existing?.category ?? ChallengeCategory.environment;
     String? selectedImageUrl = existing?.imageUrl;
 
@@ -186,6 +188,11 @@ class _CreatorPanelState extends State<CreatorPanel> {
                 SizedBox(height: 16),
 
                 _FormField(controller: titleCtrl, label: 'CHALLENGE TITLE'),
+                SizedBox(height: 12),
+                CreatorDropdown(
+                  initialValue: artistName,
+                  onChanged: (val) => artistName = val ?? '',
+                ),
                 SizedBox(height: 12),
                 _FormField(controller: descCtrl, label: 'DESCRIPTION', maxLines: 2),
                 SizedBox(height: 12),
@@ -257,6 +264,7 @@ class _CreatorPanelState extends State<CreatorPanel> {
                         if (isEditing) {
                           await Supabase.instance.client.from('challenges').update({
                             'title': titleCtrl.text.trim(),
+                            'artist_name': artistName,
                             'description': descCtrl.text.trim(),
                             'mission_briefing': briefingCtrl.text.trim(),
                             'points_reward': int.tryParse(pointsCtrl.text) ?? 50,
@@ -269,6 +277,7 @@ class _CreatorPanelState extends State<CreatorPanel> {
                           final challenge = Challenge(
                             id: '',
                             title: titleCtrl.text.trim(),
+                            artistName: artistName,
                             description: descCtrl.text.trim(),
                             missionBriefing: briefingCtrl.text.trim(),
                             creatorId: widget.user.id,
