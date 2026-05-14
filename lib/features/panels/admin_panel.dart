@@ -38,6 +38,7 @@ class _AdminPanelState extends State<AdminPanel> {
   List<CivicReport> _resolvedIssues = [];
   Map<String, dynamic> _metrics = {};
   List<Challenge> _activeChallenges = [];
+  List<Challenge> _pendingChallenges = [];
   bool _loading = true;
 
   @override
@@ -59,7 +60,8 @@ class _AdminPanelState extends State<AdminPanel> {
 
       final challsRaw = await client.from('challenges').select().order('created_at', ascending: false);
       final allChalls = (challsRaw as List).map((data) => Challenge.fromMap(data, data['id'])).toList();
-      _activeChallenges = allChalls;
+      _activeChallenges = allChalls.where((c) => c.status != ChallengeStatus.pending).toList();
+      _pendingChallenges = allChalls.where((c) => c.status == ChallengeStatus.pending).toList();
 
       final profiles = await client.from('profiles').select('id');
       final resolvedReports = allReports.where((r) => r.status == ReportStatus.resolved).toList();
@@ -575,6 +577,26 @@ class _AdminPanelState extends State<AdminPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (_pendingChallenges.isNotEmpty) ...[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('PENDING CODES', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange)),
+              Text('${_pendingChallenges.length} WAITING', style: GoogleFonts.spaceMono(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.orange)),
+            ],
+          ),
+          SizedBox(height: 12),
+          ..._pendingChallenges.map((c) => _AdminChallengeItem(
+            challenge: c,
+            onEdit: () => _showCreateForm(context, existing: c),
+            onTap: () => _showChallengeDetails(c),
+            onApprove: () async {
+              await Supabase.instance.client.from('challenges').update({'status': 'active'}).eq('id', c.id);
+              _loadData();
+            },
+          )),
+          SizedBox(height: 24),
+        ],
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -875,8 +897,9 @@ class _AdminChallengeItem extends StatelessWidget {
   final Challenge challenge;
   final VoidCallback? onEdit;
   final VoidCallback? onTap;
+  final VoidCallback? onApprove;
 
-  const _AdminChallengeItem({required this.challenge, this.onEdit, this.onTap});
+  const _AdminChallengeItem({required this.challenge, this.onEdit, this.onTap, this.onApprove});
 
   @override
   Widget build(BuildContext context) {
@@ -886,7 +909,15 @@ class _AdminChallengeItem extends StatelessWidget {
         onTap: onTap,
         title: Text(challenge.title, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text('Artist: ${challenge.artistName ?? "Unknown"} · ${challenge.city}', style: TextStyle(fontSize: 11)),
-        trailing: onEdit != null ? IconButton(icon: Icon(Icons.edit, size: 20), onPressed: onEdit) : null,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (onApprove != null)
+              IconButton(icon: Icon(Icons.check_circle, color: Colors.green, size: 20), onPressed: onApprove),
+            if (onEdit != null) 
+              IconButton(icon: Icon(Icons.edit, size: 20), onPressed: onEdit),
+          ],
+        ),
       ),
     );
   }
