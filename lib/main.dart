@@ -15,14 +15,33 @@ import 'package:social_code/features/challenges/bloc/challenges_bloc.dart';
 import 'package:social_code/features/events/bloc/events_bloc.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  await Supabase.initialize(
-    url: 'https://vyihctqxmpdbhdzvpkqg.supabase.co',
-    anonKey: 'sb_publishable_8K922tNL8hGQX4geoyz8Sg_7K9SOZ5l',
-  );
+    await Supabase.initialize(
+      url: 'https://vyihctqxmpdbhdzvpkqg.supabase.co',
+      anonKey: 'sb_publishable_8K922tNL8hGQX4geoyz8Sg_7K9SOZ5l',
+    );
 
-  runApp(const SocialCodeApp());
+    runApp(const SocialCodeApp());
+  } catch (e, stack) {
+    debugPrint('Fatal Startup Error: $e\n$stack');
+    runApp(MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Text(
+              'FATAL ERROR DURING STARTUP:\n\n$e\n\nPlease check console logs.',
+              style: const TextStyle(color: Colors.red, fontFamily: 'monospace', fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    ));
+  }
 }
 
 class SocialCodeApp extends StatelessWidget {
